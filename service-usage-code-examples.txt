@@ -1,0 +1,21 @@
+Localstorage:
+  final localStorageService = GetIt.instance<LocalStorageService>();
+  final username = await localStorageService.readUsername();
+  await localStorageService.writeUsername(input);
+
+
+ScanCode:
+
+  final codeScannerService = GetIt.instance<CodeScannerService>();
+  final result = await codeScannerService.getCodeByScan(context);
+
+Email:
+lagerliste.csv@gmail.com
+4]f{0Y5DWG,<EgMarCPw
+https://dashboard.emailjs.com/sign-in
+
+  final mailSenderService = GetIt.instance<MailSenderService>();
+ await mailSenderService.sendMessage(
+        toMail: "terrorgans123@gmail.com",
+        subject: "CSV-Liste",
+        message: "Hallo, dies ist eine Test-Mail!");

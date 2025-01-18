@@ -1,0 +1,59 @@
+Lagerliste
+Die Lagerliste setzt sich aus folgenden Informationen zusammen:
+• Fach (Text)
+• Regal (Text)
+• RegalID (Code)
+• Artikel GWID (Code)
+• Artikel FirmenID (Text, Identifikation des Kunden)
+• Beschreibung (Text)
+• Kunde (Text)
+• Ablaufdatum (Datum)
+• Menge (Zahl)
+• Mindestmenge (Zahl)
+
+Die Eindeutige Kennung eines Ortes und Artikels setzt sich aus RegalID und Artikel
+GWID zusammen.
+
+
+GENERELL:
+1) Snackbars bei allen Events damit der User was funktioniert hat. Bzw. was nicht funktioniert hat.
+
+2) Für die EMails verwenden wir einen einzigen Service. Dieser nimmt ein EMailProps objekt wo halt titel, text u. eventuell andere Informationen enthalten sind. Weil: Keine Lust auf mehreren Orten den EMail Import zu haben und schönerer Code dann. WENN WIR ZEIT U. LUST HABEN: Irgendwie kann man mit HTML CSS Templates gutaussehende Mails verschicken, kann man sich mal anschauen. 
+
+3) Für die Lagerliste auch ein einziger Service. Gleiche Gründe wie EMail-Serive UND. UC7 wird dadurch vereinfacht.
+
+
+UC1) NEUE Lagerplatz Button für Scannen von Regal ID. Gibt es das Regal? Falls ja: Artikel GWID scannen. Ist die GWID frei? Daraufhin Informationen zum Artikel eingeben: Beschreibung, Menge, Ablaufdatum, Mindestmenge. Artikel in Lagerliste eintragen => Bestätigung geben. 
+
+
+UC2) Neuen Lagerplatz festlegen. Scannen einer RegalID. Gibt es diese schon? Falls nein: Neu anlegen und die Lagerliste ist zunächst noch leer.
+
+
+UC3) In Bereits existierendes Regal einlegen. RegalID scannen (gibt es das Regal?). Artikel GWID scannen (Nummer noch verfügbar), Infos eingeben wie Beschreibung, Menge, Ablaufdatum, Mindestmenge. 
+
+
+UC4) RegalID ODER Artikel GWID scannen => gibt es diesen Lagerplatz? Ja: Informationen zum Lagerplatz anzeigen. Artikel auswählen und eingeben, wie viel eingelagert wird => Lagerliste updaten! TODO: Für alle Artikel scannen?
+
+
+UC5) Gleiche wie UC4. Doch: Artikel werden herausgenommen. Also Parameter zur Seite übergeben (bool) ob heraus genommen oder reingegeben wird. Zu beachten: Beim Text und beim aktualisieren der Lagerliste - ob + oder -. ODER: Ein Feld zum auswählen ob hier eingelagert oder ausgelagert wird - beides eig. ok.
+
+
+UC6) Bei der Seite von UC4 bzw. UC5. Folgendes beachten: Ist die Mindestmenge erreicht oder Unterschritten? Ja: EMAIL.
+
+
+UC7) Im LagerlistenService bei jeder Änderung schauen, welche Artikel abgelaufen sind. NUR 1 MAL AM TAG. Also im localstorage speichern welcher tag der letzte war und abgleichen. TODO: Auf PUTZ Antwort warten wegen Alternativlösung. ACHTUNG: Keine Artikel öfter senden. Lösung: Speichern wann das letzte mal eine Mail gesendet worden ist. Alles was davor bzw. an diesem Tag war wurde bereits verschickt.
+
+
+UC8) Export-Button. Die Lagerliste wird per EMail versendet. Als CSV nicht XLSX!!!
+
+
+UC9) Import-Button. Gleiches Format wie Export. File auf Richtigkeit prüfen. User warnen: Wirklich importieren? Falls ja: Aktuelle Lagerliste per EMail wie in UC8 exportieren. Lagerliste überschreiben mit der neuen - gerade eben importierten - Liste. 
+
+
+UC10) Inventur durchführen. TODO: machen wir dann am ende würd ich vorschlagen.
+
+UC11) Nix
+
+UC12) Backup-Lagerlisten. TODO: Vllt kommt da noch was von ihr , falls nein. Immer wenn die App startet schauen, wann das letzte Backup versendet worden ist, wenn diese Kalenderwoche noch nichts kam dann yallah rüber schicken. 
+
+UC13) Immer wenn was in einem der beiden Services - EMail oder LagerlistenÄnderungen - dann rein da in die Logs. App hat einen Button wo die Logs angezeigt werden. Auch die soll regelmäßig per Mail, wie oft schau ma dann.
