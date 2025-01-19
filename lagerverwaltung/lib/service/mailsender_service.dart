@@ -1,7 +1,8 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:http/http.dart' as http;
-import 'package:lagerverwaltung/showsnackbar.dart';
+import 'package:lagerverwaltung/model/LagerlistenEntry.dart';
 
 class MailSenderService {
   // Service-Setup:
@@ -25,7 +26,7 @@ class MailSenderService {
       required String subject,
       required String message}) async {
     final url = Uri.parse("https://api.emailjs.com/api/v1.0/email/send");
-    final response = await http.post(url,
+    await http.post(url,
         headers: {
           "origin": "http://localhost",
           "Content-Type": "application/json"
@@ -41,4 +42,11 @@ class MailSenderService {
           }
         }));
   }
+
+  // TODO:
+  void sendMindestmengeErreicht(LagerListenEntry entry) {}
+
+  void sendLagerListe(File file) {}
+
+  void sendAbgelaufen(List<LagerListenEntry> abgelaufeneArtikel) {}
 }

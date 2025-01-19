@@ -1,20 +1,27 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:lagerverwaltung/automatisierte_aufgaben/automatisiert_checker.dart';
 import 'package:lagerverwaltung/service/codescanner_service.dart';
+import 'package:lagerverwaltung/service/csv_converter_service.dart';
+import 'package:lagerverwaltung/service/lagerlistenverwatlung_service.dart';
 import 'package:lagerverwaltung/service/localstorage_service.dart';
 import 'package:lagerverwaltung/service/mailsender_service.dart';
 
 final getIt = GetIt.instance;
-
+AutomatisiertChecker checker = AutomatisiertChecker();
 void setUpServices() {
   getIt.registerLazySingleton<LocalStorageService>(() => LocalStorageService());
   getIt.registerLazySingleton<CodeScannerService>(() => CodeScannerService());
   getIt.registerLazySingleton<MailSenderService>(() => MailSenderService());
+  getIt.registerLazySingleton<LagerlistenVerwatlungsService>(
+      () => LagerlistenVerwatlungsService());
+  getIt.registerLazySingleton<CsvConverterService>(() => CsvConverterService());
 }
 
 void main() {
   setUpServices();
+  checker.checkTodo();
   runApp(const MyApp());
 }
 
@@ -53,23 +60,6 @@ class _MyHomePageState extends State<MyHomePage> {
   String _storedUsername = '';
   String _qrCodeString = "";
 
-  void readUsername() async {
-    final username = await localStorageService.readUsername();
-    setState(() {
-      _storedUsername = username ?? 'No username found';
-    });
-  }
-
-  void writeUsername() async {
-    final input = _controller.text.trim();
-    if (input.isNotEmpty) {
-      await localStorageService.writeUsername(input);
-      setState(() {
-        _storedUsername = 'Username saved: $input';
-      });
-    }
-  }
-
   void sendMail() async {
     await mailSenderService.sendMessage(
         toMail: "terrorgans123@gmail.com",
@@ -104,15 +94,6 @@ class _MyHomePageState extends State<MyHomePage> {
             CupertinoTextField(
               placeholder: "Enter username for LocalStorage",
               controller: _controller,
-            ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: readUsername,
-              child: const Text('Read Username'),
-            ),
-            ElevatedButton(
-              onPressed: writeUsername,
-              child: const Text('Write Username'),
             ),
             const SizedBox(height: 20),
             Text(
