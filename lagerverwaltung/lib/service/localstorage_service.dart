@@ -18,7 +18,7 @@ class LocalStorageService {
   // SharedPreference-Cache:
   static SharedPreferences? _prefs;
 
-  static Future<SharedPreferences> _getSharePreference() async {
+  Future<SharedPreferences> _getSharePreference() async {
     if (_prefs == null) {
       _prefs = await SharedPreferences.getInstance();
     }

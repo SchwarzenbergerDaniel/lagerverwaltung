@@ -20,6 +20,7 @@ void setUpServices() {
 }
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
   setUpServices();
   checker.checkTodo();
   runApp(const MyApp());
