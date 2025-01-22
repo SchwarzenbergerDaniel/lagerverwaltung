@@ -36,7 +36,7 @@ class MyApp extends StatelessWidget {
       theme: CupertinoThemeData(
         primaryColor: CupertinoColors.activeBlue,
         barBackgroundColor: CupertinoColors.systemGrey,
-        scaffoldBackgroundColor: CupertinoColors.systemGroupedBackground, 
+        scaffoldBackgroundColor: CupertinoColors.systemGroupedBackground,
         textTheme: CupertinoTextThemeData(
           textStyle: TextStyle(
             fontSize: 16,

@@ -39,27 +39,26 @@ class CodeScannerScreen extends StatefulWidget {
 
 class _CodeScannerScreenState extends State<CodeScannerScreen> {
   MobileScannerController controller = MobileScannerController();
-
   @override
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
-    navigationBar: CupertinoNavigationBar(
-      middle: const Text('QR Code Scanner'),
-    ),
-    child: MobileScanner(
-      controller: controller,
-      onDetect: (barcode) {
-        if (barcode.barcodes.isNotEmpty) {
-          String? code = barcode.barcodes[0].rawValue;
-          if (code != null) {
-            controller.dispose();
-            Navigator.of(context).pop(code);
+      navigationBar: CupertinoNavigationBar(
+        middle: const Text('QR Code Scanner'),
+      ),
+      child: MobileScanner(
+        controller: controller,
+        onDetect: (barcode) {
+          if (barcode.barcodes.isNotEmpty) {
+            String? code = barcode.barcodes[0].rawValue;
+            if (code != null) {
+              controller.dispose();
+              Navigator.of(context).pop(code);
+            }
           }
-        }
-      },
-    ),
-  );
-}
+        },
+      ),
+    );
+  }
 
   @override
   void dispose() {
