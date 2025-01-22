@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lagerverwaltung/showsnackbar.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/cupertino.dart';
@@ -24,9 +25,8 @@ class CodeScannerService {
         ),
       );
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Bitte erlauben Sie den Kamerazugriff')),
-      );
+      Showsnackbar.showSnackBar(
+          context, 'Bitte erlauben Sie den Kamerazugriff');
     }
     return qrCodeResult;
   }
@@ -39,11 +39,43 @@ class CodeScannerScreen extends StatefulWidget {
 
 class _CodeScannerScreenState extends State<CodeScannerScreen> {
   MobileScannerController controller = MobileScannerController();
+  bool isTorchOn = false;
+
   @override
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
         middle: const Text('QR Code Scanner'),
+        leading: CupertinoButton(
+          color: CupertinoTheme.of(context).scaffoldBackgroundColor,
+          padding: const EdgeInsets.all(12),
+          borderRadius: BorderRadius.circular(20),
+          onPressed: () {
+            controller.dispose();
+              Navigator.of(context).pop("-exit");
+          },
+          child: Icon(
+            Icons.arrow_back,
+            color: CupertinoTheme.of(context).primaryColor,
+          ),
+        ),
+        trailing: CupertinoButton(
+          color: CupertinoTheme.of(context).scaffoldBackgroundColor,
+          padding: const EdgeInsets.all(12),
+          borderRadius: BorderRadius.circular(20),
+          onPressed: () {
+            setState(() {
+              isTorchOn = !isTorchOn;
+              controller.toggleTorch();
+            });
+          },
+          child: Icon(
+            isTorchOn
+                ? Icons.lightbulb_sharp
+                : Icons.lightbulb_outline,
+            color: CupertinoTheme.of(context).primaryColor,
+          ),
+        ),
       ),
       child: MobileScanner(
         controller: controller,

@@ -81,6 +81,9 @@ class _MyHomePageState extends State<MyHomePage> {
   void scanCode() async {
     final result = await codeScannerService.getCodeByScan(context);
     if (result != null) {
+      if(result == "-exit"){ //Wenn man durch den Backarrow zurück will, das kein Error kommt 
+        return;
+      }
       setState(() {
         _qrCodeString = result;
       });
