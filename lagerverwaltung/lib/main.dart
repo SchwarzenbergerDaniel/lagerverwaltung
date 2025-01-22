@@ -7,6 +7,7 @@ import 'package:lagerverwaltung/service/csv_converter_service.dart';
 import 'package:lagerverwaltung/service/lagerlistenverwatlung_service.dart';
 import 'package:lagerverwaltung/service/localstorage_service.dart';
 import 'package:lagerverwaltung/service/mailsender_service.dart';
+import 'package:lagerverwaltung/showsnackbar.dart';
 
 final getIt = GetIt.instance;
 AutomatisiertChecker checker = AutomatisiertChecker();
@@ -31,13 +32,22 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Localstorage Test',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
+    return CupertinoApp(
+      theme: CupertinoThemeData(
+        primaryColor: CupertinoColors.activeBlue,
+        barBackgroundColor: CupertinoColors.systemGrey,
+        scaffoldBackgroundColor: CupertinoColors.systemGroupedBackground, 
+        textTheme: CupertinoTextThemeData(
+          textStyle: TextStyle(
+            fontSize: 16,
+            color: CupertinoColors.white,
+          ),
+          actionTextStyle: TextStyle(
+            color: CupertinoColors.white,
+          ),
+        ),
       ),
+      debugShowCheckedModeBanner: false,
       home: const MyHomePage(title: 'Service-Tests'),
     );
   }
@@ -59,7 +69,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   final TextEditingController _controller = TextEditingController();
   String _storedUsername = '';
-  String _qrCodeString = "";
+  String _qrCodeString = "No code";
 
   void sendMail() async {
     await mailSenderService.sendMessage(
@@ -75,50 +85,49 @@ class _MyHomePageState extends State<MyHomePage> {
         _qrCodeString = result;
       });
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Kein Code gefunden!')),
-      );
+      Showsnackbar.showSnackBar(context, "kein Code gefunden!");
     }
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
+Widget build(BuildContext context) {
+  return CupertinoPageScaffold(
+    navigationBar: CupertinoNavigationBar(
+      middle: Text(widget.title),
+      backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
+    ),
+    child: Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          CupertinoTextField(
+            placeholder: "Enter username for LocalStorage",
+            controller: _controller,
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          ),
+          const SizedBox(height: 20),
+          Text(
+            _storedUsername,
+            style: CupertinoTheme.of(context).textTheme.actionTextStyle,
+          ),
+          const SizedBox(height: 20),
+          CupertinoButton.filled(
+            onPressed: scanCode,
+            child: const Text('QR-CODE SCANNEN'),
+          ),
+          const SizedBox(height: 20),
+          Text(
+            _qrCodeString,
+            style: CupertinoTheme.of(context).textTheme.actionTextStyle,
+          ),
+          const SizedBox(height: 20),
+          CupertinoButton.filled(
+            onPressed: sendMail,
+            child: const Text('Send Mail'),
+          ),
+        ],
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            CupertinoTextField(
-              placeholder: "Enter username for LocalStorage",
-              controller: _controller,
-            ),
-            const SizedBox(height: 20),
-            Text(
-              _storedUsername,
-              style: Theme.of(context).textTheme.bodyLarge,
-            ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: scanCode,
-              child: const Text('QR-CODE SCANNEN'),
-            ),
-            const SizedBox(height: 20),
-            Text(
-              _qrCodeString,
-              style: Theme.of(context).textTheme.bodyLarge,
-            ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: sendMail,
-              child: const Text('Send Mail'),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+    ),
+  );
+}
 }

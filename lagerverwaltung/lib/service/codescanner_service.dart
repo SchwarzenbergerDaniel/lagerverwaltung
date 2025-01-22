@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:flutter/cupertino.dart';
 
 class CodeScannerService {
   // Service-Setup:
@@ -41,22 +42,24 @@ class _CodeScannerScreenState extends State<CodeScannerScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text('QR Code Scanner')),
-      body: MobileScanner(
-        controller: controller,
-        onDetect: (barcode) {
-          if (barcode.barcodes.isNotEmpty) {
-            String? code = barcode.barcodes[0].rawValue;
-            if (code != null) {
-              controller.dispose();
-              Navigator.of(context).pop(code);
-            }
+    return CupertinoPageScaffold(
+    navigationBar: CupertinoNavigationBar(
+      middle: const Text('QR Code Scanner'),
+    ),
+    child: MobileScanner(
+      controller: controller,
+      onDetect: (barcode) {
+        if (barcode.barcodes.isNotEmpty) {
+          String? code = barcode.barcodes[0].rawValue;
+          if (code != null) {
+            controller.dispose();
+            Navigator.of(context).pop(code);
           }
-        },
-      ),
-    );
-  }
+        }
+      },
+    ),
+  );
+}
 
   @override
   void dispose() {
