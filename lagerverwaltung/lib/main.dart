@@ -8,6 +8,7 @@ import 'package:lagerverwaltung/service/csv_converter_service.dart';
 import 'package:lagerverwaltung/service/lagerlistenverwatlung_service.dart';
 import 'package:lagerverwaltung/service/localstorage_service.dart';
 import 'package:lagerverwaltung/service/mailsender_service.dart';
+import 'package:lagerverwaltung/settings_page.dart';
 import 'package:lagerverwaltung/showsnackbar.dart';
 
 final getIt = GetIt.instance;
@@ -99,6 +100,9 @@ Widget build(BuildContext context) {
   return CupertinoPageScaffold(
     navigationBar: CupertinoNavigationBar(
       middle: Text(widget.title),
+      trailing: CupertinoButton(child: Icon(Icons.settings), onPressed: () {
+        Navigator.push(context, CupertinoPageRoute( builder: (context) => SettingsPage()));
+      }),
       backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
     ),
     child: Center(
