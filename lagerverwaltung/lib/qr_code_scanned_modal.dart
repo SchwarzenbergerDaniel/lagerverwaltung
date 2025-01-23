@@ -8,8 +8,6 @@ class QrCodeScannedModal{
         title: Text('Wähle aus für $result'),
         actions: <CupertinoActionSheetAction>[
           CupertinoActionSheetAction(
-            /// This parameter indicates the action would be a default
-            /// default behavior, turns the action's text to bold text.
             isDefaultAction: true,
             onPressed: () {
               Navigator.pop(context);
@@ -23,9 +21,6 @@ class QrCodeScannedModal{
             child: const Text('Neuer Lagerplatz'),
           ),
           CupertinoActionSheetAction(
-            /// This parameter indicates the action would perform
-            /// a destructive action such as delete or exit and turns
-            /// the action's text color to red.
             isDestructiveAction: true,
             onPressed: () {
               Navigator.pop(context);
