@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:lagerverwaltung/automatisierte_aufgaben/automatisiert_checker.dart';
+import 'package:lagerverwaltung/qr_code_scanned_modal.dart';
 import 'package:lagerverwaltung/service/codescanner_service.dart';
 import 'package:lagerverwaltung/service/csv_converter_service.dart';
 import 'package:lagerverwaltung/service/lagerlistenverwatlung_service.dart';
@@ -87,6 +88,7 @@ class _MyHomePageState extends State<MyHomePage> {
       setState(() {
         _qrCodeString = result;
       });
+      QrCodeScannedModal.showActionSheet(context, result);
     } else {
       Showsnackbar.showSnackBar(context, "kein Code gefunden!");
     }
