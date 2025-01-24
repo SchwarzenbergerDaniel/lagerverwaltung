@@ -2,14 +2,14 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:lagerverwaltung/automatisierte_aufgaben/automatisiert_checker.dart';
-import 'package:lagerverwaltung/qr_code_scanned_modal.dart';
+import 'package:lagerverwaltung/widgets/qr_code_scanned_modal.dart';
 import 'package:lagerverwaltung/service/codescanner_service.dart';
 import 'package:lagerverwaltung/service/csv_converter_service.dart';
 import 'package:lagerverwaltung/service/lagerlistenverwatlung_service.dart';
 import 'package:lagerverwaltung/service/localstorage_service.dart';
 import 'package:lagerverwaltung/service/mailsender_service.dart';
-import 'package:lagerverwaltung/settings_page.dart';
-import 'package:lagerverwaltung/showsnackbar.dart';
+import 'package:lagerverwaltung/pages/settings_page.dart';
+import 'package:lagerverwaltung/widgets/showsnackbar.dart';
 
 final getIt = GetIt.instance;
 AutomatisiertChecker checker = AutomatisiertChecker();
@@ -83,7 +83,8 @@ class _MyHomePageState extends State<MyHomePage> {
   void scanCode() async {
     final result = await codeScannerService.getCodeByScan(context);
     if (result != null) {
-      if(result == "-exit"){ //Wenn man durch den Backarrow zurück will, das kein Error kommt 
+      if (result == "-exit") {
+        //Wenn man durch den Backarrow zurück will, das kein Error kommt
         return;
       }
       setState(() {
@@ -96,47 +97,50 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   @override
-Widget build(BuildContext context) {
-  return CupertinoPageScaffold(
-    navigationBar: CupertinoNavigationBar(
-      middle: Text(widget.title),
-      trailing: CupertinoButton(child: Icon(Icons.settings), onPressed: () {
-        Navigator.push(context, CupertinoPageRoute( builder: (context) => SettingsPage()));
-      }),
-      backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
-    ),
-    child: Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          CupertinoTextField(
-            placeholder: "Enter username for LocalStorage",
-            controller: _controller,
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          ),
-          const SizedBox(height: 20),
-          Text(
-            _storedUsername,
-            style: CupertinoTheme.of(context).textTheme.actionTextStyle,
-          ),
-          const SizedBox(height: 20),
-          CupertinoButton.filled(
-            onPressed: scanCode,
-            child: const Text('QR-CODE SCANNEN'),
-          ),
-          const SizedBox(height: 20),
-          Text(
-            _qrCodeString,
-            style: CupertinoTheme.of(context).textTheme.actionTextStyle,
-          ),
-          const SizedBox(height: 20),
-          CupertinoButton.filled(
-            onPressed: sendMail,
-            child: const Text('Send Mail'),
-          ),
-        ],
+  Widget build(BuildContext context) {
+    return CupertinoPageScaffold(
+      navigationBar: CupertinoNavigationBar(
+        middle: Text(widget.title),
+        trailing: CupertinoButton(
+            child: Icon(Icons.settings_outlined),
+            onPressed: () {
+              Navigator.push(context,
+                  CupertinoPageRoute(builder: (context) => SettingsPage()));
+            }),
+        backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
       ),
-    ),
-  );
-}
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            CupertinoTextField(
+              placeholder: "Enter username for LocalStorage",
+              controller: _controller,
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            ),
+            const SizedBox(height: 20),
+            Text(
+              _storedUsername,
+              style: CupertinoTheme.of(context).textTheme.actionTextStyle,
+            ),
+            const SizedBox(height: 20),
+            CupertinoButton.filled(
+              onPressed: scanCode,
+              child: const Text('QR-CODE SCANNEN'),
+            ),
+            const SizedBox(height: 20),
+            Text(
+              _qrCodeString,
+              style: CupertinoTheme.of(context).textTheme.actionTextStyle,
+            ),
+            const SizedBox(height: 20),
+            CupertinoButton.filled(
+              onPressed: sendMail,
+              child: const Text('Send Mail'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }

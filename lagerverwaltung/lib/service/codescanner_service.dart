@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:lagerverwaltung/showsnackbar.dart';
+import 'package:lagerverwaltung/widgets/custom_leading_button.dart';
+import 'package:lagerverwaltung/widgets/showsnackbar.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/cupertino.dart';
@@ -46,19 +47,7 @@ class _CodeScannerScreenState extends State<CodeScannerScreen> {
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
         middle: const Text('QR Code Scanner'),
-        leading: CupertinoButton(
-          color: CupertinoTheme.of(context).scaffoldBackgroundColor,
-          padding: const EdgeInsets.all(12),
-          borderRadius: BorderRadius.circular(20),
-          onPressed: () {
-            controller.dispose();
-              Navigator.of(context).pop("-exit");
-          },
-          child: Icon(
-            Icons.arrow_back,
-            color: CupertinoTheme.of(context).primaryColor,
-          ),
-        ),
+        leading: CustomBackButton(onPressed: () {Navigator.of(context).pop("-exit");}),
         trailing: CupertinoButton(
           color: CupertinoTheme.of(context).scaffoldBackgroundColor,
           padding: const EdgeInsets.all(12),
