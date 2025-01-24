@@ -138,6 +138,15 @@ class _MyHomePageState extends State<MyHomePage> {
               onPressed: sendMail,
               child: const Text('Send Mail'),
             ),
+            
+            // TEST 
+            const SizedBox(height: 20,),
+            CupertinoButton.filled(
+              onPressed: () => {QrCodeScannedModal.showActionSheet(context, "ScannedID")},
+              child: const Text('Alr Scanned PopUp Button'),
+            ),
+
+
           ],
         ),
       ),
