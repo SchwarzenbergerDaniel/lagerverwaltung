@@ -1,5 +1,5 @@
 import 'package:flutter/cupertino.dart';
-import 'package:lagerverwaltung/widgets/custom_leading_button.dart';
+import 'package:lagerverwaltung/widget/custom_leading_button.dart';
 
 class SettingsPage extends StatelessWidget {
   const SettingsPage({super.key});
@@ -8,7 +8,7 @@ class SettingsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
-        middle: const Text('Settings'),
+        middle: const Text('Einstellungen'),
         backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
         leading: CustomBackButton(),
       ),

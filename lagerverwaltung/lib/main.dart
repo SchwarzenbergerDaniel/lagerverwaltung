@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:lagerverwaltung/automatisierte_aufgaben/automatisiert_checker.dart';
+import 'package:lagerverwaltung/config/constants.dart';
 import 'package:lagerverwaltung/widgets/qr_code_scanned_modal.dart';
 import 'package:lagerverwaltung/service/codescanner_service.dart';
 import 'package:lagerverwaltung/service/csv_converter_service.dart';
@@ -83,7 +84,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void scanCode() async {
     final result = await codeScannerService.getCodeByScan(context);
     if (result != null) {
-      if (result == "-exit") {
+      if (result == Constants.ExitReturnValue) {
         //Wenn man durch den Backarrow zurück will, das kein Error kommt
         return;
       }
