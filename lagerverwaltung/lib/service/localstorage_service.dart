@@ -1,5 +1,10 @@
+import 'dart:convert';
+
 import 'package:lagerverwaltung/model/LagerlistenEntry.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+//TODO: Always add to logs => Will do that in the next PR.
+enum ReasonForLagerlistenChange { import, amountChange, addEntry, noReason }
 
 class LocalStorageService {
   // Service-Setup:
@@ -11,6 +16,7 @@ class LocalStorageService {
   }
 
   // Keys:
+  static const String _lagerlisteKey = "lagerliste_key";
   static const String _lastBackupKey = "lagerliste_lastbackupmade_key";
   static const String _lastAbgelaufenMailSentKey =
       "abgelaufen_lastMailDate_key";
@@ -19,13 +25,9 @@ class LocalStorageService {
   static SharedPreferences? _prefs;
 
   Future<SharedPreferences> _getSharePreference() async {
-    if (_prefs == null) {
-      _prefs = await SharedPreferences.getInstance();
-    }
+    _prefs ??= await SharedPreferences.getInstance();
     return _prefs!;
   }
-
-  // METHODEN:
 
   // Last Abgelaufen Mail:
   Future<DateTime> getLastTimeAbgelaufenMailSent() async {
@@ -69,12 +71,20 @@ class LocalStorageService {
     return "${dateTime.year}-${dateTime.month}-${dateTime.day}";
   }
 
-  //TODO: Erst machbar wenn wir wissen wie genau der Spaß aussehen soll.
-  void addLagerListenEntry(LagerListenEntry entry) {}
+  void clearLagerliste() async {
+    lagerlisteChanged([], ReasonForLagerlistenChange.noReason);
+  }
 
-  void changeAmount(LagerListenEntry entry, int amountChange) {}
+  void lagerlisteChanged(
+      List<LagerListenEntry> newList, ReasonForLagerlistenChange reason) async {
+    // Reason (not my brother wezon) is relevant for the logs.
+    final prefs = await _getSharePreference();
 
-  void clearLagerliste() {}
+    final jsonList = newList.map((entry) => entry.toJson()).toList();
+    await prefs.setString(_lagerlisteKey, jsonEncode(jsonList));
 
-  void setNewLagerListe(List<LagerListenEntry> newList) {}
+    if (reason != ReasonForLagerlistenChange.noReason) {
+      //TODO: LOG
+    }
+  }
 }

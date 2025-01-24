@@ -3,14 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:lagerverwaltung/automatisierte_aufgaben/automatisiert_checker.dart';
 import 'package:lagerverwaltung/config/constants.dart';
-import 'package:lagerverwaltung/widgets/qr_code_scanned_modal.dart';
+import 'package:lagerverwaltung/widget/qr_code_scanned_modal.dart';
 import 'package:lagerverwaltung/service/codescanner_service.dart';
 import 'package:lagerverwaltung/service/csv_converter_service.dart';
 import 'package:lagerverwaltung/service/lagerlistenverwatlung_service.dart';
 import 'package:lagerverwaltung/service/localstorage_service.dart';
 import 'package:lagerverwaltung/service/mailsender_service.dart';
-import 'package:lagerverwaltung/pages/settings_page.dart';
-import 'package:lagerverwaltung/widgets/showsnackbar.dart';
+import 'package:lagerverwaltung/page/settings_page.dart';
+import 'package:lagerverwaltung/widget/showsnackbar.dart';
 
 final getIt = GetIt.instance;
 AutomatisiertChecker checker = AutomatisiertChecker();
@@ -71,7 +71,7 @@ class _MyHomePageState extends State<MyHomePage> {
   final mailSenderService = GetIt.instance<MailSenderService>();
 
   final TextEditingController _controller = TextEditingController();
-  String _storedUsername = '';
+  final String _storedUsername = '';
   String _qrCodeString = "No code";
 
   void sendMail() async {
@@ -84,7 +84,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void scanCode() async {
     final result = await codeScannerService.getCodeByScan(context);
     if (result != null) {
-      if (result == Constants.ExitReturnValue) {
+      if (result == Constants.EXIT_RETURN_VALUE) {
         //Wenn man durch den Backarrow zurück will, das kein Error kommt
         return;
       }
@@ -139,15 +139,16 @@ class _MyHomePageState extends State<MyHomePage> {
               onPressed: sendMail,
               child: const Text('Send Mail'),
             ),
-            
-            // TEST 
-            const SizedBox(height: 20,),
+
+            // TEST
+            const SizedBox(
+              height: 20,
+            ),
             CupertinoButton.filled(
-              onPressed: () => {QrCodeScannedModal.showActionSheet(context, "ScannedID")},
+              onPressed: () =>
+                  {QrCodeScannedModal.showActionSheet(context, "ScannedID")},
               child: const Text('Alr Scanned PopUp Button'),
             ),
-
-
           ],
         ),
       ),

@@ -1,0 +1,1 @@
+lagerplatzId,fach,regal,artikelGWID,arikelFirmenId,beschreibung,kunde,ablaufdatum,menge,mindestMenge

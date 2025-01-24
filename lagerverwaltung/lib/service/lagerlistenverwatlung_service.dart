@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:get_it/get_it.dart';
+import 'package:lagerverwaltung/config/errormessage_constants.dart';
 import 'package:lagerverwaltung/model/LagerlistenEntry.dart';
 import 'package:lagerverwaltung/service/csv_converter_service.dart';
 import 'package:lagerverwaltung/service/localstorage_service.dart';
@@ -16,7 +17,7 @@ class LagerlistenVerwatlungsService {
     return _instance;
   }
 
-  // instanzen
+  // Instanzen
   final localStorageService = GetIt.instance<LocalStorageService>();
   final mailSenderService = GetIt.instance<MailSenderService>();
   final csvConverterService = GetIt.instance<CsvConverterService>();
@@ -24,8 +25,8 @@ class LagerlistenVerwatlungsService {
   List<LagerListenEntry> lagerlistenEntries = [];
 
   // Methods:
-  bool regalExist(String regalId) {
-    return lagerlistenEntries.any((val) => val.regalId == regalId);
+  bool regalExist(String lagerplatzId) {
+    return lagerlistenEntries.any((val) => val.lagerplatzId == lagerplatzId);
   }
 
   bool artikelGWIDExist(String gwidCode) {
@@ -33,19 +34,20 @@ class LagerlistenVerwatlungsService {
   }
 
   void addToLagerliste(LagerListenEntry entry) {
-    this.lagerlistenEntries.add(entry);
-    localStorageService.addLagerListenEntry(entry);
+    lagerlistenEntries.add(entry);
+    localStorageService.lagerlisteChanged(
+        lagerlistenEntries, ReasonForLagerlistenChange.addEntry);
   }
 
-  void addEmptyRegal(String regalCode) {
-    LagerListenEntry entry = LagerListenEntry(regalId: regalCode);
+  void addEmptyRegal(String lagerplatzCode) {
+    LagerListenEntry entry = LagerListenEntry(lagerplatzId: lagerplatzCode);
     addToLagerliste(entry);
   }
 
-  List<LagerListenEntry> getLagerlisteByRegal(String regalCode) {
+  List<LagerListenEntry> getLagerlisteByRegal(String lagerplatzCode) {
     return this
         .lagerlistenEntries
-        .where((val) => val.regalId == regalCode)
+        .where((val) => val.lagerplatzId == lagerplatzCode)
         .toList();
   }
 
@@ -53,39 +55,43 @@ class LagerlistenVerwatlungsService {
     LagerListenEntry? entry = lagerlistenEntries
         .where((val) => val.artikelGWID == artikelGWID)
         .firstOrNull;
+
     if (entry == null) {
-      return "Artikel konnte nicht gefunden werden!";
+      return ErrorMessageConstants.COULD_NOT_FIND_ARTICLE;
+      //TEST: Liest du dir das durch? Falls ja antworte DANKE!
     }
     entry.menge = entry.menge! + amountChange;
     if (entry.menge! < 0) {
-      return "Sie können nicht mehr entnehmen als im Lager vorhanden ist!";
+      return ErrorMessageConstants.NOT_ENOUGH_IN_STORAGE;
     }
 
-    localStorageService.changeAmount(entry, amountChange);
+    localStorageService.lagerlisteChanged(
+        lagerlistenEntries, ReasonForLagerlistenChange.amountChange);
 
     if (entry.menge! <= entry.mindestMenge!) {
       mailSenderService.sendMindestmengeErreicht(entry);
-      return "Die Mindestmenge wurde erreicht! Genauere Informationen per Mail!";
+      return ErrorMessageConstants.MIN_AMOUNT_REACHED;
     }
 
     return null;
   }
 
   void exportLagerListe() {
-    File file = csvConverterService.toCsv(this.lagerlistenEntries);
+    File file = csvConverterService.toCsv(lagerlistenEntries);
     mailSenderService.sendLagerListe(file);
   }
 
   String? importFromFile(File file) {
     var newList = csvConverterService.convertToList(file);
     if (newList == null) {
-      return "File konnte nicht importiert werden. Achten Sie auf richtiges Format!";
+      return ErrorMessageConstants.COULD_NOT_FIND_ARTICLE;
     }
 
     exportLagerListe();
     localStorageService.clearLagerliste();
-    localStorageService.setNewLagerListe(newList);
-    this.lagerlistenEntries = newList;
+    localStorageService.lagerlisteChanged(
+        newList, ReasonForLagerlistenChange.import);
+    lagerlistenEntries = newList;
 
     return null;
   }
