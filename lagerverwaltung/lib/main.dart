@@ -88,38 +88,33 @@ class _MyHomePageState extends State<MyHomePage> {
         "beschreibung": "Artikelbeschreibung 1",
         "kunde": "Kunde 1",
         "ablaufdatum": "2025-12-31",
-        "menge": 50,
+        "menge": 5,
         "mindestMenge": 10,
-      },
-      {
-        "fach": "B2",
-        "regal": "R2",
-        "lagerplatzId": "102",
-        "artikelGWID": "G124",
-        "arikelFirmenId": "F457",
-        "beschreibung": "Artikelbeschreibung 2",
-        "kunde": "Kunde 2",
-        "ablaufdatum": "2024-06-30",
-        "menge": 30,
-        "mindestMenge": 5,
-      },
-      {
-        "fach": "C3",
-        "regal": "R3",
-        "lagerplatzId": "103",
-        "artikelGWID": "G125",
-        "arikelFirmenId": "F458",
-        "beschreibung": "Artikelbeschreibung 3",
-        "kunde": "Kunde 3",
-        "ablaufdatum": null,
-        "menge": 70,
-        "mindestMenge": 20,
       }
     ];
     List<LagerListenEntry> entries =
         jsonArray.map((json) => LagerListenEntry.fromJson(json)).toList();
-    mailSenderService.sendLagerListe(
-        await csvConverterService.toCsv(entries), Constants.TO_MAIL_DEFAULT);
+    mailSenderService.sendLagerListe(await csvConverterService.toCsv(entries),
+        Constants.TO_MAIL_DEFAULT, false);
+    mailSenderService.sendLagerListe(await csvConverterService.toCsv(entries),
+        Constants.TO_MAIL_DEFAULT, true);
+
+    mailSenderService.sendMindestmengeErreicht(
+        entries[0], 1, Constants.TO_MAIL_DEFAULT);
+
+    mailSenderService.sendMindestmengeErreicht(
+        entries[0], -1, Constants.TO_MAIL_DEFAULT);
+    mailSenderService.sendAbgelaufen(
+        entries +
+            entries +
+            entries +
+            entries +
+            entries +
+            entries +
+            entries +
+            entries +
+            entries,
+        Constants.TO_MAIL_DEFAULT);
   }
 
   void scanCode() async {

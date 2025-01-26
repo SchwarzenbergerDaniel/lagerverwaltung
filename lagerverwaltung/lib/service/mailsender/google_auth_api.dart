@@ -6,7 +6,7 @@ class GoogleAuthApi {
   ]); // Damit mails gesendet werden könnnen.
 
   static Future<GoogleSignInAccount?> signIn() async {
-    if (await _googleSignIn.isSignedIn()) {
+    if (await _googleSignIn.isSignedIn() && _googleSignIn.currentUser != null) {
       return _googleSignIn.currentUser;
     }
 

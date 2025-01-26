@@ -1,14 +1,14 @@
-import 'dart:convert';
 import 'dart:io';
-import 'package:google_sign_in/google_sign_in.dart';
-import 'package:http/http.dart' as http;
-import 'package:lagerverwaltung/config/constants.dart';
 import 'package:lagerverwaltung/model/LagerlistenEntry.dart';
+import 'package:lagerverwaltung/service/mailsender/templates/abgelaufen_liste_template.dart';
+import 'package:lagerverwaltung/service/mailsender/templates/backup_email_template.dart';
+import 'package:lagerverwaltung/service/mailsender/templates/html_template_generator.dart';
 import 'package:lagerverwaltung/service/mailsender/google_auth_api.dart';
+import 'package:lagerverwaltung/service/mailsender/templates/mindestmenge_erreicht_template.dart';
 import 'package:mailer/mailer.dart';
 import 'package:mailer/smtp_server/gmail.dart';
 
-//TODO: Always add to logs => Will do that in the next PR.
+//TODO: Always add to logs
 class MailSenderService {
   // Service-Setup:
   MailSenderService._privateConstructor();
@@ -22,25 +22,25 @@ class MailSenderService {
   static const String _fromName = "Lagerliste";
 
   // Methods:
-  Future<void> sendMessage({
-    required String toMail,
-    required String subject,
-    required String message,
-    Map<String, dynamic>? attachment,
-  }) async {
+  Future<void> _sendMessage(
+      {required String toMail,
+      List<FileAttachment>? attachments,
+      required HTMLTemplateGenerator templateGenerator}) async {
     try {
       final user = await GoogleAuthApi.signIn();
-      if (user == null) return;
 
-      final auth = await user.authentication;
+      final auth = await user!.authentication;
       final token = auth.accessToken!;
+      attachments = attachments ?? [];
 
-//TODO: Change to html
       final mailMessage = Message()
         ..from = Address(user.email, _fromName)
-        ..recipients = [toMail]
-        ..subject = subject
-        ..text = message;
+        ..recipients = [
+          toMail
+        ] // [ toMail,"lukasbrainovic@gmail.com","tobias.nesvadba@gmail.com"]
+        ..subject = templateGenerator.getTitle()
+        ..attachments = attachments
+        ..html = await templateGenerator.getHTML();
 
       final smtpServer = gmailSaslXoauth2(user.email, token);
 
@@ -48,28 +48,31 @@ class MailSenderService {
     } catch (e) {}
   }
 
-  // TODO: DONT FORGET TO LOG.
-  void sendMindestmengeErreicht(LagerListenEntry entry) {}
-
-  void sendLagerListe(File file, String toMail) async {
-    //TODO: Schön machen.
-    final user = await GoogleAuthApi.signIn();
-    if (user == null) return;
-
-    final auth = await user.authentication;
-    final token = auth.accessToken!;
-
-    final mailMessage = Message()
-      ..from = Address(user.email, _fromName)
-      ..recipients = [toMail]
-      ..subject = "Backup"
-      ..attachments = [FileAttachment(file)]
-      ..html = "<h1>Jippie</h1>";
-
-    final smtpServer = gmailSaslXoauth2(user.email, token);
-
-    await send(mailMessage, smtpServer);
+  void sendLagerListe(File file, String toMail, bool isAutomatic) {
+    _sendMessage(
+      toMail: toMail,
+      templateGenerator:
+          LagerlisteBackupTemplate(file: file, isAutomatic: isAutomatic),
+      attachments: [FileAttachment(file)],
+    );
+    //TODO: LOG
   }
 
-  void sendAbgelaufen(List<LagerListenEntry> abgelaufeneArtikel) {}
+  void sendMindestmengeErreicht(
+      LagerListenEntry entry, int amountChange, String toMail) {
+    _sendMessage(
+        toMail: toMail,
+        templateGenerator: MindestmengeErreichtTemplate(
+            artikel: entry, amountChange: amountChange));
+    //TODO: LOG
+  }
+
+  void sendAbgelaufen(
+      List<LagerListenEntry> abgelaufeneArtikel, String toMail) {
+    _sendMessage(
+        toMail: toMail,
+        templateGenerator:
+            AbgelaufenListeTemplate(abgelaufenListe: abgelaufeneArtikel));
+    //TODO: LOG
+  }
 }

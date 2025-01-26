@@ -13,6 +13,7 @@ class AutomatisiertChecker {
   final lagerlistenVerwatlungsService =
       GetIt.instance<LagerlistenVerwatlungsService>();
 
+//TODO: Timer auf nächsten Tag und dann weider yallah => Kann man rekursiv lösen.
   void checkTodo() {
     _checkAbgelaufen();
     _checkBackup();
@@ -33,7 +34,8 @@ class AutomatisiertChecker {
               .isAfter(lastTime)) // Nur jene, die noch nie versendet wurden.
           .toList();
       if (abgelaufeneArtikel.isNotEmpty) {
-        mailSenderService.sendAbgelaufen(abgelaufeneArtikel);
+        mailSenderService.sendAbgelaufen(
+            abgelaufeneArtikel, Constants.TO_MAIL_DEFAULT);
         localStorageService.setLastTimeAbgelaufenMailSent();
       }
     }
@@ -64,7 +66,8 @@ class AutomatisiertChecker {
       mailSenderService.sendLagerListe(
           await csvConverterService
               .toCsv(lagerlistenVerwatlungsService.lagerlistenEntries),
-          Constants.TO_MAIL_DEFAULT);
+          Constants.TO_MAIL_DEFAULT,
+          true);
       localStorageService.setLastBackup();
     }
   }
