@@ -132,7 +132,7 @@ class _MyHomePageState extends State<MyHomePage> {
         List<LagerListenEntry> artikelListe =
           lagerListenVerwaltungsService.getLagerlisteByRegal(scannedID);
         Navigator.push(context, CupertinoPageRoute(
-                builder: (context) => LagerlistePage(entries: artikelListe)));
+                builder: (context) => LagerlistePage(entries: artikelListe, lagerplatzId: scannedID,)));
       } else {
         final result =
             await LagerplatzCodeScannedModal.showActionSheet(context, '12345');
@@ -143,6 +143,7 @@ class _MyHomePageState extends State<MyHomePage> {
           ScanArtikelCodeAfterLagerplatz(scannedID);
         } else if (result == false) {
           lagerListenVerwaltungsService.addEmptyRegal(scannedID);
+          Showsnackbar.showSnackBar(context, "Lagerliste wurde erstellt");
         }
       }
     } else {
@@ -223,16 +224,6 @@ class _MyHomePageState extends State<MyHomePage> {
             CupertinoButton.filled(
               onPressed: sendMail,
               child: const Text('Send Mail'),
-            ),
-
-            // TEST
-            const SizedBox(
-              height: 20,
-            ),
-            CupertinoButton.filled(
-              onPressed: () =>
-                  {LagerplatzCodeScannedModal.showActionSheet(context, "ScannedID")},
-              child: const Text('Alr Scanned PopUp Button'),
             ),
           ],
         ),

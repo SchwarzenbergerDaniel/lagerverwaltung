@@ -1,18 +1,30 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:lagerverwaltung/model/LagerlistenEntry.dart';
 import 'package:lagerverwaltung/widget/custom_leading_button.dart';
 import 'package:lagerverwaltung/page/artikel_page.dart';
 
 class LagerlistePage extends StatefulWidget {
   final List<LagerListenEntry> entries;
+  final String lagerplatzId;
 
-  const LagerlistePage({Key? key, required this.entries}) : super(key: key);
+  const LagerlistePage({Key? key, required this.entries, required this.lagerplatzId}) : super(key: key);
 
   @override
   _LagerlistePageState createState() => _LagerlistePageState();
 }
 
 class _LagerlistePageState extends State<LagerlistePage> {
+  void addArtikel(){
+    LagerListenEntry toAdd = LagerListenEntry(lagerplatzId: widget.lagerplatzId);
+    Navigator.push(
+      context,
+      CupertinoPageRoute(
+        builder: (context) => ArtikelPage(entry: toAdd),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
@@ -26,23 +38,7 @@ class _LagerlistePageState extends State<LagerlistePage> {
           children: [
             CupertinoButton.filled(
               onPressed: () async {
-                /*
-                final result = await QrCodeScannedModal.showActionSheet(context, 'Neuer Artikel');
-                if (result == true) {
-                  final newEntry = LagerListenEntry();
-                  Navigator.push(
-                    context,
-                    CupertinoPageRoute(
-                      builder: (context) => ArtikelPage(entry: newEntry),
-                    ),
-                  ).then((savedEntry) {
-                    if (savedEntry != null && savedEntry is LagerListenEntry) {
-                      setState(() {
-                        widget.entries.add(savedEntry);
-                      });
-                    }
-                  });
-                } */
+                addArtikel();
               },
               child: const Text('Neuen Artikel hinzufügen'),
             ),
@@ -60,13 +56,7 @@ class _LagerlistePageState extends State<LagerlistePage> {
                         CupertinoPageRoute(
                           builder: (context) => ArtikelPage(entry: entry),
                         ),
-                      ).then((updatedEntry) {
-                        if (updatedEntry != null && updatedEntry is LagerListenEntry) {
-                          setState(() {
-                            widget.entries[index] = updatedEntry;
-                          });
-                        }
-                      });
+                      );
                     },
                     child: Container(
                       padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
@@ -89,7 +79,7 @@ class _LagerlistePageState extends State<LagerlistePage> {
                             ),
                           ),
                           const Icon(
-                            CupertinoIcons.right_chevron,
+                            Icons.add,
                             color: CupertinoColors.systemGrey,
                           ),
                         ],
