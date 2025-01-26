@@ -14,6 +14,7 @@ import 'package:lagerverwaltung/service/localstorage_service.dart';
 import 'package:lagerverwaltung/service/mailsender/mailsender_service.dart';
 import 'package:lagerverwaltung/page/settings_page.dart';
 import 'package:lagerverwaltung/widget/showsnackbar.dart';
+import 'package:lagerverwaltung/utils/scan_artikel_code_after_lagerplatz.dart';
 
 final getIt = GetIt.instance;
 AutomatisiertChecker checker = AutomatisiertChecker();
@@ -130,17 +131,23 @@ class _MyHomePageState extends State<MyHomePage> {
       }
       if (lagerListenVerwaltungsService.regalExist(scannedID)) {
         List<LagerListenEntry> artikelListe =
-          lagerListenVerwaltungsService.getLagerlisteByRegal(scannedID);
-        Navigator.push(context, CupertinoPageRoute(
-                builder: (context) => LagerlistePage(entries: artikelListe, lagerplatzId: scannedID,)));
+            lagerListenVerwaltungsService.getLagerlisteByRegal(scannedID);
+        Navigator.push(
+            context,
+            CupertinoPageRoute(
+                builder: (context) => LagerlistePage(
+                      entries: artikelListe,
+                      lagerplatzId: scannedID,
+                    )));
       } else {
-        final result =
-            await LagerplatzCodeScannedModal.showActionSheet(context, '12345');
-            //True = Neuer Artikel
-            //False = Neuer Lagerplatz
-            //Null = Exit
+        final result = await LagerplatzCodeScannedModal.showActionSheet(
+            context, scannedID);
+        //True = Neuer Artikel
+        //False = Neuer Lagerplatz
+        //Null = Exit
         if (result == true) {
-          ScanArtikelCodeAfterLagerplatz(scannedID);
+          lagerListenVerwaltungsService.addEmptyRegal(scannedID);
+          scanArtikelCodeAfterLagerplatz(context, scannedID);
         } else if (result == false) {
           lagerListenVerwaltungsService.addEmptyRegal(scannedID);
           Showsnackbar.showSnackBar(context, "Lagerliste wurde erstellt");
@@ -149,10 +156,6 @@ class _MyHomePageState extends State<MyHomePage> {
     } else {
       Showsnackbar.showSnackBar(context, "kein Code gefunden!");
     }
-  }
-
-  void ScanArtikelCodeAfterLagerplatz(String lagerplatzId){
-    //TO DO
   }
 
   void scanArtikelCode() async {
@@ -224,6 +227,29 @@ class _MyHomePageState extends State<MyHomePage> {
             CupertinoButton.filled(
               onPressed: sendMail,
               child: const Text('Send Mail'),
+            ),
+
+            //TEST
+            const SizedBox(height: 20),
+            CupertinoButton.filled(
+              onPressed: () {
+                LagerListenEntry exampleEntry = LagerListenEntry(
+                  fach: 'A1',
+                  regal: 'R1',
+                  lagerplatzId: "12345",
+                  artikelGWID: 'GW12345',
+                  arikelFirmenId: 'Firma123',
+                  beschreibung: 'Beispielartikel',
+                  kunde: 'Max Mustermann',
+                  ablaufdatum: DateTime.now()
+                      .add(Duration(days: 30)), // Ablaufdatum in 30 Tagen
+                  menge: 10,
+                  mindestMenge: 5,
+                );
+
+                lagerListenVerwaltungsService.addToLagerliste(exampleEntry);
+              },
+              child: const Text('Create Artikel'),
             ),
           ],
         ),

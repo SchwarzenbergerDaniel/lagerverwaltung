@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:lagerverwaltung/model/LagerlistenEntry.dart';
+import 'package:lagerverwaltung/utils/scan_artikel_code_after_lagerplatz.dart';
 import 'package:lagerverwaltung/widget/custom_leading_button.dart';
 import 'package:lagerverwaltung/page/artikel_page.dart';
 
@@ -15,30 +16,22 @@ class LagerlistePage extends StatefulWidget {
 }
 
 class _LagerlistePageState extends State<LagerlistePage> {
-  void addArtikel(){
-    LagerListenEntry toAdd = LagerListenEntry(lagerplatzId: widget.lagerplatzId);
-    Navigator.push(
-      context,
-      CupertinoPageRoute(
-        builder: (context) => ArtikelPage(entry: toAdd),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
+    String lagerplatzId = widget.lagerplatzId;
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
-        middle: const Text('Lagerliste'),
+        middle: Text("Lagerliste: $lagerplatzId"),
         backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
         leading: CustomBackButton(),
       ),
       child: SafeArea(
         child: Column(
           children: [
+            const SizedBox(height: 16),
             CupertinoButton.filled(
               onPressed: () async {
-                addArtikel();
+                scanArtikelCodeAfterLagerplatz(context, widget.lagerplatzId);
               },
               child: const Text('Neuen Artikel hinzufügen'),
             ),
@@ -54,7 +47,7 @@ class _LagerlistePageState extends State<LagerlistePage> {
                       Navigator.push(
                         context,
                         CupertinoPageRoute(
-                          builder: (context) => ArtikelPage(entry: entry),
+                          builder: (context) => ArtikelPage(entry: entry,),
                         ),
                       );
                     },
@@ -72,14 +65,14 @@ class _LagerlistePageState extends State<LagerlistePage> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            entry.beschreibung ?? 'Unbenannt',
+                            entry.beschreibung ?? "Unbennant!",
                             style: const TextStyle(
                               fontSize: 16,
-                              color: CupertinoColors.black,
+                              color: CupertinoColors.white,
                             ),
                           ),
                           const Icon(
-                            Icons.add,
+                            Icons.edit_outlined,
                             color: CupertinoColors.systemGrey,
                           ),
                         ],
