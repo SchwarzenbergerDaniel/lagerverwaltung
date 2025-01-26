@@ -1,22 +1,29 @@
 import 'package:flutter/cupertino.dart';
+import 'package:lagerverwaltung/page/artikel_page.dart';
+import '../model/lagerlistenentry.dart';
 
 class QrCodeScannedModal{
   static void showActionSheet(BuildContext context, String result) {
     showCupertinoModalPopup<void>(
       context: context,
       builder: (BuildContext context) => CupertinoActionSheet(
-        title: Text('Wähle aus für $result'),
+        title: Text('Wähle eine Aktion für $result'),
         actions: <CupertinoActionSheetAction>[
           CupertinoActionSheetAction(
             isDefaultAction: true,
             onPressed: () {
-              Navigator.pop(context);
+              //MUSS NOCH LAGERPLATZ SCANNEN
+               /* Navigator.push(context,
+                  CupertinoPageRoute(builder: (context) => ArtikelPage())); */
             },
-            child: const Text('Zeige Informationen'),
+            child: const Text('Neuer Artikel'),
           ),
           CupertinoActionSheetAction(
             onPressed: () {
               Navigator.pop(context);
+              //
+              //
+              //
             },
             child: const Text('Neuer Lagerplatz'),
           ),
@@ -25,7 +32,7 @@ class QrCodeScannedModal{
             onPressed: () {
               Navigator.pop(context);
             },
-            child: const Text('Löschen'),
+            child: const Text('Zurück'),
           ),
         ],
       ),

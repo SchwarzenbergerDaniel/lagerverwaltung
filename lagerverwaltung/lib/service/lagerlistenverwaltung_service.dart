@@ -56,6 +56,13 @@ class LagerlistenVerwaltungsService {
         .toList();
   }
 
+  LagerListenEntry getArtikelByGWID(String gwidCode) {
+    return this
+        .lagerlistenEntries
+        .where((val) => val.artikelGWID == gwidCode)
+        .first;
+  }
+
   String? changeAmount(String artikelGWID, int amountChange) {
     LagerListenEntry? entry = lagerlistenEntries
         .where((val) => val.artikelGWID == artikelGWID)

@@ -71,6 +71,7 @@ class _MyHomePageState extends State<MyHomePage> {
   final codeScannerService = GetIt.instance<CodeScannerService>();
   final mailSenderService = GetIt.instance<MailSenderService>();
   final csvConverterService = GetIt.instance<CsvConverterService>();
+  final lagerListenVerwaltungsService = GetIt.instance<LagerlistenVerwaltungsService>();
 
   final TextEditingController _controller = TextEditingController();
   final String _storedUsername = '';
@@ -118,16 +119,27 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void scanCode() async {
-    final result = await codeScannerService.getCodeByScan(context);
-    if (result != null) {
-      if (result == Constants.EXIT_RETURN_VALUE) {
+    final scannedID = await codeScannerService.getCodeByScan(context);
+    if (scannedID != null) {
+      if (scannedID == Constants.EXIT_RETURN_VALUE) {
         //Wenn man durch den Backarrow zurück will, das kein Error kommt
         return;
       }
       setState(() {
-        _qrCodeString = result;
+        if(lagerListenVerwaltungsService.artikelGWIDExist(scannedID))
+        {
+          LagerListenEntry artikel = lagerListenVerwaltungsService.getArtikelByGWID(scannedID);
+          //Zu Page und artikel mitgeben
+        }
+        else if(lagerListenVerwaltungsService.regalExist(scannedID)){
+          List<LagerListenEntry> artikelListe = lagerListenVerwaltungsService.getLagerlisteByRegal(scannedID);
+          //Pop mit Liste?
+          //Gewähltes Item -> Zu Page und artikel mitgeben
+        }
+        else{
+          QrCodeScannedModal.showActionSheet(context, scannedID);
+        }
       });
-      QrCodeScannedModal.showActionSheet(context, result);
     } else {
       Showsnackbar.showSnackBar(context, "kein Code gefunden!");
     }
