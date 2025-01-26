@@ -14,6 +14,10 @@ class LagerListenEntry {
   int? mindestMenge;
 
   // Methoden:
+  bool istArtikel() {
+    return artikelGWID != null;
+  }
+
   bool getIstAbgelaufen() {
     if (ablaufdatum == null) {
       return false;
