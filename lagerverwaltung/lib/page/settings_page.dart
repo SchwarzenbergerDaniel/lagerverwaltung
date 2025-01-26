@@ -13,6 +13,10 @@ class SettingsPage extends StatelessWidget {
         leading: CustomBackButton(),
       ),
       child: Text("nothing here yet"),
+      //Color Changing - Eine variable lol
+      //Empfänger Mail
+      //Ablaufdatum erinnerung
+      //...?
     );
   }
 }
