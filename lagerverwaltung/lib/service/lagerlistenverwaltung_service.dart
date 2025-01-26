@@ -9,12 +9,12 @@ import 'package:lagerverwaltung/service/localstorage_service.dart';
 import 'package:lagerverwaltung/service/mailsender/mailsender_service.dart';
 
 // Wenn ein String zurück gegeben wird, dann wird in diesem beschrieben was passiert ist: SNACKBAR nach aufruf!
-class LagerlistenVerwatlungsService {
+class LagerlistenVerwaltungsService {
   // Service-Setup:
-  LagerlistenVerwatlungsService._privateConstructor();
-  static final LagerlistenVerwatlungsService _instance =
-      LagerlistenVerwatlungsService._privateConstructor();
-  factory LagerlistenVerwatlungsService() {
+  LagerlistenVerwaltungsService._privateConstructor();
+  static final LagerlistenVerwaltungsService _instance =
+      LagerlistenVerwaltungsService._privateConstructor();
+  factory LagerlistenVerwaltungsService() {
     return _instance;
   }
 
@@ -26,7 +26,7 @@ class LagerlistenVerwatlungsService {
   List<LagerListenEntry> lagerlistenEntries = [];
 
   // Methods:
-  bool regalExist(String lagerplatzId) {
+  bool lagerplatzExist(String lagerplatzId) {
     return lagerlistenEntries.any((val) => val.lagerplatzId == lagerplatzId);
   }
 
@@ -36,19 +36,18 @@ class LagerlistenVerwatlungsService {
 
   void addToLagerliste(LagerListenEntry entry) {
     lagerlistenEntries.add(entry);
-    localStorageService.lagerlisteChanged(
-        lagerlistenEntries, ReasonForLagerlistenChange.addEntry);
+    localStorageService.addEntry(lagerlistenEntries, entry);
   }
 
-  void addEmptyRegal(String lagerplatzCode) {
+  void addEmptyLagerplatz(String lagerplatzCode) {
     LagerListenEntry entry = LagerListenEntry(lagerplatzId: lagerplatzCode);
     addToLagerliste(entry);
   }
 
-  List<LagerListenEntry> getLagerlisteByRegal(String lagerplatzCode) {
+  List<LagerListenEntry> getLagerlisteByLagerplatz(String lagerplatzCode) {
     return this
         .lagerlistenEntries
-        .where((val) => val.lagerplatzId == lagerplatzCode)
+        .where((val) => val.lagerplatzId == lagerplatzCode && val.istArtikel())
         .toList();
   }
 
@@ -65,8 +64,7 @@ class LagerlistenVerwatlungsService {
       return ErrorMessageConstants.NOT_ENOUGH_IN_STORAGE;
     }
 
-    localStorageService.lagerlisteChanged(
-        lagerlistenEntries, ReasonForLagerlistenChange.amountChange);
+    localStorageService.amountChange(lagerlistenEntries, entry, amountChange);
 
     if (entry.menge! <= entry.mindestMenge!) {
       mailSenderService.sendMindestmengeErreicht(
@@ -90,8 +88,7 @@ class LagerlistenVerwatlungsService {
 
     exportLagerListe();
     localStorageService.clearLagerliste();
-    localStorageService.lagerlisteChanged(
-        newList, ReasonForLagerlistenChange.import);
+    localStorageService.import(newList);
     lagerlistenEntries = newList;
 
     return null;

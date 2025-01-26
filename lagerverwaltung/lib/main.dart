@@ -4,10 +4,11 @@ import 'package:get_it/get_it.dart';
 import 'package:lagerverwaltung/automatisierte_aufgaben/automatisiert_checker.dart';
 import 'package:lagerverwaltung/config/constants.dart';
 import 'package:lagerverwaltung/model/LagerlistenEntry.dart';
+import 'package:lagerverwaltung/service/logger/logger_service.dart';
 import 'package:lagerverwaltung/widget/qr_code_scanned_modal.dart';
 import 'package:lagerverwaltung/service/codescanner_service.dart';
 import 'package:lagerverwaltung/service/csv_converter_service.dart';
-import 'package:lagerverwaltung/service/lagerlistenverwatlung_service.dart';
+import 'package:lagerverwaltung/service/lagerlistenverwaltung_service.dart';
 import 'package:lagerverwaltung/service/localstorage_service.dart';
 import 'package:lagerverwaltung/service/mailsender/mailsender_service.dart';
 import 'package:lagerverwaltung/page/settings_page.dart';
@@ -19,9 +20,10 @@ void setUpServices() {
   getIt.registerLazySingleton<LocalStorageService>(() => LocalStorageService());
   getIt.registerLazySingleton<CodeScannerService>(() => CodeScannerService());
   getIt.registerLazySingleton<MailSenderService>(() => MailSenderService());
-  getIt.registerLazySingleton<LagerlistenVerwatlungsService>(
-      () => LagerlistenVerwatlungsService());
+  getIt.registerLazySingleton<LagerlistenVerwaltungsService>(
+      () => LagerlistenVerwaltungsService());
   getIt.registerLazySingleton<CsvConverterService>(() => CsvConverterService());
+  getIt.registerLazySingleton<LoggerService>(() => LoggerService());
 }
 
 void main() {
@@ -71,6 +73,7 @@ class _MyHomePageState extends State<MyHomePage> {
   final codeScannerService = GetIt.instance<CodeScannerService>();
   final mailSenderService = GetIt.instance<MailSenderService>();
   final csvConverterService = GetIt.instance<CsvConverterService>();
+  final loggerService = GetIt.instance<LoggerService>();
 
   final TextEditingController _controller = TextEditingController();
   final String _storedUsername = '';
@@ -115,6 +118,7 @@ class _MyHomePageState extends State<MyHomePage> {
             entries +
             entries,
         Constants.TO_MAIL_DEFAULT);
+    final logs = await loggerService.getLogs();
   }
 
   void scanCode() async {

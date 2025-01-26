@@ -1,5 +1,8 @@
 import 'dart:io';
+import 'package:get_it/get_it.dart';
 import 'package:lagerverwaltung/model/LagerlistenEntry.dart';
+import 'package:lagerverwaltung/service/logger/log_entry.dart';
+import 'package:lagerverwaltung/service/logger/logger_service.dart';
 import 'package:lagerverwaltung/service/mailsender/templates/abgelaufen_liste_template.dart';
 import 'package:lagerverwaltung/service/mailsender/templates/backup_email_template.dart';
 import 'package:lagerverwaltung/service/mailsender/templates/html_template_generator.dart';
@@ -8,7 +11,6 @@ import 'package:lagerverwaltung/service/mailsender/templates/mindestmenge_erreic
 import 'package:mailer/mailer.dart';
 import 'package:mailer/smtp_server/gmail.dart';
 
-//TODO: Always add to logs
 class MailSenderService {
   // Service-Setup:
   MailSenderService._privateConstructor();
@@ -17,6 +19,9 @@ class MailSenderService {
   factory MailSenderService() {
     return _instance;
   }
+
+  // INSTANCES
+  final loggerService = GetIt.instance<LoggerService>();
 
   // CONSTANTS:
   static const String _fromName = "Lagerliste";
@@ -55,7 +60,11 @@ class MailSenderService {
           LagerlisteBackupTemplate(file: file, isAutomatic: isAutomatic),
       attachments: [FileAttachment(file)],
     );
-    //TODO: LOG
+    loggerService.log(LogEntryModel(
+        timestamp: DateTime.now(),
+        logReason: LogReason.Backup_Lagerliste_gesendet,
+        zusatzInformationen:
+            "Empfänger: $toMail | Manuell getriggered: ${isAutomatic ? "Ja" : "Nein"}"));
   }
 
   void sendMindestmengeErreicht(
@@ -64,7 +73,13 @@ class MailSenderService {
         toMail: toMail,
         templateGenerator: MindestmengeErreichtTemplate(
             artikel: entry, amountChange: amountChange));
-    //TODO: LOG
+    loggerService.log(LogEntryModel(
+        timestamp: DateTime.now(),
+        logReason:
+            amountChange > 0 ? LogReason.Einlagerung : LogReason.Auslagerung,
+        lagerplatzId: entry.lagerplatzId,
+        artikelGWID: entry.artikelGWID,
+        zusatzInformationen: "Mindestmenge erreicht, EMail gesendet"));
   }
 
   void sendAbgelaufen(
@@ -73,6 +88,12 @@ class MailSenderService {
         toMail: toMail,
         templateGenerator:
             AbgelaufenListeTemplate(abgelaufenListe: abgelaufeneArtikel));
-    //TODO: LOG
+    loggerService.log(
+      LogEntryModel(
+          timestamp: DateTime.now(),
+          logReason: LogReason.Abgelaufen_Artikel_gesendet,
+          zusatzInformationen:
+              "Empfänger-Email: $toMail | Anzahl abgelaufener Artikel: ${abgelaufeneArtikel.length}"),
+    );
   }
 }

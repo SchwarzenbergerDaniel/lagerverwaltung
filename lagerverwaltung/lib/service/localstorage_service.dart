@@ -1,10 +1,10 @@
 import 'dart:convert';
 
+import 'package:get_it/get_it.dart';
 import 'package:lagerverwaltung/model/LagerlistenEntry.dart';
+import 'package:lagerverwaltung/service/logger/log_entry.dart';
+import 'package:lagerverwaltung/service/logger/logger_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
-//TODO: Always add to logs => Will do that in the next PR.
-enum ReasonForLagerlistenChange { import, amountChange, addEntry, noReason }
 
 class LocalStorageService {
   // Service-Setup:
@@ -14,6 +14,7 @@ class LocalStorageService {
   factory LocalStorageService() {
     return _instance;
   }
+  final loggerService = GetIt.instance<LoggerService>();
 
   // Keys:
   static const String _lagerlisteKey = "lagerliste_key";
@@ -72,19 +73,55 @@ class LocalStorageService {
   }
 
   void clearLagerliste() async {
-    lagerlisteChanged([], ReasonForLagerlistenChange.noReason);
+    _lagerlisteChanged([]);
   }
 
-  void lagerlisteChanged(
-      List<LagerListenEntry> newList, ReasonForLagerlistenChange reason) async {
+  void _lagerlisteChanged(List<LagerListenEntry> newList) async {
     // Reason (not my brother wezon) is relevant for the logs.
     final prefs = await _getSharePreference();
 
     final jsonList = newList.map((entry) => entry.toJson()).toList();
     await prefs.setString(_lagerlisteKey, jsonEncode(jsonList));
+  }
 
-    if (reason != ReasonForLagerlistenChange.noReason) {
-      //TODO: LOG
+  void import(List<LagerListenEntry> newList) {
+    _lagerlisteChanged(newList);
+    loggerService.log(LogEntryModel(
+        timestamp: DateTime.now(), logReason: LogReason.Lagerliste_importiert));
+  }
+
+  void addEntry(
+      List<LagerListenEntry> lagerlistenEntries, LagerListenEntry entry) {
+    _lagerlisteChanged(lagerlistenEntries);
+
+    if (entry.istArtikel()) {
+      loggerService.log(LogEntryModel(
+          timestamp: DateTime.now(),
+          logReason: LogReason.Eintrag_in_Lagerliste,
+          artikelGWID: entry.artikelGWID,
+          lagerplatzId: entry.lagerplatzId));
+    } else {
+      // Leerer Lagerplatz wurde angelegt.
+      loggerService.log(LogEntryModel(
+          timestamp: DateTime.now(),
+          logReason: LogReason.Lagerplatz_angelegt,
+          lagerplatzId: entry.lagerplatzId));
     }
+  }
+
+  void amountChange(List<LagerListenEntry> lagerlistenEntries,
+      LagerListenEntry entry, int amountChange) {
+    _lagerlisteChanged(lagerlistenEntries);
+
+    loggerService.log(
+      LogEntryModel(
+          timestamp: DateTime.now(),
+          logReason:
+              amountChange > 0 ? LogReason.Einlagerung : LogReason.Auslagerung,
+          lagerplatzId: entry.lagerplatzId,
+          artikelGWID: entry.artikelGWID,
+          menge: amountChange > 0 ? amountChange : -amountChange,
+          neueMenge: entry.menge),
+    );
   }
 }
