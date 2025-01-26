@@ -1,11 +1,12 @@
 import 'dart:io';
 
 import 'package:get_it/get_it.dart';
+import 'package:lagerverwaltung/config/constants.dart';
 import 'package:lagerverwaltung/config/errormessage_constants.dart';
 import 'package:lagerverwaltung/model/LagerlistenEntry.dart';
 import 'package:lagerverwaltung/service/csv_converter_service.dart';
 import 'package:lagerverwaltung/service/localstorage_service.dart';
-import 'package:lagerverwaltung/service/mailsender_service.dart';
+import 'package:lagerverwaltung/service/mailsender/mailsender_service.dart';
 
 // Wenn ein String zurück gegeben wird, dann wird in diesem beschrieben was passiert ist: SNACKBAR nach aufruf!
 class LagerlistenVerwatlungsService {
@@ -76,9 +77,9 @@ class LagerlistenVerwatlungsService {
     return null;
   }
 
-  void exportLagerListe() {
-    File file = csvConverterService.toCsv(lagerlistenEntries);
-    mailSenderService.sendLagerListe(file);
+  void exportLagerListe() async {
+    File file = await csvConverterService.toCsv(lagerlistenEntries);
+    mailSenderService.sendLagerListe(file, Constants.TO_MAIL_DEFAULT);
   }
 
   String? importFromFile(File file) {

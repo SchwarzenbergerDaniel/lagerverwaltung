@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:csv/csv.dart';
 import 'package:lagerverwaltung/config/constants.dart';
 import 'package:lagerverwaltung/model/LagerlistenEntry.dart';
+import 'package:path_provider/path_provider.dart';
 
 // CSV FILE Looks like this:
 //lagerplatzId,fach,regal,artikelGWID,arikelFirmenId,beschreibung,kunde,ablaufdatum,menge,mindestMenge
@@ -31,9 +32,12 @@ class CsvConverterService {
     }
   }
 
-  File toCsv(List<LagerListenEntry> entries) {
-    final file = File("lagerlisten.csv");
+  Future<File> toCsv(List<LagerListenEntry> entries) async {
+    final directory = await getTemporaryDirectory();
+    final filePath = '${directory.path}/lagerlisten.csv';
 
+    // Create the file
+    final file = File(filePath);
     final csvContent = StringBuffer()
       ..writeln(Constants.CSV_HEADER_VALUE)
       ..writeAll(entries.map((entry) => entry.toCsvRow()), "\n");
