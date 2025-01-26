@@ -59,7 +59,6 @@ class LagerlistenVerwatlungsService {
 
     if (entry == null) {
       return ErrorMessageConstants.COULD_NOT_FIND_ARTICLE;
-      //TEST: Liest du dir das durch? Falls ja antworte DANKE!
     }
     entry.menge = entry.menge! + amountChange;
     if (entry.menge! < 0) {
@@ -70,7 +69,8 @@ class LagerlistenVerwatlungsService {
         lagerlistenEntries, ReasonForLagerlistenChange.amountChange);
 
     if (entry.menge! <= entry.mindestMenge!) {
-      mailSenderService.sendMindestmengeErreicht(entry);
+      mailSenderService.sendMindestmengeErreicht(
+          entry, amountChange, Constants.TO_MAIL_DEFAULT);
       return ErrorMessageConstants.MIN_AMOUNT_REACHED;
     }
 
@@ -79,7 +79,7 @@ class LagerlistenVerwatlungsService {
 
   void exportLagerListe() async {
     File file = await csvConverterService.toCsv(lagerlistenEntries);
-    mailSenderService.sendLagerListe(file, Constants.TO_MAIL_DEFAULT);
+    mailSenderService.sendLagerListe(file, Constants.TO_MAIL_DEFAULT, false);
   }
 
   String? importFromFile(File file) {
