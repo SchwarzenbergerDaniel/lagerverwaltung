@@ -9,12 +9,16 @@ import 'package:lagerverwaltung/service/localstorage_service.dart';
 import 'package:lagerverwaltung/service/mailsender/mailsender_service.dart';
 
 // Wenn ein String zurück gegeben wird, dann wird in diesem beschrieben was passiert ist: SNACKBAR nach aufruf!
-class LagerlistenVerwatlungsService {
+class LagerlistenVerwaltungsService {
   // Service-Setup:
-  LagerlistenVerwatlungsService._privateConstructor();
-  static final LagerlistenVerwatlungsService _instance =
-      LagerlistenVerwatlungsService._privateConstructor();
-  factory LagerlistenVerwatlungsService() {
+  LagerlistenVerwaltungsService
+._privateConstructor();
+  static final LagerlistenVerwaltungsService
+ _instance =
+      LagerlistenVerwaltungsService
+    ._privateConstructor();
+  factory LagerlistenVerwaltungsService
+() {
     return _instance;
   }
 

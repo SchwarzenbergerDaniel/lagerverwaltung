@@ -2,7 +2,7 @@ import 'package:get_it/get_it.dart';
 import 'package:lagerverwaltung/config/constants.dart';
 import 'package:lagerverwaltung/model/LagerlistenEntry.dart';
 import 'package:lagerverwaltung/service/csv_converter_service.dart';
-import 'package:lagerverwaltung/service/lagerlistenverwatlung_service.dart';
+import 'package:lagerverwaltung/service/lagerlistenverwaltung_service.dart';
 import 'package:lagerverwaltung/service/localstorage_service.dart';
 import 'package:lagerverwaltung/service/mailsender/mailsender_service.dart';
 
@@ -11,7 +11,7 @@ class AutomatisiertChecker {
   final mailSenderService = GetIt.instance<MailSenderService>();
   final csvConverterService = GetIt.instance<CsvConverterService>();
   final lagerlistenVerwatlungsService =
-      GetIt.instance<LagerlistenVerwatlungsService>();
+      GetIt.instance<LagerlistenVerwaltungsService>();
 
 //TODO: Timer auf nächsten Tag und dann weider yallah => Kann man rekursiv lösen.
   void checkTodo() {

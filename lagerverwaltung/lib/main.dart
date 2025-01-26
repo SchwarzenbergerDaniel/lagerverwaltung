@@ -7,7 +7,7 @@ import 'package:lagerverwaltung/model/LagerlistenEntry.dart';
 import 'package:lagerverwaltung/widget/qr_code_scanned_modal.dart';
 import 'package:lagerverwaltung/service/codescanner_service.dart';
 import 'package:lagerverwaltung/service/csv_converter_service.dart';
-import 'package:lagerverwaltung/service/lagerlistenverwatlung_service.dart';
+import 'package:lagerverwaltung/service/lagerlistenverwaltung_service.dart';
 import 'package:lagerverwaltung/service/localstorage_service.dart';
 import 'package:lagerverwaltung/service/mailsender/mailsender_service.dart';
 import 'package:lagerverwaltung/page/settings_page.dart';
@@ -19,8 +19,8 @@ void setUpServices() {
   getIt.registerLazySingleton<LocalStorageService>(() => LocalStorageService());
   getIt.registerLazySingleton<CodeScannerService>(() => CodeScannerService());
   getIt.registerLazySingleton<MailSenderService>(() => MailSenderService());
-  getIt.registerLazySingleton<LagerlistenVerwatlungsService>(
-      () => LagerlistenVerwatlungsService());
+  getIt.registerLazySingleton<LagerlistenVerwaltungsService>(
+      () => LagerlistenVerwaltungsService());
   getIt.registerLazySingleton<CsvConverterService>(() => CsvConverterService());
 }
 
