@@ -37,6 +37,7 @@ Future<void> scanArtikelCodeAfterLagerplatz(BuildContext context, String lagerpl
               lagerplatzId: lagerplatzId,
               artikelGWID: scannedID,
             ),
+            isEditable: true,
           ),
         ),
       );

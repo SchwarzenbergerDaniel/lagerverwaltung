@@ -45,6 +45,7 @@ class LagerlistenVerwaltungsService {
   }
 
   void addEmptyRegal(String lagerplatzCode) {
+    //-----------------------------------Lagerplatz bekommt Artikel mit nix
     LagerListenEntry entry = LagerListenEntry(lagerplatzId: lagerplatzCode);
     addToLagerliste(entry);
   }
