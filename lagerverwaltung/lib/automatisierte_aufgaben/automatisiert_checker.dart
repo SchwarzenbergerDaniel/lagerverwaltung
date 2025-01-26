@@ -1,9 +1,10 @@
 import 'package:get_it/get_it.dart';
+import 'package:lagerverwaltung/config/constants.dart';
 import 'package:lagerverwaltung/model/LagerlistenEntry.dart';
 import 'package:lagerverwaltung/service/csv_converter_service.dart';
 import 'package:lagerverwaltung/service/lagerlistenverwatlung_service.dart';
 import 'package:lagerverwaltung/service/localstorage_service.dart';
-import 'package:lagerverwaltung/service/mailsender_service.dart';
+import 'package:lagerverwaltung/service/mailsender/mailsender_service.dart';
 
 class AutomatisiertChecker {
   final localStorageService = GetIt.instance<LocalStorageService>();
@@ -60,8 +61,10 @@ class AutomatisiertChecker {
   void _checkBackup() async {
     DateTime lastBackup = await localStorageService.getLastBackup();
     if (!_isLastBackupInThisCalenderWeek(lastBackup)) {
-      mailSenderService.sendLagerListe(csvConverterService
-          .toCsv(lagerlistenVerwatlungsService.lagerlistenEntries));
+      mailSenderService.sendLagerListe(
+          await csvConverterService
+              .toCsv(lagerlistenVerwatlungsService.lagerlistenEntries),
+          Constants.TO_MAIL_DEFAULT);
       localStorageService.setLastBackup();
     }
   }

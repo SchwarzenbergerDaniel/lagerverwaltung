@@ -3,14 +3,15 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:lagerverwaltung/automatisierte_aufgaben/automatisiert_checker.dart';
 import 'package:lagerverwaltung/config/constants.dart';
-import 'package:lagerverwaltung/widgets/qr_code_scanned_modal.dart';
+import 'package:lagerverwaltung/model/LagerlistenEntry.dart';
+import 'package:lagerverwaltung/widget/qr_code_scanned_modal.dart';
 import 'package:lagerverwaltung/service/codescanner_service.dart';
 import 'package:lagerverwaltung/service/csv_converter_service.dart';
 import 'package:lagerverwaltung/service/lagerlistenverwatlung_service.dart';
 import 'package:lagerverwaltung/service/localstorage_service.dart';
-import 'package:lagerverwaltung/service/mailsender_service.dart';
-import 'package:lagerverwaltung/pages/settings_page.dart';
-import 'package:lagerverwaltung/widgets/showsnackbar.dart';
+import 'package:lagerverwaltung/service/mailsender/mailsender_service.dart';
+import 'package:lagerverwaltung/page/settings_page.dart';
+import 'package:lagerverwaltung/widget/showsnackbar.dart';
 
 final getIt = GetIt.instance;
 AutomatisiertChecker checker = AutomatisiertChecker();
@@ -69,22 +70,62 @@ class _MyHomePageState extends State<MyHomePage> {
   final localStorageService = GetIt.instance<LocalStorageService>();
   final codeScannerService = GetIt.instance<CodeScannerService>();
   final mailSenderService = GetIt.instance<MailSenderService>();
+  final csvConverterService = GetIt.instance<CsvConverterService>();
 
   final TextEditingController _controller = TextEditingController();
-  String _storedUsername = '';
+  final String _storedUsername = '';
   String _qrCodeString = "No code";
 
   void sendMail() async {
-    await mailSenderService.sendMessage(
-        toMail: "terrorgans123@gmail.com",
-        subject: "CSV-Liste",
-        message: "Hallo, dies ist eine Test-Mail!");
+    // TESTEN: csvConverter, files senden
+    List<Map<String, dynamic>> jsonArray = [
+      {
+        "fach": "A1",
+        "regal": "R1",
+        "lagerplatzId": "101",
+        "artikelGWID": "G123",
+        "arikelFirmenId": "F456",
+        "beschreibung": "Artikelbeschreibung 1",
+        "kunde": "Kunde 1",
+        "ablaufdatum": "2025-12-31",
+        "menge": 50,
+        "mindestMenge": 10,
+      },
+      {
+        "fach": "B2",
+        "regal": "R2",
+        "lagerplatzId": "102",
+        "artikelGWID": "G124",
+        "arikelFirmenId": "F457",
+        "beschreibung": "Artikelbeschreibung 2",
+        "kunde": "Kunde 2",
+        "ablaufdatum": "2024-06-30",
+        "menge": 30,
+        "mindestMenge": 5,
+      },
+      {
+        "fach": "C3",
+        "regal": "R3",
+        "lagerplatzId": "103",
+        "artikelGWID": "G125",
+        "arikelFirmenId": "F458",
+        "beschreibung": "Artikelbeschreibung 3",
+        "kunde": "Kunde 3",
+        "ablaufdatum": null,
+        "menge": 70,
+        "mindestMenge": 20,
+      }
+    ];
+    List<LagerListenEntry> entries =
+        jsonArray.map((json) => LagerListenEntry.fromJson(json)).toList();
+    mailSenderService.sendLagerListe(
+        await csvConverterService.toCsv(entries), Constants.TO_MAIL_DEFAULT);
   }
 
   void scanCode() async {
     final result = await codeScannerService.getCodeByScan(context);
     if (result != null) {
-      if (result == Constants.ExitReturnValue) {
+      if (result == Constants.EXIT_RETURN_VALUE) {
         //Wenn man durch den Backarrow zurück will, das kein Error kommt
         return;
       }
@@ -139,15 +180,16 @@ class _MyHomePageState extends State<MyHomePage> {
               onPressed: sendMail,
               child: const Text('Send Mail'),
             ),
-            
-            // TEST 
-            const SizedBox(height: 20,),
+
+            // TEST
+            const SizedBox(
+              height: 20,
+            ),
             CupertinoButton.filled(
-              onPressed: () => {QrCodeScannedModal.showActionSheet(context, "ScannedID")},
+              onPressed: () =>
+                  {QrCodeScannedModal.showActionSheet(context, "ScannedID")},
               child: const Text('Alr Scanned PopUp Button'),
             ),
-
-
           ],
         ),
       ),

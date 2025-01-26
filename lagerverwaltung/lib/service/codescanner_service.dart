@@ -35,6 +35,8 @@ class CodeScannerService {
 }
 
 class CodeScannerScreen extends StatefulWidget {
+  const CodeScannerScreen({super.key});
+
   @override
   _CodeScannerScreenState createState() => _CodeScannerScreenState();
 }
@@ -48,7 +50,9 @@ class _CodeScannerScreenState extends State<CodeScannerScreen> {
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
         middle: const Text('QR Code Scanner'),
-        leading: CustomBackButton(onPressed: () {Navigator.of(context).pop(Constants.ExitReturnValue);}),
+        leading: CustomBackButton(onPressed: () {
+          Navigator.of(context).pop(Constants.EXIT_RETURN_VALUE);
+        }),
         trailing: CupertinoButton(
           color: CupertinoTheme.of(context).scaffoldBackgroundColor,
           padding: const EdgeInsets.all(12),
@@ -60,9 +64,7 @@ class _CodeScannerScreenState extends State<CodeScannerScreen> {
             });
           },
           child: Icon(
-            isTorchOn
-                ? Icons.lightbulb_sharp
-                : Icons.lightbulb_outline,
+            isTorchOn ? Icons.lightbulb_sharp : Icons.lightbulb_outline,
             color: CupertinoTheme.of(context).primaryColor,
           ),
         ),

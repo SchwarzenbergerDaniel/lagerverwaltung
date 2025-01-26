@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "216394735894",
+    "project_id": "signin-555d3",
+    "storage_bucket": "signin-555d3.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:216394735894:android:154cd254954d09d32cb037",
+        "android_client_info": {
+          "package_name": "com.example.lagerverwaltung"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "216394735894-n1sndsq8vn6ds8v2jotimff0hm9g27sb.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBZwFEj3SH-WG3RpyD3EEm7Z8jgPXFfOy4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "216394735894-n1sndsq8vn6ds8v2jotimff0hm9g27sb.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
