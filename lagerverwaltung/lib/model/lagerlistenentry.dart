@@ -81,6 +81,10 @@ class LagerListenEntry {
     }
   }
 
+  LagerListenEntry.onlyId({required String fach}) {
+    this.fach = fach;
+  }
+
   // CSV - STUFF
   static LagerListenEntry convertCSVLine(String csvLine) {
     List<String> split = csvLine.split(Constants.CSV_DELIMITER_VALUE);

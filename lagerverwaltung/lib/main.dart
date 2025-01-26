@@ -4,7 +4,9 @@ import 'package:get_it/get_it.dart';
 import 'package:lagerverwaltung/automatisierte_aufgaben/automatisiert_checker.dart';
 import 'package:lagerverwaltung/config/constants.dart';
 import 'package:lagerverwaltung/model/LagerlistenEntry.dart';
-import 'package:lagerverwaltung/widget/qr_code_scanned_modal.dart';
+import 'package:lagerverwaltung/page/artikel_page.dart';
+import 'package:lagerverwaltung/page/lagerliste_page.dart';
+import 'package:lagerverwaltung/widget/lagerplatz_code_scanned_modal.dart';
 import 'package:lagerverwaltung/service/codescanner_service.dart';
 import 'package:lagerverwaltung/service/csv_converter_service.dart';
 import 'package:lagerverwaltung/service/lagerlistenverwaltung_service.dart';
@@ -71,7 +73,8 @@ class _MyHomePageState extends State<MyHomePage> {
   final codeScannerService = GetIt.instance<CodeScannerService>();
   final mailSenderService = GetIt.instance<MailSenderService>();
   final csvConverterService = GetIt.instance<CsvConverterService>();
-  final lagerListenVerwaltungsService = GetIt.instance<LagerlistenVerwaltungsService>();
+  final lagerListenVerwaltungsService =
+      GetIt.instance<LagerlistenVerwaltungsService>();
 
   final TextEditingController _controller = TextEditingController();
   final String _storedUsername = '';
@@ -118,28 +121,57 @@ class _MyHomePageState extends State<MyHomePage> {
         Constants.TO_MAIL_DEFAULT);
   }
 
-  void scanCode() async {
+  void scanLagerplatzCode() async {
     final scannedID = await codeScannerService.getCodeByScan(context);
     if (scannedID != null) {
       if (scannedID == Constants.EXIT_RETURN_VALUE) {
         //Wenn man durch den Backarrow zurück will, das kein Error kommt
         return;
       }
-      setState(() {
-        if(lagerListenVerwaltungsService.artikelGWIDExist(scannedID))
-        {
-          LagerListenEntry artikel = lagerListenVerwaltungsService.getArtikelByGWID(scannedID);
-          //Zu Page und artikel mitgeben
+      if (lagerListenVerwaltungsService.regalExist(scannedID)) {
+        List<LagerListenEntry> artikelListe =
+          lagerListenVerwaltungsService.getLagerlisteByRegal(scannedID);
+        Navigator.push(context, CupertinoPageRoute(
+                builder: (context) => LagerlistePage(entries: artikelListe)));
+      } else {
+        final result =
+            await LagerplatzCodeScannedModal.showActionSheet(context, '12345');
+            //True = Neuer Artikel
+            //False = Neuer Lagerplatz
+            //Null = Exit
+        if (result == true) {
+          ScanArtikelCodeAfterLagerplatz(scannedID);
+        } else if (result == false) {
+          lagerListenVerwaltungsService.addEmptyRegal(scannedID);
         }
-        else if(lagerListenVerwaltungsService.regalExist(scannedID)){
-          List<LagerListenEntry> artikelListe = lagerListenVerwaltungsService.getLagerlisteByRegal(scannedID);
-          //Pop mit Liste?
-          //Gewähltes Item -> Zu Page und artikel mitgeben
-        }
-        else{
-          QrCodeScannedModal.showActionSheet(context, scannedID);
-        }
-      });
+      }
+    } else {
+      Showsnackbar.showSnackBar(context, "kein Code gefunden!");
+    }
+  }
+
+  void ScanArtikelCodeAfterLagerplatz(String lagerplatzId){
+    //TO DO
+  }
+
+  void scanArtikelCode() async {
+    final scannedID = await codeScannerService.getCodeByScan(context);
+    if (scannedID != null) {
+      if (scannedID == Constants.EXIT_RETURN_VALUE) {
+        //Wenn man durch den Backarrow zurück will, das kein Error kommt
+        return;
+      }
+      if (lagerListenVerwaltungsService.artikelGWIDExist(scannedID)) {
+        LagerListenEntry artikel =
+            lagerListenVerwaltungsService.getArtikelByGWID(scannedID);
+        Navigator.push(
+            context,
+            CupertinoPageRoute(
+                builder: (context) => ArtikelPage(entry: artikel)));
+      } else {
+        Showsnackbar.showSnackBar(
+            context, "kein Artikel mit dieser ID gefunden!");
+      }
     } else {
       Showsnackbar.showSnackBar(context, "kein Code gefunden!");
     }
@@ -174,8 +206,13 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             const SizedBox(height: 20),
             CupertinoButton.filled(
-              onPressed: scanCode,
-              child: const Text('QR-CODE SCANNEN'),
+              onPressed: scanLagerplatzCode,
+              child: const Text('Lagerplatz Scannen'),
+            ),
+            const SizedBox(height: 20),
+            CupertinoButton.filled(
+              onPressed: scanArtikelCode,
+              child: const Text('Artikel Scannen'),
             ),
             const SizedBox(height: 20),
             Text(
@@ -194,7 +231,7 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             CupertinoButton.filled(
               onPressed: () =>
-                  {QrCodeScannedModal.showActionSheet(context, "ScannedID")},
+                  {LagerplatzCodeScannedModal.showActionSheet(context, "ScannedID")},
               child: const Text('Alr Scanned PopUp Button'),
             ),
           ],
