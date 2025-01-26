@@ -8,7 +8,7 @@ import 'package:lagerverwaltung/service/mailsender/templates/mindestmenge_erreic
 import 'package:mailer/mailer.dart';
 import 'package:mailer/smtp_server/gmail.dart';
 
-//TODO: Always add to logs => Will do that in the next PR.
+//TODO: Always add to logs
 class MailSenderService {
   // Service-Setup:
   MailSenderService._privateConstructor();

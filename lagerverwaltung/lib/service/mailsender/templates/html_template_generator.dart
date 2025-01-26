@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:lagerverwaltung/service/mailsender/templates/template_file_constants.dart';
 
 abstract class HTMLTemplateGenerator {

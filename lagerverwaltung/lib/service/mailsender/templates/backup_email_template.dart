@@ -1,8 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
-
-import 'package:intl/intl.dart';
 import 'package:lagerverwaltung/service/mailsender/templates/html_template_generator.dart';
 import 'package:http/http.dart' as http;
 

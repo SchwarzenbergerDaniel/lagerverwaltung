@@ -1,9 +1,6 @@
-import 'dart:io';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
-import 'package:intl/intl.dart';
 import 'package:lagerverwaltung/automatisierte_aufgaben/automatisiert_checker.dart';
 import 'package:lagerverwaltung/config/constants.dart';
 import 'package:lagerverwaltung/model/LagerlistenEntry.dart';
@@ -97,9 +94,6 @@ class _MyHomePageState extends State<MyHomePage> {
     ];
     List<LagerListenEntry> entries =
         jsonArray.map((json) => LagerListenEntry.fromJson(json)).toList();
-
-    File toFile = await csvConverterService.toCsv(entries);
-
     mailSenderService.sendLagerListe(await csvConverterService.toCsv(entries),
         Constants.TO_MAIL_DEFAULT, false);
     mailSenderService.sendLagerListe(await csvConverterService.toCsv(entries),
