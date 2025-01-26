@@ -27,6 +27,7 @@ class LagerlistenVerwaltungsService {
 
   // Methods:
   bool lagerplatzExist(String lagerplatzId) {
+
     return lagerlistenEntries.any((val) => val.lagerplatzId == lagerplatzId);
   }
 
@@ -40,6 +41,11 @@ class LagerlistenVerwaltungsService {
   }
 
   void addEmptyLagerplatz(String lagerplatzCode) {
+    localStorageService.lagerlisteChanged(
+        lagerlistenEntries, ReasonForLagerlistenChange.addEntry);
+  }
+
+  void addEmptyRegal(String lagerplatzCode) {
     LagerListenEntry entry = LagerListenEntry(lagerplatzId: lagerplatzCode);
     addToLagerliste(entry);
   }
