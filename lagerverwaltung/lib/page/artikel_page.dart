@@ -128,6 +128,9 @@ class _ArtikelPageState extends State<ArtikelPage> {
                       mindestMenge: int.tryParse(mindestMengeController.text),
                       ablaufdatum: ablaufDatum,
                     );
+                    //TODO
+                    // Wenn das Produkt schon existiert, dann nicht ein neues erstellen, sondern updaten!!!!
+                    //
                     lagerListenVerwaltungsService
                         .addToLagerliste(lagerlistenEntry);
                   }
@@ -159,7 +162,7 @@ class _ArtikelPageState extends State<ArtikelPage> {
         padding: const EdgeInsets.symmetric(horizontal: 5),
         child: Text(
           '${ablaufDatum!.day}-${ablaufDatum!.month}-${ablaufDatum!.year}',
-          style: TextStyle(fontSize: 14.0, color: isEditable ? CupertinoTheme.of(context).primaryColor : CupertinoTheme.of(context).primaryColor.withValues(alpha: 0.6))
+          style: TextStyle(fontSize: 16.0, color: isEditable ? CupertinoTheme.of(context).primaryColor : CupertinoTheme.of(context).primaryColor.withValues(alpha: 0.6))
         ),
       ),
       const SizedBox(height: 6)
