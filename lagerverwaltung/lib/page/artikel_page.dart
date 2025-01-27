@@ -32,6 +32,24 @@ class _ArtikelPageState extends State<ArtikelPage> {
   DateTime? ablaufDatum;
   late bool isEditable = widget.isEditable;
 
+  void _showDialog(Widget child) {
+    showCupertinoModalPopup<void>(
+      context: context,
+      builder: (BuildContext context) => Container(
+        height: 216,
+        padding: const EdgeInsets.only(top: 6.0),
+        margin: EdgeInsets.only(
+          bottom: MediaQuery.of(context).viewInsets.bottom,
+        ),
+        color: CupertinoColors.systemBackground.resolveFrom(context),
+        child: SafeArea(
+          top: false,
+          child: child,
+        ),
+      ),
+    );
+  }
+
   @override
   void initState() {
     super.initState();
@@ -50,7 +68,7 @@ class _ArtikelPageState extends State<ArtikelPage> {
         TextEditingController(text: widget.entry?.menge?.toString() ?? '');
     mindestMengeController = TextEditingController(
         text: widget.entry?.mindestMenge?.toString() ?? '');
-    ablaufDatum = widget.entry?.ablaufdatum;
+    ablaufDatum = widget.entry?.ablaufdatum ?? DateTime.now();
   }
 
   @override
@@ -66,18 +84,18 @@ class _ArtikelPageState extends State<ArtikelPage> {
           padding: const EdgeInsets.all(16.0),
           children: [
             const SizedBox(height: 16),
-            _buildReadOnlyField(label: 'Fach', controller: fachController),
-            _buildReadOnlyField(label: 'Regal', controller: regalController),
-            _buildReadOnlyField(label: 'Lagerplatz ID', controller: lagerplatzIdController),
-            _buildReadOnlyField(label: 'Artikel GWID', controller: artikelGWIDController),
-            _buildReadOnlyField(label: 'Artikel Firmen ID', controller: arikelFirmenIdController),
-            _buildReadOnlyField(label: 'Beschreibung', controller: beschreibungController),
-            _buildReadOnlyField(label: 'Kunde', controller: kundeController),
-            const SizedBox(height: 16),
-            _buildDatePickerField(label: 'Ablaufdatum'),
-            const SizedBox(height: 16),
-            _buildReadOnlyField(label: 'Menge', controller: mengeController, inputType: TextInputType.number),
-            _buildReadOnlyField(label: 'Mindestmenge', controller: mindestMengeController, inputType: TextInputType.number),
+            _buildLabeledField('Fach', fachController),
+            _buildLabeledField('Regal', regalController),
+            _buildLabeledField('Lagerplatz ID', lagerplatzIdController),
+            _buildLabeledField('Artikel GWID', artikelGWIDController),
+            _buildLabeledField('Artikel Firmen ID', arikelFirmenIdController),
+            _buildLabeledField('Beschreibung', beschreibungController),
+            _buildLabeledField('Kunde', kundeController),
+            _abgelaufenPicker(),
+            _buildLabeledField('Menge', mengeController,
+                inputType: TextInputType.number),
+            _buildLabeledField('Mindestmenge', mindestMengeController,
+                inputType: TextInputType.number),
             CupertinoButton(
               child: Text(isEditable ? 'Speichern' : 'Bearbeiten'),
               onPressed: () {
@@ -93,11 +111,11 @@ class _ArtikelPageState extends State<ArtikelPage> {
                         mengeController.text.isEmpty ||
                         mindestMengeController.text.isEmpty ||
                         ablaufDatum == null) {
-                      Showsnackbar.showSnackBar(context, "Felder sind leer!\nKorrigiere diese bitte");
+                      Showsnackbar.showSnackBar(
+                          context, "Felder sind leer!\nKorrigiere diese bitte");
                       return;
                     }
 
-                    // Erstelle einen neuen LagerlistenEntry
                     final lagerlistenEntry = LagerListenEntry(
                       fach: fachController.text,
                       regal: regalController.text,
@@ -123,112 +141,63 @@ class _ArtikelPageState extends State<ArtikelPage> {
     );
   }
 
-  Widget _buildReadOnlyField({
-    required String label,
-    required TextEditingController controller,
-    TextInputType inputType = TextInputType.text,
-  }) {
+  Widget _abgelaufenPicker() {
+    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+      const Text('Ablaufdatum',
+          style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: CupertinoColors.systemGrey5),),
+      CupertinoButton(
+        onPressed: () => _showDialog(
+          CupertinoDatePicker(
+            initialDateTime: ablaufDatum,
+            mode: CupertinoDatePickerMode.date,
+            use24hFormat: true,
+            onDateTimeChanged: (DateTime newDate) {
+              setState(() => ablaufDatum = newDate);
+            },
+          ),
+        ),
+        padding: const EdgeInsets.symmetric(horizontal: 5),
+        child: Text(
+          '${ablaufDatum!.day}-${ablaufDatum!.month}-${ablaufDatum!.year}',
+          style: TextStyle(fontSize: 14.0, color: isEditable ? CupertinoTheme.of(context).primaryColor : CupertinoTheme.of(context).primaryColor.withValues(alpha: 0.6))
+        ),
+      ),
+      const SizedBox(height: 6)
+    ]);
+  }
+
+  Widget _buildLabeledField(String label, TextEditingController controller,
+      {TextInputType inputType = TextInputType.text}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           label,
-          style: TextStyle(
-            fontSize: 12,
-            color: CupertinoTheme.of(context).barBackgroundColor,
-          ),
+          style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: CupertinoColors.systemGrey5),
         ),
-        CupertinoTextField(
-          controller: controller,
-          placeholder: label,
-          keyboardType: inputType,
-          enabled: isEditable,
-          style: TextStyle(
-            color: isEditable
-                ? CupertinoColors.label
-                : CupertinoColors.inactiveGray,
+        const SizedBox(height: 8),
+        Container(
+          decoration: BoxDecoration(
+            border: Border.all(
+                color: CupertinoColors.separator.resolveFrom(context)),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: CupertinoTextField(
+            controller: controller,
+            placeholder: label,
+            keyboardType: inputType,
+            enabled: isEditable,
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+            style: TextStyle(
+              color: isEditable
+                  ? CupertinoColors.label
+                  : CupertinoColors.inactiveGray,
+            ),
+            decoration: null,
           ),
         ),
         const SizedBox(height: 16),
       ],
     );
   }
-
-  Widget _buildDatePickerField({required String label}) {
-  return Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      Text(
-        label,
-        style: TextStyle(
-          fontSize: 12,
-          color: CupertinoTheme.of(context).barBackgroundColor,
-        ),
-      ),
-      CupertinoTextField(
-        readOnly: true,
-        placeholder: 'Kein Datum ausgewählt',
-        controller: TextEditingController(
-          text: ablaufDatum != null
-              ? '${ablaufDatum!.day}.${ablaufDatum!.month}.${ablaufDatum!.year}'
-              : '',
-        ),
-        onTap: isEditable
-            ? () {
-                showCupertinoModalPopup(
-                  context: context,
-                  builder: (context) => Container(
-                    height: 300,
-                    color: CupertinoColors.systemBackground,
-                    child: Column(
-                      children: [
-                        SizedBox(
-                          height: 200,
-                          child: CupertinoDatePicker(
-                            mode: CupertinoDatePickerMode.date,
-                            initialDateTime: ablaufDatum ?? DateTime.now(),
-                            minimumDate: DateTime(2000),
-                            maximumDate: DateTime(2100),
-                            onDateTimeChanged: (DateTime newDate) {
-                              setState(() {
-                                ablaufDatum = newDate;
-                              });
-                            },
-                          ),
-                        ),
-                        CupertinoButton(
-                          child: const Text('Fertig'),
-                          onPressed: () {
-                            Navigator.pop(context);
-                          },
-                        ),
-                      ],
-                    ),
-                  ),
-                );
-              }
-            : null,
-        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-        decoration: BoxDecoration(
-          color: CupertinoColors.systemGrey6,
-          borderRadius: BorderRadius.circular(5),
-          border: Border.all(
-            color: CupertinoColors.separator,
-          ),
-        ),
-        style: TextStyle(
-          fontSize: 16,
-          color: isEditable
-              ? CupertinoColors.label
-              : CupertinoColors.inactiveGray,
-        ),
-        placeholderStyle: const TextStyle(
-          fontSize: 16,
-          color: CupertinoColors.placeholderText,
-        ),
-      ),
-      const SizedBox(height: 16),
-    ],
-  );
-}
 }
