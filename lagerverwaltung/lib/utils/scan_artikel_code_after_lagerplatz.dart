@@ -7,9 +7,11 @@ import 'package:lagerverwaltung/service/codescanner_service.dart';
 import 'package:lagerverwaltung/service/lagerlistenverwaltung_service.dart';
 import 'package:lagerverwaltung/widget/showsnackbar.dart';
 
-Future<void> scanArtikelCodeAfterLagerplatz(BuildContext context, String lagerplatzId) async {
+Future<void> scanArtikelCodeAfterLagerplatz(
+    BuildContext context, String lagerplatzId) async {
   final codeScannerService = GetIt.instance<CodeScannerService>();
-  final lagerListenVerwaltungsService = GetIt.instance<LagerlistenVerwaltungsService>();
+  final lagerListenVerwaltungsService =
+      GetIt.instance<LagerlistenVerwaltungsService>();
   final scannedID = await codeScannerService.getCodeByScan(context);
 
   if (scannedID != null) {
@@ -30,17 +32,15 @@ Future<void> scanArtikelCodeAfterLagerplatz(BuildContext context, String lagerpl
       );
     } else {
       Navigator.push(
-        context,
-        CupertinoPageRoute(
-          builder: (context) => ArtikelPage(
-            entry: LagerListenEntry(
-              lagerplatzId: lagerplatzId,
-              artikelGWID: scannedID,
-            ),
-            isEditable: true,
-          ),
-        ),
-      );
+          context,
+          CupertinoPageRoute(
+              builder: (context) => ArtikelPage(
+                    entry: LagerListenEntry(
+                      lagerplatzId: lagerplatzId,
+                      artikelGWID: scannedID,
+                    ),
+                    isEditable: true,
+                  )));
     }
   } else {
     Showsnackbar.showSnackBar(context, "kein Code gefunden!");

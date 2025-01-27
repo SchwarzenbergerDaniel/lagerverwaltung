@@ -123,7 +123,6 @@ class _MyHomePageState extends State<MyHomePage> {
             entries +
             entries,
         Constants.TO_MAIL_DEFAULT);
-    final logs = await loggerService.getLogs();
   }
 
   void scanLagerplatzCode() async {

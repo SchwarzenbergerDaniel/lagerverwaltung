@@ -29,7 +29,7 @@ class _ArtikelPageState extends State<ArtikelPage> {
   late TextEditingController kundeController;
   late TextEditingController mengeController;
   late TextEditingController mindestMengeController;
-  late TextEditingController ablaufDatumController;
+  DateTime? ablaufDatum;
   late bool isEditable = widget.isEditable;
 
   @override
@@ -50,11 +50,7 @@ class _ArtikelPageState extends State<ArtikelPage> {
         TextEditingController(text: widget.entry?.menge?.toString() ?? '');
     mindestMengeController = TextEditingController(
         text: widget.entry?.mindestMenge?.toString() ?? '');
-    ablaufDatumController = TextEditingController(
-  text: widget.entry?.ablaufdatum != null
-      ? widget.entry!.ablaufdatum!.toIso8601String()
-      : '',
-);
+    ablaufDatum = widget.entry?.ablaufdatum;
   }
 
   @override
@@ -70,15 +66,15 @@ class _ArtikelPageState extends State<ArtikelPage> {
           padding: const EdgeInsets.all(16.0),
           children: [
             const SizedBox(height: 16),
-            _buildReadOnlyField(label:  'Fach', controller: fachController),
+            _buildReadOnlyField(label: 'Fach', controller: fachController),
             _buildReadOnlyField(label: 'Regal', controller: regalController),
             _buildReadOnlyField(label: 'Lagerplatz ID', controller: lagerplatzIdController),
-            _buildReadOnlyField(label:'Artikel GWID', controller: artikelGWIDController),
-            _buildReadOnlyField(label:'Artikel Firmen ID', controller: arikelFirmenIdController),
-            _buildReadOnlyField(label:'Beschreibung', controller: beschreibungController),
-            _buildReadOnlyField(label:'Kunde', controller: kundeController),
+            _buildReadOnlyField(label: 'Artikel GWID', controller: artikelGWIDController),
+            _buildReadOnlyField(label: 'Artikel Firmen ID', controller: arikelFirmenIdController),
+            _buildReadOnlyField(label: 'Beschreibung', controller: beschreibungController),
+            _buildReadOnlyField(label: 'Kunde', controller: kundeController),
             const SizedBox(height: 16),
-            _buildReadOnlyField(label: 'Ablaufdatum', controller: ablaufDatumController, inputType: TextInputType.datetime),
+            _buildDatePickerField(label: 'Ablaufdatum'),
             const SizedBox(height: 16),
             _buildReadOnlyField(label: 'Menge', controller: mengeController, inputType: TextInputType.number),
             _buildReadOnlyField(label: 'Mindestmenge', controller: mindestMengeController, inputType: TextInputType.number),
@@ -96,7 +92,7 @@ class _ArtikelPageState extends State<ArtikelPage> {
                         kundeController.text.isEmpty ||
                         mengeController.text.isEmpty ||
                         mindestMengeController.text.isEmpty ||
-                        ablaufDatumController.text.isEmpty) {
+                        ablaufDatum == null) {
                       Showsnackbar.showSnackBar(context, "Felder sind leer!\nKorrigiere diese bitte");
                       return;
                     }
@@ -112,7 +108,7 @@ class _ArtikelPageState extends State<ArtikelPage> {
                       kunde: kundeController.text,
                       menge: int.tryParse(mengeController.text),
                       mindestMenge: int.tryParse(mindestMengeController.text),
-                      ablaufdatum: DateTime.tryParse(ablaufDatumController.text),
+                      ablaufdatum: ablaufDatum,
                     );
                     lagerListenVerwaltungsService
                         .addToLagerliste(lagerlistenEntry);
@@ -127,8 +123,11 @@ class _ArtikelPageState extends State<ArtikelPage> {
     );
   }
 
-  Widget _buildReadOnlyField({required String label, required TextEditingController controller,
-      TextInputType inputType = TextInputType.text}) {
+  Widget _buildReadOnlyField({
+    required String label,
+    required TextEditingController controller,
+    TextInputType inputType = TextInputType.text,
+  }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -154,4 +153,82 @@ class _ArtikelPageState extends State<ArtikelPage> {
       ],
     );
   }
+
+  Widget _buildDatePickerField({required String label}) {
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Text(
+        label,
+        style: TextStyle(
+          fontSize: 12,
+          color: CupertinoTheme.of(context).barBackgroundColor,
+        ),
+      ),
+      CupertinoTextField(
+        readOnly: true,
+        placeholder: 'Kein Datum ausgewählt',
+        controller: TextEditingController(
+          text: ablaufDatum != null
+              ? '${ablaufDatum!.day}.${ablaufDatum!.month}.${ablaufDatum!.year}'
+              : '',
+        ),
+        onTap: isEditable
+            ? () {
+                showCupertinoModalPopup(
+                  context: context,
+                  builder: (context) => Container(
+                    height: 300,
+                    color: CupertinoColors.systemBackground,
+                    child: Column(
+                      children: [
+                        SizedBox(
+                          height: 200,
+                          child: CupertinoDatePicker(
+                            mode: CupertinoDatePickerMode.date,
+                            initialDateTime: ablaufDatum ?? DateTime.now(),
+                            minimumDate: DateTime(2000),
+                            maximumDate: DateTime(2100),
+                            onDateTimeChanged: (DateTime newDate) {
+                              setState(() {
+                                ablaufDatum = newDate;
+                              });
+                            },
+                          ),
+                        ),
+                        CupertinoButton(
+                          child: const Text('Fertig'),
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              }
+            : null,
+        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+        decoration: BoxDecoration(
+          color: CupertinoColors.systemGrey6,
+          borderRadius: BorderRadius.circular(5),
+          border: Border.all(
+            color: CupertinoColors.separator,
+          ),
+        ),
+        style: TextStyle(
+          fontSize: 16,
+          color: isEditable
+              ? CupertinoColors.label
+              : CupertinoColors.inactiveGray,
+        ),
+        placeholderStyle: const TextStyle(
+          fontSize: 16,
+          color: CupertinoColors.placeholderText,
+        ),
+      ),
+      const SizedBox(height: 16),
+    ],
+  );
+}
 }
