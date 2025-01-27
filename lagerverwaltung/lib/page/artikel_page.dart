@@ -1,19 +1,25 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:lagerverwaltung/model/LagerlistenEntry.dart';
+import 'package:lagerverwaltung/service/lagerlistenverwaltung_service.dart';
 import 'package:lagerverwaltung/widget/custom_leading_button.dart';
+import 'package:lagerverwaltung/widget/showsnackbar.dart';
 
 class ArtikelPage extends StatefulWidget {
   final LagerListenEntry? entry;
   final bool isEditable;
 
-  ArtikelPage({Key? key, required this.entry, this.isEditable = false}) : super(key: key);
+  ArtikelPage({Key? key, required this.entry, this.isEditable = false})
+      : super(key: key);
 
   @override
   _ArtikelPageState createState() => _ArtikelPageState();
 }
 
 class _ArtikelPageState extends State<ArtikelPage> {
+  final lagerListenVerwaltungsService =
+      GetIt.instance<LagerlistenVerwaltungsService>();
   late TextEditingController fachController;
   late TextEditingController regalController;
   late TextEditingController lagerplatzIdController;
@@ -23,8 +29,7 @@ class _ArtikelPageState extends State<ArtikelPage> {
   late TextEditingController kundeController;
   late TextEditingController mengeController;
   late TextEditingController mindestMengeController;
-
-  DateTime? ablaufdatum;
+  late TextEditingController ablaufDatumController;
   late bool isEditable = widget.isEditable;
 
   @override
@@ -45,7 +50,11 @@ class _ArtikelPageState extends State<ArtikelPage> {
         TextEditingController(text: widget.entry?.menge?.toString() ?? '');
     mindestMengeController = TextEditingController(
         text: widget.entry?.mindestMenge?.toString() ?? '');
-    ablaufdatum = widget.entry?.ablaufdatum;
+    ablaufDatumController = TextEditingController(
+  text: widget.entry?.ablaufdatum != null
+      ? widget.entry!.ablaufdatum!.toIso8601String()
+      : '',
+);
   }
 
   @override
@@ -61,39 +70,52 @@ class _ArtikelPageState extends State<ArtikelPage> {
           padding: const EdgeInsets.all(16.0),
           children: [
             const SizedBox(height: 16),
-            _buildReadOnlyField('Fach', fachController),
-            _buildReadOnlyField('Regal', regalController),
-            _buildReadOnlyField('Lagerplatz ID', lagerplatzIdController),
-            _buildReadOnlyField('Artikel GWID', artikelGWIDController),
-            _buildReadOnlyField('Artikel Firmen ID', arikelFirmenIdController),
-            _buildReadOnlyField('Beschreibung', beschreibungController),
-            _buildReadOnlyField('Kunde', kundeController),
+            _buildReadOnlyField(label:  'Fach', controller: fachController),
+            _buildReadOnlyField(label: 'Regal', controller: regalController),
+            _buildReadOnlyField(label: 'Lagerplatz ID', controller: lagerplatzIdController),
+            _buildReadOnlyField(label:'Artikel GWID', controller: artikelGWIDController),
+            _buildReadOnlyField(label:'Artikel Firmen ID', controller: arikelFirmenIdController),
+            _buildReadOnlyField(label:'Beschreibung', controller: beschreibungController),
+            _buildReadOnlyField(label:'Kunde', controller: kundeController),
             const SizedBox(height: 16),
-            Text(
-              'Ablaufdatum',
-              style: TextStyle(
-                fontSize: 12,
-                color: CupertinoTheme.of(context).barBackgroundColor,
-              ),
-            ),
-            Text(
-              ablaufdatum != null
-                  ? 'Ablaufdatum: ${ablaufdatum!.toLocal().toIso8601String().split('T')[0]}'
-                  : 'Kein Ablaufdatum festgelegt',
-              style: TextStyle(
-                fontSize: 16,
-                color: CupertinoColors.inactiveGray,
-              ),
-            ),
+            _buildReadOnlyField(label: 'Ablaufdatum', controller: ablaufDatumController, inputType: TextInputType.datetime),
             const SizedBox(height: 16),
-            _buildReadOnlyField('Menge', mengeController),
-            _buildReadOnlyField('Mindestmenge', mindestMengeController),
+            _buildReadOnlyField(label: 'Menge', controller: mengeController, inputType: TextInputType.number),
+            _buildReadOnlyField(label: 'Mindestmenge', controller: mindestMengeController, inputType: TextInputType.number),
             CupertinoButton(
               child: Text(isEditable ? 'Speichern' : 'Bearbeiten'),
               onPressed: () {
                 setState(() {
-                  if(isEditable){
-                    //TO DO AUFRUF DER METHODE ZUM ABSPEICHERN UND ERSETZEN/EINFÜGEN IN LOCALSTORAGE
+                  if (isEditable) {
+                    if (fachController.text.isEmpty ||
+                        regalController.text.isEmpty ||
+                        lagerplatzIdController.text.isEmpty ||
+                        artikelGWIDController.text.isEmpty ||
+                        arikelFirmenIdController.text.isEmpty ||
+                        beschreibungController.text.isEmpty ||
+                        kundeController.text.isEmpty ||
+                        mengeController.text.isEmpty ||
+                        mindestMengeController.text.isEmpty ||
+                        ablaufDatumController.text.isEmpty) {
+                      Showsnackbar.showSnackBar(context, "Felder sind leer!\nKorrigiere diese bitte");
+                      return;
+                    }
+
+                    // Erstelle einen neuen LagerlistenEntry
+                    final lagerlistenEntry = LagerListenEntry(
+                      fach: fachController.text,
+                      regal: regalController.text,
+                      lagerplatzId: lagerplatzIdController.text,
+                      artikelGWID: artikelGWIDController.text,
+                      arikelFirmenId: arikelFirmenIdController.text,
+                      beschreibung: beschreibungController.text,
+                      kunde: kundeController.text,
+                      menge: int.tryParse(mengeController.text),
+                      mindestMenge: int.tryParse(mindestMengeController.text),
+                      ablaufdatum: DateTime.tryParse(ablaufDatumController.text),
+                    );
+                    lagerListenVerwaltungsService
+                        .addToLagerliste(lagerlistenEntry);
                   }
                   isEditable = !isEditable;
                 });
@@ -105,7 +127,8 @@ class _ArtikelPageState extends State<ArtikelPage> {
     );
   }
 
-  Widget _buildReadOnlyField(String label, TextEditingController controller) {
+  Widget _buildReadOnlyField({required String label, required TextEditingController controller,
+      TextInputType inputType = TextInputType.text}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -119,6 +142,7 @@ class _ArtikelPageState extends State<ArtikelPage> {
         CupertinoTextField(
           controller: controller,
           placeholder: label,
+          keyboardType: inputType,
           enabled: isEditable,
           style: TextStyle(
             color: isEditable
