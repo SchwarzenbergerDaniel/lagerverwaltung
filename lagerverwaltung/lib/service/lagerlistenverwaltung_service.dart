@@ -41,11 +41,6 @@ class LagerlistenVerwaltungsService {
   }
 
   void addEmptyLagerplatz(String lagerplatzCode) {
-    localStorageService.lagerlisteChanged(
-        lagerlistenEntries, ReasonForLagerlistenChange.addEntry);
-  }
-
-  void addEmptyRegal(String lagerplatzCode) {
     LagerListenEntry entry = LagerListenEntry(lagerplatzId: lagerplatzCode);
     addToLagerliste(entry);
   }
