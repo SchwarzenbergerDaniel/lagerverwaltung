@@ -45,5 +45,28 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>GIDClientID</key>
+	<string>216394735894-hcm13qeavqqp21tashdvarhvqgseuvdm.apps.googleusercontent.com</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Using the library for ...</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Using the mic for ...</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Using the camera for ...</string>
+
+	<key>CFBundleURLTypes</key>
+<array>
+    <dict>
+        <key>CFBundleTypeRole</key>
+        <string>Editor</string>
+        <key>CFBundleURLSchemes</key>
+        <array>
+            <!-- TODO Replace this value: -->
+            <!-- Copied from GoogleService-Info.plist key REVERSED_CLIENT_ID -->
+            <string>com.googleusercontent.apps.216394735894-hcm13qeavqqp21tashdvarhvqgseuvdm</string>
+        </array>
+    </dict>
+</array>
+
 </dict>
 </plist>
