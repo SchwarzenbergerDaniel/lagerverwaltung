@@ -7,6 +7,7 @@ import 'package:lagerverwaltung/model/LagerlistenEntry.dart';
 import 'package:lagerverwaltung/page/artikel_page.dart';
 import 'package:lagerverwaltung/page/lagerliste_page.dart';
 import 'package:lagerverwaltung/widget/lagerplatz_code_scanned_modal.dart';
+import 'package:lagerverwaltung/service/logger/logger_service.dart';
 import 'package:lagerverwaltung/service/codescanner_service.dart';
 import 'package:lagerverwaltung/service/csv_converter_service.dart';
 import 'package:lagerverwaltung/service/lagerlistenverwaltung_service.dart';
@@ -25,6 +26,7 @@ void setUpServices() {
   getIt.registerLazySingleton<LagerlistenVerwaltungsService>(
       () => LagerlistenVerwaltungsService());
   getIt.registerLazySingleton<CsvConverterService>(() => CsvConverterService());
+  getIt.registerLazySingleton<LoggerService>(() => LoggerService());
 }
 
 void main() {
@@ -76,6 +78,7 @@ class _MyHomePageState extends State<MyHomePage> {
   final csvConverterService = GetIt.instance<CsvConverterService>();
   final lagerListenVerwaltungsService =
       GetIt.instance<LagerlistenVerwaltungsService>();
+  final loggerService = GetIt.instance<LoggerService>();
 
   final TextEditingController _controller = TextEditingController();
   final String _storedUsername = '';
@@ -120,6 +123,7 @@ class _MyHomePageState extends State<MyHomePage> {
             entries +
             entries,
         Constants.TO_MAIL_DEFAULT);
+    final logs = await loggerService.getLogs();
   }
 
   void scanLagerplatzCode() async {
@@ -129,9 +133,9 @@ class _MyHomePageState extends State<MyHomePage> {
         //Wenn man durch den Backarrow zurück will, das kein Error kommt
         return;
       }
-      if (lagerListenVerwaltungsService.regalExist(scannedID)) {
+      if (lagerListenVerwaltungsService.lagerplatzExist(scannedID)) {
         List<LagerListenEntry> artikelListe =
-            lagerListenVerwaltungsService.getLagerlisteByRegal(scannedID);
+            lagerListenVerwaltungsService.getLagerlisteByLagerplatz(scannedID);
         Navigator.push(
             context,
             CupertinoPageRoute(
@@ -146,10 +150,10 @@ class _MyHomePageState extends State<MyHomePage> {
         //False = Neuer Lagerplatz
         //Null = Exit
         if (result == true) {
-          lagerListenVerwaltungsService.addEmptyRegal(scannedID);
+          lagerListenVerwaltungsService.addEmptyLagerplatz(scannedID);
           scanArtikelCodeAfterLagerplatz(context, scannedID);
         } else if (result == false) {
-          lagerListenVerwaltungsService.addEmptyRegal(scannedID);
+          lagerListenVerwaltungsService.addEmptyLagerplatz(scannedID);
           Showsnackbar.showSnackBar(context, "Lagerliste wurde erstellt");
         }
       }

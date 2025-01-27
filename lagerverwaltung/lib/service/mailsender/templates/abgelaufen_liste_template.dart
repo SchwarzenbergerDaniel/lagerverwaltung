@@ -12,7 +12,7 @@ class AbgelaufenListeTemplate extends HTMLTemplateGenerator {
 
     return '''
       <p>Hallo!</p>
-      <p>Die folgenden Artikel sind abgelaufen oder erreichen bald ihr Mindesthaltbarkeitsdatum:</p>
+      <p>Die folgenden Artikel sind abgelaufen oder erreichen heute ihr Mindesthaltbarkeitsdatum:</p>
       <table style="width: 100%; border-collapse: collapse; margin: 20px 0; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
         <thead style="background-color: #004aad; color: white;">
           <tr>
