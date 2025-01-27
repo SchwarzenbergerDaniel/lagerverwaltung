@@ -4,8 +4,10 @@ import 'package:get_it/get_it.dart';
 import 'package:lagerverwaltung/automatisierte_aufgaben/automatisiert_checker.dart';
 import 'package:lagerverwaltung/config/constants.dart';
 import 'package:lagerverwaltung/model/LagerlistenEntry.dart';
+import 'package:lagerverwaltung/page/artikel_page.dart';
+import 'package:lagerverwaltung/page/lagerliste_page.dart';
+import 'package:lagerverwaltung/widget/lagerplatz_code_scanned_modal.dart';
 import 'package:lagerverwaltung/service/logger/logger_service.dart';
-import 'package:lagerverwaltung/widget/qr_code_scanned_modal.dart';
 import 'package:lagerverwaltung/service/codescanner_service.dart';
 import 'package:lagerverwaltung/service/csv_converter_service.dart';
 import 'package:lagerverwaltung/service/lagerlistenverwaltung_service.dart';
@@ -13,6 +15,7 @@ import 'package:lagerverwaltung/service/localstorage_service.dart';
 import 'package:lagerverwaltung/service/mailsender/mailsender_service.dart';
 import 'package:lagerverwaltung/page/settings_page.dart';
 import 'package:lagerverwaltung/widget/showsnackbar.dart';
+import 'package:lagerverwaltung/utils/scan_artikel_code_after_lagerplatz.dart';
 
 final getIt = GetIt.instance;
 AutomatisiertChecker checker = AutomatisiertChecker();
@@ -73,6 +76,8 @@ class _MyHomePageState extends State<MyHomePage> {
   final codeScannerService = GetIt.instance<CodeScannerService>();
   final mailSenderService = GetIt.instance<MailSenderService>();
   final csvConverterService = GetIt.instance<CsvConverterService>();
+  final lagerListenVerwaltungsService =
+      GetIt.instance<LagerlistenVerwaltungsService>();
   final loggerService = GetIt.instance<LoggerService>();
 
   final TextEditingController _controller = TextEditingController();
@@ -118,20 +123,62 @@ class _MyHomePageState extends State<MyHomePage> {
             entries +
             entries,
         Constants.TO_MAIL_DEFAULT);
-    final logs = await loggerService.getLogs();
   }
 
-  void scanCode() async {
-    final result = await codeScannerService.getCodeByScan(context);
-    if (result != null) {
-      if (result == Constants.EXIT_RETURN_VALUE) {
+  void scanLagerplatzCode() async {
+    final scannedID = await codeScannerService.getCodeByScan(context);
+    if (scannedID != null) {
+      if (scannedID == Constants.EXIT_RETURN_VALUE) {
         //Wenn man durch den Backarrow zurück will, das kein Error kommt
         return;
       }
-      setState(() {
-        _qrCodeString = result;
-      });
-      QrCodeScannedModal.showActionSheet(context, result);
+      if (lagerListenVerwaltungsService.lagerplatzExist(scannedID)) {
+        List<LagerListenEntry> artikelListe =
+            lagerListenVerwaltungsService.getLagerlisteByLagerplatz(scannedID);
+        Navigator.push(
+            context,
+            CupertinoPageRoute(
+                builder: (context) => LagerlistePage(
+                      entries: artikelListe,
+                      lagerplatzId: scannedID,
+                    )));
+      } else {
+        final result = await LagerplatzCodeScannedModal.showActionSheet(
+            context, scannedID);
+        //True = Neuer Artikel
+        //False = Neuer Lagerplatz
+        //Null = Exit
+        if (result == true) {
+          lagerListenVerwaltungsService.addEmptyLagerplatz(scannedID);
+          scanArtikelCodeAfterLagerplatz(context, scannedID);
+        } else if (result == false) {
+          lagerListenVerwaltungsService.addEmptyLagerplatz(scannedID);
+          Showsnackbar.showSnackBar(context, "Lagerliste wurde erstellt");
+        }
+      }
+    } else {
+      Showsnackbar.showSnackBar(context, "kein Code gefunden!");
+    }
+  }
+
+  void scanArtikelCode() async {
+    final scannedID = await codeScannerService.getCodeByScan(context);
+    if (scannedID != null) {
+      if (scannedID == Constants.EXIT_RETURN_VALUE) {
+        //Wenn man durch den Backarrow zurück will, das kein Error kommt
+        return;
+      }
+      if (lagerListenVerwaltungsService.artikelGWIDExist(scannedID)) {
+        LagerListenEntry artikel =
+            lagerListenVerwaltungsService.getArtikelByGWID(scannedID);
+        Navigator.push(
+            context,
+            CupertinoPageRoute(
+                builder: (context) => ArtikelPage(entry: artikel)));
+      } else {
+        Showsnackbar.showSnackBar(
+            context, "kein Artikel mit dieser ID gefunden!");
+      }
     } else {
       Showsnackbar.showSnackBar(context, "kein Code gefunden!");
     }
@@ -166,8 +213,13 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             const SizedBox(height: 20),
             CupertinoButton.filled(
-              onPressed: scanCode,
-              child: const Text('QR-CODE SCANNEN'),
+              onPressed: scanLagerplatzCode,
+              child: const Text('Lagerplatz Scannen'),
+            ),
+            const SizedBox(height: 20),
+            CupertinoButton.filled(
+              onPressed: scanArtikelCode,
+              child: const Text('Artikel Scannen'),
             ),
             const SizedBox(height: 20),
             Text(
@@ -180,14 +232,27 @@ class _MyHomePageState extends State<MyHomePage> {
               child: const Text('Send Mail'),
             ),
 
-            // TEST
-            const SizedBox(
-              height: 20,
-            ),
+            //TEST
+            const SizedBox(height: 20),
             CupertinoButton.filled(
-              onPressed: () =>
-                  {QrCodeScannedModal.showActionSheet(context, "ScannedID")},
-              child: const Text('Alr Scanned PopUp Button'),
+              onPressed: () {
+                LagerListenEntry exampleEntry = LagerListenEntry(
+                  fach: 'A1',
+                  regal: 'R1',
+                  lagerplatzId: "12345",
+                  artikelGWID: 'GW12345',
+                  arikelFirmenId: 'Firma123',
+                  beschreibung: 'Beispielartikel',
+                  kunde: 'Max Mustermann',
+                  ablaufdatum: DateTime.now()
+                      .add(Duration(days: 30)), // Ablaufdatum in 30 Tagen
+                  menge: 10,
+                  mindestMenge: 5,
+                );
+
+                lagerListenVerwaltungsService.addToLagerliste(exampleEntry);
+              },
+              child: const Text('Create Artikel'),
             ),
           ],
         ),

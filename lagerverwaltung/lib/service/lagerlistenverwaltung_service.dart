@@ -27,7 +27,6 @@ class LagerlistenVerwaltungsService {
 
   // Methods:
   bool lagerplatzExist(String lagerplatzId) {
-
     return lagerlistenEntries.any((val) => val.lagerplatzId == lagerplatzId);
   }
 
@@ -50,6 +49,13 @@ class LagerlistenVerwaltungsService {
         .lagerlistenEntries
         .where((val) => val.lagerplatzId == lagerplatzCode && val.istArtikel())
         .toList();
+  }
+
+  LagerListenEntry getArtikelByGWID(String gwidCode) {
+    return this
+        .lagerlistenEntries
+        .where((val) => val.artikelGWID == gwidCode)
+        .first;
   }
 
   String? changeAmount(String artikelGWID, int amountChange) {
