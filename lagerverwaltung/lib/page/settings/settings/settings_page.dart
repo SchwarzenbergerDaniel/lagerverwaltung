@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:lagerverwaltung/page/settings/setting_tile.dart';
+import 'package:lagerverwaltung/page/settings/change_mail/change_mail_page.dart';
+import 'package:lagerverwaltung/page/settings/settings/setting_tile.dart';
 import 'package:lagerverwaltung/widget/custom_leading_button.dart';
 
 class SettingsPage extends StatelessWidget {
@@ -20,8 +21,8 @@ class SettingsPage extends StatelessWidget {
             //TODO: Actual Content
             createSettingTile(
                 "Account", Icons.person, Center(child: Text("Account-Page"))),
-            createSettingTile("Mail-Empfänger", Icons.mail,
-                Center(child: Text("Mail-Empfänger"))),
+            createSettingTile(
+                "Mail-Empfänger", Icons.mail, EMailEmpfaengerAendernPage()),
           ],
         ),
       ),

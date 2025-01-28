@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
@@ -6,6 +8,8 @@ import 'package:lagerverwaltung/config/constants.dart';
 import 'package:lagerverwaltung/model/LagerlistenEntry.dart';
 import 'package:lagerverwaltung/page/artikel_page.dart';
 import 'package:lagerverwaltung/page/lagerliste_page.dart';
+import 'package:lagerverwaltung/service/localsettings_manager_service.dart';
+import 'package:lagerverwaltung/testhelper/testhelper.dart';
 import 'package:lagerverwaltung/widget/lagerplatz_code_scanned_modal.dart';
 import 'package:lagerverwaltung/service/logger/logger_service.dart';
 import 'package:lagerverwaltung/service/codescanner_service.dart';
@@ -13,7 +17,7 @@ import 'package:lagerverwaltung/service/csv_converter_service.dart';
 import 'package:lagerverwaltung/service/lagerlistenverwaltung_service.dart';
 import 'package:lagerverwaltung/service/localstorage_service.dart';
 import 'package:lagerverwaltung/service/mailsender/mailsender_service.dart';
-import 'package:lagerverwaltung/page/settings/settings_page.dart';
+import 'package:lagerverwaltung/page/settings/settings/settings_page.dart';
 import 'package:lagerverwaltung/widget/showsnackbar.dart';
 import 'package:lagerverwaltung/utils/scan_artikel_code_after_lagerplatz.dart';
 
@@ -27,10 +31,15 @@ void setUpServices() {
       () => LagerlistenVerwaltungsService());
   getIt.registerLazySingleton<CsvConverterService>(() => CsvConverterService());
   getIt.registerLazySingleton<LoggerService>(() => LoggerService());
+  getIt.registerLazySingleton<LocalSettingsManagerService>(
+      () => LocalSettingsManagerService());
 }
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  await Testhelper
+      .clearLocalStorage(); // TODO: REMOVE WHEN FINISHED, JUST FOR TESTING!
   setUpServices();
   checker.checkTodo();
   runApp(const MyApp());
@@ -80,9 +89,8 @@ class _MyHomePageState extends State<MyHomePage> {
   final lagerListenVerwaltungsService =
       GetIt.instance<LagerlistenVerwaltungsService>();
   final loggerService = GetIt.instance<LoggerService>();
-
-  final TextEditingController _controller = TextEditingController();
-  final String _storedUsername = '';
+  final localSettingsManagerService =
+      GetIt.instance<LocalSettingsManagerService>();
 
   void sendMail() async {
     // TESTEN: csvConverter, files senden
@@ -103,26 +111,17 @@ class _MyHomePageState extends State<MyHomePage> {
     List<LagerListenEntry> entries =
         jsonArray.map((json) => LagerListenEntry.fromJson(json)).toList();
     mailSenderService.sendLagerListe(await csvConverterService.toCsv(entries),
-        Constants.TO_MAIL_DEFAULT, false);
+        localSettingsManagerService.getMail(), false);
     mailSenderService.sendLagerListe(await csvConverterService.toCsv(entries),
-        Constants.TO_MAIL_DEFAULT, true);
+        localSettingsManagerService.getMail(), true);
 
     mailSenderService.sendMindestmengeErreicht(
-        entries[0], 1, Constants.TO_MAIL_DEFAULT);
+        entries[0], 1, localSettingsManagerService.getMail());
 
     mailSenderService.sendMindestmengeErreicht(
-        entries[0], -1, Constants.TO_MAIL_DEFAULT);
+        entries[0], -1, localSettingsManagerService.getMail());
     mailSenderService.sendAbgelaufen(
-        entries +
-            entries +
-            entries +
-            entries +
-            entries +
-            entries +
-            entries +
-            entries +
-            entries,
-        Constants.TO_MAIL_DEFAULT);
+        entries + entries, localSettingsManagerService.getMail());
   }
 
   void scanLagerplatzCode() async {
@@ -201,11 +200,6 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Text(
-              _storedUsername,
-              style: CupertinoTheme.of(context).textTheme.actionTextStyle,
-            ),
-            const SizedBox(height: 20),
             CupertinoButton.filled(
               onPressed: scanLagerplatzCode,
               child: const Text('Lagerplatz Scannen'),

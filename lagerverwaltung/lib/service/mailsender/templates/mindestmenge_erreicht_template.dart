@@ -10,11 +10,6 @@ class MindestmengeErreichtTemplate extends HTMLTemplateGenerator {
       {required this.artikel, required this.amountChange});
 
   @override
-  String getTitle() {
-    return "Mindestmenge erreicht für Artikel: ${artikel.beschreibung!}";
-  }
-
-  @override
   Future<String> generateContentHTML() async {
     if (amountChange > 0) {
       return getWasNachfuellen();
@@ -56,6 +51,11 @@ class MindestmengeErreichtTemplate extends HTMLTemplateGenerator {
 
   @override
   String getSubject() {
-    return "Mindestmenge erreicht für Artikel: ${artikel.beschreibung!}";
+    return "Achtung: Mindestmenge für ${artikel.beschreibung!} erreicht!";
+  }
+
+  @override
+  String getTitle() {
+    return "Artikel ${artikel.beschreibung!} sollte aufgefüllt werden ⚠️";
   }
 }

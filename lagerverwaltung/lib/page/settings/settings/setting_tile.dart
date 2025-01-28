@@ -15,7 +15,6 @@ class SettingTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final a = CupertinoTheme.of(context).textTheme;
     return GestureDetector(
       onTap: () {
         Navigator.push(

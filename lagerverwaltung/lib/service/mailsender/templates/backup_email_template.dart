@@ -53,15 +53,15 @@ class LagerlisteBackupTemplate extends HTMLTemplateGenerator {
   @override
   String getTitle() {
     return isAutomatic
-        ? "Automatisches Backup erfolgreich erstellt! 🚀"
-        : "Ihr Backup wurde erfolgreich erstellt ✅";
+        ? "Automatisiertes Backup erstellt! 🚀"
+        : "Backup erfolgreich erstellt! ✅";
   }
 
   @override
   String getSubject() {
     return isAutomatic
-        ? "Automatisches Backup erfolgreich erstellt! 🚀"
-        : "Ihr Backup wurde erfolgreich erstellt ✅";
+        ? "Gute Neuigkeiten: Ihr automatisches Backup wurde erstellt 🚀"
+        : "Erfolg: Ihr manuelles Backup wurde erstellt ✅";
   }
 
   Future<String> generateJoke() async {

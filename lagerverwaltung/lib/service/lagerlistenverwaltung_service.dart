@@ -1,10 +1,10 @@
 import 'dart:io';
 
 import 'package:get_it/get_it.dart';
-import 'package:lagerverwaltung/config/constants.dart';
 import 'package:lagerverwaltung/config/errormessage_constants.dart';
 import 'package:lagerverwaltung/model/LagerlistenEntry.dart';
 import 'package:lagerverwaltung/service/csv_converter_service.dart';
+import 'package:lagerverwaltung/service/localsettings_manager_service.dart';
 import 'package:lagerverwaltung/service/localstorage_service.dart';
 import 'package:lagerverwaltung/service/mailsender/mailsender_service.dart';
 
@@ -22,6 +22,8 @@ class LagerlistenVerwaltungsService {
   final localStorageService = GetIt.instance<LocalStorageService>();
   final mailSenderService = GetIt.instance<MailSenderService>();
   final csvConverterService = GetIt.instance<CsvConverterService>();
+  final localSettingsManagerService =
+      GetIt.instance<LocalSettingsManagerService>();
 
   List<LagerListenEntry> lagerlistenEntries = [];
 
@@ -45,20 +47,16 @@ class LagerlistenVerwaltungsService {
   }
 
   List<LagerListenEntry> getLagerlisteByLagerplatz(String lagerplatzCode) {
-    return this
-        .lagerlistenEntries
+    return lagerlistenEntries
         .where((val) => val.lagerplatzId == lagerplatzCode && val.istArtikel())
         .toList();
   }
 
   LagerListenEntry getArtikelByGWID(String gwidCode) {
-    return this
-        .lagerlistenEntries
-        .where((val) => val.artikelGWID == gwidCode)
-        .first;
+    return lagerlistenEntries.where((val) => val.artikelGWID == gwidCode).first;
   }
 
-  String? changeAmount(String artikelGWID, int amountChange) {
+  Future<String?> changeAmount(String artikelGWID, int amountChange) async {
     LagerListenEntry? entry = lagerlistenEntries
         .where((val) => val.artikelGWID == artikelGWID)
         .firstOrNull;
@@ -75,7 +73,7 @@ class LagerlistenVerwaltungsService {
 
     if (entry.menge! <= entry.mindestMenge!) {
       mailSenderService.sendMindestmengeErreicht(
-          entry, amountChange, Constants.TO_MAIL_DEFAULT);
+          entry, amountChange, localSettingsManagerService.getMail());
       return ErrorMessageConstants.MIN_AMOUNT_REACHED;
     }
 
@@ -84,7 +82,8 @@ class LagerlistenVerwaltungsService {
 
   void exportLagerListe() async {
     File file = await csvConverterService.toCsv(lagerlistenEntries);
-    mailSenderService.sendLagerListe(file, Constants.TO_MAIL_DEFAULT, false);
+    mailSenderService.sendLagerListe(
+        file, localSettingsManagerService.getMail(), false);
   }
 
   String? importFromFile(File file) {

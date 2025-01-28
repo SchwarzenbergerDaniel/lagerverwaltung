@@ -1,10 +1,11 @@
 import 'package:get_it/get_it.dart';
-import 'package:lagerverwaltung/config/constants.dart';
 import 'package:lagerverwaltung/model/LagerlistenEntry.dart';
 import 'package:lagerverwaltung/service/csv_converter_service.dart';
 import 'package:lagerverwaltung/service/lagerlistenverwaltung_service.dart';
+import 'package:lagerverwaltung/service/localsettings_manager_service.dart';
 import 'package:lagerverwaltung/service/localstorage_service.dart';
 import 'package:lagerverwaltung/service/mailsender/mailsender_service.dart';
+import 'dart:async';
 
 class AutomatisiertChecker {
   final localStorageService = GetIt.instance<LocalStorageService>();
@@ -12,11 +13,23 @@ class AutomatisiertChecker {
   final csvConverterService = GetIt.instance<CsvConverterService>();
   final lagerlistenVerwatlungsService =
       GetIt.instance<LagerlistenVerwaltungsService>();
+  final localSettingsManagerService =
+      GetIt.instance<LocalSettingsManagerService>();
 
-//TODO: Timer auf nächsten Tag und dann weider yallah => Kann man rekursiv lösen.
+  //Do not call this method multiple times! The call at the launch of the app is enough.
   void checkTodo() {
     _checkAbgelaufen();
     _checkBackup();
+    scheduleDailyCheck();
+  }
+
+  void scheduleDailyCheck() {
+    final now = DateTime.now();
+    final nextDay = DateTime(now.year, now.month, now.day + 1, 0, 0, 0);
+    final durationTillNextDay = nextDay.difference(now);
+    Timer(durationTillNextDay, () {
+      checkTodo();
+    });
   }
 
   // CHECK Abgelaufene Artikel.
@@ -35,7 +48,7 @@ class AutomatisiertChecker {
           .toList();
       if (abgelaufeneArtikel.isNotEmpty) {
         mailSenderService.sendAbgelaufen(
-            abgelaufeneArtikel, Constants.TO_MAIL_DEFAULT);
+            abgelaufeneArtikel, localSettingsManagerService.getMail());
         localStorageService.setLastTimeAbgelaufenMailSent();
       }
     }
@@ -66,7 +79,7 @@ class AutomatisiertChecker {
       mailSenderService.sendLagerListe(
           await csvConverterService
               .toCsv(lagerlistenVerwatlungsService.lagerlistenEntries),
-          Constants.TO_MAIL_DEFAULT,
+          localSettingsManagerService.getMail(),
           true);
       localStorageService.setLastBackup();
     }
