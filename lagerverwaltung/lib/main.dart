@@ -13,7 +13,7 @@ import 'package:lagerverwaltung/service/csv_converter_service.dart';
 import 'package:lagerverwaltung/service/lagerlistenverwaltung_service.dart';
 import 'package:lagerverwaltung/service/localstorage_service.dart';
 import 'package:lagerverwaltung/service/mailsender/mailsender_service.dart';
-import 'package:lagerverwaltung/page/settings_page.dart';
+import 'package:lagerverwaltung/page/settings/settings_page.dart';
 import 'package:lagerverwaltung/widget/showsnackbar.dart';
 import 'package:lagerverwaltung/utils/scan_artikel_code_after_lagerplatz.dart';
 
@@ -50,10 +50,10 @@ class MyApp extends StatelessWidget {
         textTheme: CupertinoTextThemeData(
           textStyle: TextStyle(
             fontSize: 16,
-            color: CupertinoColors.white,
+            color: CupertinoColors.label,
           ),
           actionTextStyle: TextStyle(
-            color: CupertinoColors.white,
+            color: CupertinoColors.activeBlue,
           ),
         ),
       ),
@@ -83,7 +83,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
   final TextEditingController _controller = TextEditingController();
   final String _storedUsername = '';
-  String _qrCodeString = "No code";
 
   void sendMail() async {
     // TESTEN: csvConverter, files senden
@@ -202,12 +201,6 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            CupertinoTextField(
-              placeholder: "Enter username for LocalStorage",
-              controller: _controller,
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            ),
-            const SizedBox(height: 20),
             Text(
               _storedUsername,
               style: CupertinoTheme.of(context).textTheme.actionTextStyle,
@@ -221,11 +214,6 @@ class _MyHomePageState extends State<MyHomePage> {
             CupertinoButton.filled(
               onPressed: scanArtikelCode,
               child: const Text('Artikel Scannen'),
-            ),
-            const SizedBox(height: 20),
-            Text(
-              _qrCodeString,
-              style: CupertinoTheme.of(context).textTheme.actionTextStyle,
             ),
             const SizedBox(height: 20),
             CupertinoButton.filled(

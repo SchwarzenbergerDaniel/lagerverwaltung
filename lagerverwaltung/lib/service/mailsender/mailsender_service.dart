@@ -43,7 +43,7 @@ class MailSenderService {
         ..recipients = [
           toMail
         ] // [ toMail,"lukasbrainovic@gmail.com","tobias.nesvadba@gmail.com"]
-        ..subject = templateGenerator.getTitle()
+        ..subject = templateGenerator.getSubject()
         ..attachments = attachments
         ..html = await templateGenerator.getHTML();
 

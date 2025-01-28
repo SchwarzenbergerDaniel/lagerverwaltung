@@ -51,4 +51,9 @@ class AbgelaufenListeTemplate extends HTMLTemplateGenerator {
   String getTitle() {
     return "Abgelaufene Artikel entdeckt ⚠️";
   }
+
+  @override
+  String getSubject() {
+    return "Abgelaufene Artikel entdeckt ⚠️";
+  }
 }

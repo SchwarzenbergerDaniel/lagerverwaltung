@@ -53,4 +53,9 @@ class MindestmengeErreichtTemplate extends HTMLTemplateGenerator {
     <p>Weiterhin eine erfolgreiche Woche!</p>
   ''';
   }
+
+  @override
+  String getSubject() {
+    return "Mindestmenge erreicht für Artikel: ${artikel.beschreibung!}";
+  }
 }
