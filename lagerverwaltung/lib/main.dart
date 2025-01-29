@@ -22,6 +22,7 @@ import 'package:lagerverwaltung/page/settings/settings/settings_page.dart';
 import 'package:lagerverwaltung/widget/showsnackbar.dart';
 import 'package:lagerverwaltung/utils/scan_artikel_code_after_lagerplatz.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 final getIt = GetIt.instance;
 AutomatisiertChecker checker = AutomatisiertChecker();
@@ -41,9 +42,7 @@ void setUpServices() {
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
-  // await Testhelper
-  //   .clearLocalStorage(); // TODO: REMOVE WHEN FINISHED, JUST FOR TESTING!
+  // await Testhelper.clearLocalStorage(); //TODO: REMOVE BEFORE PUBLISHING
   setUpServices();
   checker.checkTodo();
   final themeService = getIt<ThemeChangingService>();
@@ -64,6 +63,7 @@ class MyApp extends StatelessWidget {
     return Consumer<ThemeChangingService>(
       builder: (context, themeService, child) {
         return CupertinoApp(
+          localizationsDelegates: [DefaultMaterialLocalizations.delegate],
           theme: CupertinoThemeData(
             primaryColor:
                 themeService.primaryColor.color, // Aktualisierte Farbe
