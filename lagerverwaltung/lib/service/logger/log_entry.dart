@@ -9,7 +9,8 @@ enum LogReason {
   Lagerliste_importiert,
   Trackingliste_gesendet,
   Abgelaufen_Artikel_gesendet,
-  Eintrag_in_Lagerliste
+  Eintrag_in_Lagerliste,
+  Artikel_entnehmen
 }
 
 class LogEntryModel {

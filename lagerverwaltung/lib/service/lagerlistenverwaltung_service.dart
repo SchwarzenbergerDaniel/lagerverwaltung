@@ -25,20 +25,39 @@ class LagerlistenVerwaltungsService {
   final localSettingsManagerService =
       GetIt.instance<LocalSettingsManagerService>();
 
-  List<LagerListenEntry> lagerlistenEntries = [];
+  Future<List<LagerListenEntry>> get lagerlistenEntries async =>
+      await localStorageService.getLagerliste();
 
   // Methods:
-  bool lagerplatzExist(String lagerplatzId) {
-    return lagerlistenEntries.any((val) => val.lagerplatzId == lagerplatzId);
+
+  Future<bool> lagerplatzExist(String lagerplatzId) async {
+    return (await lagerlistenEntries)
+        .any((val) => val.lagerplatzId == lagerplatzId);
   }
 
-  bool artikelGWIDExist(String gwidCode) {
-    return lagerlistenEntries.any((val) => val.artikelGWID == gwidCode);
+  void deleteArtikel(String artikelGWID, String lagerplatzID) async {
+    final list = await lagerlistenEntries;
+    LagerListenEntry? entry = list.firstWhere((element) =>
+        element.artikelGWID == artikelGWID &&
+        element.lagerplatzId == lagerplatzID);
+    list.remove(entry);
+    localStorageService.removeEntry(list, entry);
   }
 
-  void addToLagerliste(LagerListenEntry entry) {
-    lagerlistenEntries.add(entry);
-    localStorageService.addEntry(lagerlistenEntries, entry);
+  void updateArtikel(
+      String artikelGWID, String lagerplatzID, LagerListenEntry entry) {
+    deleteArtikel(artikelGWID, lagerplatzID);
+    addToLagerliste(entry);
+  }
+
+  Future<bool> artikelGWIDExist(String gwidCode) async {
+    return (await lagerlistenEntries).any((val) => val.artikelGWID == gwidCode);
+  }
+
+  void addToLagerliste(LagerListenEntry entry) async {
+    final list = await lagerlistenEntries;
+    list.add(entry);
+    localStorageService.addEntry(list, entry);
   }
 
   void addEmptyLagerplatz(String lagerplatzCode) {
@@ -46,18 +65,21 @@ class LagerlistenVerwaltungsService {
     addToLagerliste(entry);
   }
 
-  List<LagerListenEntry> getLagerlisteByLagerplatz(String lagerplatzCode) {
-    return lagerlistenEntries
+  Future<List<LagerListenEntry>> getLagerlisteByLagerplatz(
+      String lagerplatzCode) async {
+    return (await lagerlistenEntries)
         .where((val) => val.lagerplatzId == lagerplatzCode && val.istArtikel())
         .toList();
   }
 
-  LagerListenEntry getArtikelByGWID(String gwidCode) {
-    return lagerlistenEntries.where((val) => val.artikelGWID == gwidCode).first;
+  Future<LagerListenEntry> getArtikelByGWID(String gwidCode) async {
+    return (await lagerlistenEntries)
+        .where((val) => val.artikelGWID == gwidCode)
+        .first;
   }
 
   Future<String?> changeAmount(String artikelGWID, int amountChange) async {
-    LagerListenEntry? entry = lagerlistenEntries
+    LagerListenEntry? entry = (await lagerlistenEntries)
         .where((val) => val.artikelGWID == artikelGWID)
         .firstOrNull;
 
@@ -69,7 +91,8 @@ class LagerlistenVerwaltungsService {
       return ErrorMessageConstants.NOT_ENOUGH_IN_STORAGE;
     }
 
-    localStorageService.amountChange(lagerlistenEntries, entry, amountChange);
+    localStorageService.amountChange(
+        (await lagerlistenEntries), entry, amountChange);
 
     if (entry.menge! <= entry.mindestMenge!) {
       mailSenderService.sendMindestmengeErreicht(
@@ -81,7 +104,7 @@ class LagerlistenVerwaltungsService {
   }
 
   void exportLagerListe() async {
-    File file = await csvConverterService.toCsv(lagerlistenEntries);
+    File file = await csvConverterService.toCsv(await lagerlistenEntries);
     mailSenderService.sendLagerListe(
         file, localSettingsManagerService.getMail(), false);
   }
@@ -95,7 +118,6 @@ class LagerlistenVerwaltungsService {
     exportLagerListe();
     localStorageService.clearLagerliste();
     localStorageService.import(newList);
-    lagerlistenEntries = newList;
 
     return null;
   }

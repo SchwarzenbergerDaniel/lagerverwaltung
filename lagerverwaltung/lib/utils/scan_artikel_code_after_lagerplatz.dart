@@ -20,9 +20,9 @@ Future<void> scanArtikelCodeAfterLagerplatz(
       return;
     }
 
-    if (lagerListenVerwaltungsService.artikelGWIDExist(scannedID)) {
+    if (await lagerListenVerwaltungsService.artikelGWIDExist(scannedID)) {
       LagerListenEntry artikel =
-          lagerListenVerwaltungsService.getArtikelByGWID(scannedID);
+          await lagerListenVerwaltungsService.getArtikelByGWID(scannedID);
 
       Navigator.push(
         context,

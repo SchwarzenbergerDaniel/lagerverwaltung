@@ -72,6 +72,18 @@ class LocalStorageService {
     return "${dateTime.year}-${dateTime.month}-${dateTime.day}";
   }
 
+  // Lagerliste
+
+  Future<List<LagerListenEntry>> getLagerliste() async {
+    final prefs = await _getSharePreference();
+    final jsonString = prefs.getString(_lagerlisteKey);
+    if (jsonString == null) {
+      return [];
+    }
+    final List<dynamic> jsonList = jsonDecode(jsonString);
+    return jsonList.map((entry) => LagerListenEntry.fromJson(entry)).toList();
+  }
+
   void clearLagerliste() async {
     _lagerlisteChanged([]);
   }
@@ -90,9 +102,19 @@ class LocalStorageService {
         timestamp: DateTime.now(), logReason: LogReason.Lagerliste_importiert));
   }
 
+  void removeEntry(
+      List<LagerListenEntry> newLagerlistenEntries, LagerListenEntry entry) {
+    _lagerlisteChanged(newLagerlistenEntries);
+    loggerService.log(LogEntryModel(
+        timestamp: DateTime.now(),
+        logReason: LogReason.Artikel_entnehmen,
+        artikelGWID: entry.artikelGWID,
+        lagerplatzId: entry.lagerplatzId));
+  }
+
   void addEntry(
-      List<LagerListenEntry> lagerlistenEntries, LagerListenEntry entry) {
-    _lagerlisteChanged(lagerlistenEntries);
+      List<LagerListenEntry> newLagerlistenEntries, LagerListenEntry entry) {
+    _lagerlisteChanged(newLagerlistenEntries);
 
     if (entry.istArtikel()) {
       loggerService.log(LogEntryModel(

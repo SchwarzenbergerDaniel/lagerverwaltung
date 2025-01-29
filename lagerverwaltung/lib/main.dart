@@ -35,14 +35,15 @@ void setUpServices() {
   getIt.registerLazySingleton<LoggerService>(() => LoggerService());
   getIt.registerLazySingleton<LocalSettingsManagerService>(
       () => LocalSettingsManagerService());
-  getIt.registerLazySingleton<ThemeChangingService>(() => ThemeChangingService());
+  getIt.registerLazySingleton<ThemeChangingService>(
+      () => ThemeChangingService());
 }
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  await Testhelper
-      .clearLocalStorage(); // TODO: REMOVE WHEN FINISHED, JUST FOR TESTING!
+  // await Testhelper
+  //   .clearLocalStorage(); // TODO: REMOVE WHEN FINISHED, JUST FOR TESTING!
   setUpServices();
   checker.checkTodo();
   final themeService = getIt<ThemeChangingService>();
@@ -64,7 +65,8 @@ class MyApp extends StatelessWidget {
       builder: (context, themeService, child) {
         return CupertinoApp(
           theme: CupertinoThemeData(
-            primaryColor: themeService.primaryColor.color, // Aktualisierte Farbe
+            primaryColor:
+                themeService.primaryColor.color, // Aktualisierte Farbe
             barBackgroundColor: CupertinoColors.systemBackground,
             scaffoldBackgroundColor: CupertinoColors.systemGroupedBackground,
             textTheme: CupertinoTextThemeData(
@@ -144,9 +146,10 @@ class _MyHomePageState extends State<MyHomePage> {
         //Wenn man durch den Backarrow zurück will, das kein Error kommt
         return;
       }
-      if (lagerListenVerwaltungsService.lagerplatzExist(scannedID)) {
+      if (await lagerListenVerwaltungsService.lagerplatzExist(scannedID)) {
         List<LagerListenEntry> artikelListe =
-            lagerListenVerwaltungsService.getLagerlisteByLagerplatz(scannedID);
+            await lagerListenVerwaltungsService
+                .getLagerlisteByLagerplatz(scannedID);
         Navigator.push(
             context,
             CupertinoPageRoute(
@@ -180,9 +183,9 @@ class _MyHomePageState extends State<MyHomePage> {
         //Wenn man durch den Backarrow zurück will, das kein Error kommt
         return;
       }
-      if (lagerListenVerwaltungsService.artikelGWIDExist(scannedID)) {
+      if (await lagerListenVerwaltungsService.artikelGWIDExist(scannedID)) {
         LagerListenEntry artikel =
-            lagerListenVerwaltungsService.getArtikelByGWID(scannedID);
+            await lagerListenVerwaltungsService.getArtikelByGWID(scannedID);
         Navigator.push(
             context,
             CupertinoPageRoute(

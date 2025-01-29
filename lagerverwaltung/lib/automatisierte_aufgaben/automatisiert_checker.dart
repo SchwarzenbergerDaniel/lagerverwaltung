@@ -41,7 +41,8 @@ class AutomatisiertChecker {
         lastTime.month != today.month ||
         lastTime.year != today.year) {
       // Mail mit abgelaufenen Artikeln schicken!
-      List<LagerListenEntry> abgelaufeneArtikel = _getAbgelaufeneArtikel();
+      List<LagerListenEntry> abgelaufeneArtikel =
+          await _getAbgelaufeneArtikel();
       abgelaufeneArtikel = abgelaufeneArtikel
           .where((val) => val.ablaufdatum!
               .isAfter(lastTime)) // Nur jene, die noch nie versendet wurden.
@@ -54,11 +55,12 @@ class AutomatisiertChecker {
     }
   }
 
-  List<LagerListenEntry> _getAbgelaufeneArtikel() {
+  Future<List<LagerListenEntry>> _getAbgelaufeneArtikel() async {
     DateTime today = DateTime.now();
     today = DateTime(today.year, today.month, today.day);
 
-    return lagerlistenVerwatlungsService.lagerlistenEntries.where((val) {
+    return (await lagerlistenVerwatlungsService.lagerlistenEntries)
+        .where((val) {
       if (val.ablaufdatum != null) {
         DateTime ablaufDate = DateTime(
           val.ablaufdatum!.year,
@@ -78,7 +80,7 @@ class AutomatisiertChecker {
     if (!_isLastBackupInThisCalenderWeek(lastBackup)) {
       mailSenderService.sendLagerListe(
           await csvConverterService
-              .toCsv(lagerlistenVerwatlungsService.lagerlistenEntries),
+              .toCsv(await lagerlistenVerwatlungsService.lagerlistenEntries),
           localSettingsManagerService.getMail(),
           true);
       localStorageService.setLastBackup();
