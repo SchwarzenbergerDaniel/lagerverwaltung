@@ -47,6 +47,8 @@ abstract class HTMLTemplateGenerator {
   @protected
   String getTitle();
 
+  String getSubject();
+
   @protected
   Future<String> generateContentHTML();
 

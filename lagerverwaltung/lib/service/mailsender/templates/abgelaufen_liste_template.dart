@@ -31,6 +31,7 @@ class AbgelaufenListeTemplate extends HTMLTemplateGenerator {
   ''';
   }
 
+  //TODO: Artikel, die heute erst ablaufen gelblich makieren.
   StringBuffer _getTableRows() {
     StringBuffer tableRows = StringBuffer();
 
@@ -49,6 +50,11 @@ class AbgelaufenListeTemplate extends HTMLTemplateGenerator {
 
   @override
   String getTitle() {
-    return "Abgelaufene Artikel entdeckt ⚠️";
+    return "Achtung! Abgelaufene Artikel entdeckt 🛒";
+  }
+
+  @override
+  String getSubject() {
+    return "Wichtige Meldung: Abgelaufene Artikel ⚠️";
   }
 }

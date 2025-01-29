@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:lagerverwaltung/config/constants.dart';
 import 'package:lagerverwaltung/widget/custom_leading_button.dart';
 import 'package:lagerverwaltung/widget/showsnackbar.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:lagerverwaltung/config/constants.dart';
 
 class CodeScannerService {
   // Service-Setup:

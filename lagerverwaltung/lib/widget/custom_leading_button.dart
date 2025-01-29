@@ -1,8 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:lagerverwaltung/config/constants.dart';
 
 //Weil die automatischen Cupertino Icons nicht funktionieren
-class CustomBackButton extends StatefulWidget{
+class CustomBackButton extends StatefulWidget {
   final VoidCallback? onPressed;
 
   const CustomBackButton({Key? key, this.onPressed}) : super(key: key);
@@ -20,7 +21,7 @@ class _CustomBackButtonState extends State<CustomBackButton> {
       borderRadius: BorderRadius.circular(20),
       onPressed: widget.onPressed ??
           () {
-            Navigator.of(context).pop("-exit");
+            Navigator.of(context).pop(Constants.EXIT_RETURN_VALUE);
           },
       child: Icon(
         Icons.arrow_back,

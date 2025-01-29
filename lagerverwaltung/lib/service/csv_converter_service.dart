@@ -1,12 +1,12 @@
 import 'dart:io';
 
-import 'package:lagerverwaltung/config/constants.dart';
+import 'package:lagerverwaltung/config/default_values.dart';
 import 'package:lagerverwaltung/model/LagerlistenEntry.dart';
 import 'package:path_provider/path_provider.dart';
 
 // CSV FILE Looks like this:
 //lagerplatzId,fach,regal,artikelGWID,arikelFirmenId,beschreibung,kunde,ablaufdatum,menge,mindestMenge
-
+//TODO: Make first line dynamic
 class CsvConverterService {
   // Service-Setup:
   CsvConverterService._privateConstructor();
@@ -38,7 +38,7 @@ class CsvConverterService {
     // Create the file
     final file = File(filePath);
     final csvContent = StringBuffer()
-      ..writeln(Constants.CSV_HEADER_VALUE)
+      ..writeln(DefaultValues.DEFAULT_CSV_HEADER_VALUE)
       ..writeAll(entries.map((entry) => entry.toCsvRow()), "\n");
 
     file.writeAsStringSync(csvContent.toString());
