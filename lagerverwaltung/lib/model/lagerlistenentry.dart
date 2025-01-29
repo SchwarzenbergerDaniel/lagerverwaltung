@@ -1,4 +1,5 @@
 import 'package:lagerverwaltung/config/constants.dart';
+import 'package:lagerverwaltung/page/settings/csv_column_order/csv_column_order_changer_page.dart';
 
 class LagerListenEntry {
   // Instanzen
@@ -86,35 +87,67 @@ class LagerListenEntry {
   }
 
   // CSV - STUFF
-  static LagerListenEntry convertCSVLine(String csvLine) {
+  static LagerListenEntry convertCSVLine(
+      String csvLine, List<Columns> csvOrder) {
     List<String> split = csvLine.split(Constants.CSV_DELIMITER_VALUE);
 
+    Map<Columns, String> values = {};
+
+    for (int i = 0; i < csvOrder.length && i < split.length; i++) {
+      values[csvOrder[i]] = split[i];
+    }
+
     return LagerListenEntry(
-      lagerplatzId: split[0].isNotEmpty ? split[0] : null,
-      fach: split[1].isNotEmpty ? split[1] : null,
-      regal: split[2].isNotEmpty ? split[2] : null,
-      artikelGWID: split[3].isNotEmpty ? split[3] : null,
-      arikelFirmenId: split[4].isNotEmpty ? split[4] : null,
-      beschreibung: split[5].isNotEmpty ? split[5] : null,
-      kunde: split[6].isNotEmpty ? split[6] : null,
-      ablaufdatum: split[7].isNotEmpty ? DateTime.tryParse(split[7]) : null,
-      menge: split[8].isNotEmpty ? int.tryParse(split[8]) : null,
-      mindestMenge: split[9].isNotEmpty ? int.tryParse(split[9]) : null,
+      lagerplatzId: values[Columns.lagerplatzId]?.isNotEmpty == true
+          ? values[Columns.lagerplatzId]
+          : null,
+      fach: values[Columns.fach]?.isNotEmpty == true
+          ? values[Columns.fach]
+          : null,
+      regal: values[Columns.regal]?.isNotEmpty == true
+          ? values[Columns.regal]
+          : null,
+      artikelGWID: values[Columns.artikelGWID]?.isNotEmpty == true
+          ? values[Columns.artikelGWID]
+          : null,
+      arikelFirmenId: values[Columns.arikelFirmenId]?.isNotEmpty == true
+          ? values[Columns.arikelFirmenId]
+          : null,
+      beschreibung: values[Columns.beschreibung]?.isNotEmpty == true
+          ? values[Columns.beschreibung]
+          : null,
+      kunde: values[Columns.kunde]?.isNotEmpty == true
+          ? values[Columns.kunde]
+          : null,
+      ablaufdatum: values[Columns.ablaufdatum]?.isNotEmpty == true
+          ? DateTime.tryParse(values[Columns.ablaufdatum]!)
+          : null,
+      menge: values[Columns.menge]?.isNotEmpty == true
+          ? int.tryParse(values[Columns.menge]!)
+          : null,
+      mindestMenge: values[Columns.mindestMenge]?.isNotEmpty == true
+          ? int.tryParse(values[Columns.mindestMenge]!)
+          : null,
     );
   }
 
-  String toCsvRow() {
-    return [
-      lagerplatzId ?? '',
-      fach ?? '',
-      regal ?? '',
-      artikelGWID ?? '',
-      arikelFirmenId ?? '',
-      beschreibung ?? '',
-      kunde ?? '',
-      ablaufdatum?.toIso8601String() ?? '',
-      menge?.toString() ?? '',
-      mindestMenge?.toString() ?? ''
-    ].join(',');
+  String toCsvRow(List<Columns> default_csv_order) {
+    List<(Columns column, dynamic value)> values = [
+      (Columns.lagerplatzId, lagerplatzId ?? ''),
+      (Columns.fach, fach ?? ''),
+      (Columns.regal, regal ?? ''),
+      (Columns.artikelGWID, artikelGWID ?? ''),
+      (Columns.arikelFirmenId, arikelFirmenId ?? ''),
+      (Columns.beschreibung, beschreibung ?? ''),
+      (Columns.kunde, kunde ?? ''),
+      (Columns.ablaufdatum, ablaufdatum?.toIso8601String() ?? ''),
+      (Columns.menge, menge?.toString() ?? ''),
+      (Columns.mindestMenge, mindestMenge?.toString() ?? '')
+    ];
+    values.sort((left, right) => default_csv_order
+        .indexOf(left.$1)
+        .compareTo(default_csv_order.indexOf(right.$1)));
+
+    return values.map((value) => value.$2).join(Constants.CSV_DELIMITER_VALUE);
   }
 }
