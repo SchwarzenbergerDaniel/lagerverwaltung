@@ -9,6 +9,7 @@ import 'package:lagerverwaltung/model/LagerlistenEntry.dart';
 import 'package:lagerverwaltung/page/artikel_page.dart';
 import 'package:lagerverwaltung/page/lagerliste_page.dart';
 import 'package:lagerverwaltung/service/localsettings_manager_service.dart';
+import 'package:lagerverwaltung/service/theme_changing_service.dart';
 import 'package:lagerverwaltung/testhelper/testhelper.dart';
 import 'package:lagerverwaltung/widget/lagerplatz_code_scanned_modal.dart';
 import 'package:lagerverwaltung/service/logger/logger_service.dart';
@@ -20,6 +21,7 @@ import 'package:lagerverwaltung/service/mailsender/mailsender_service.dart';
 import 'package:lagerverwaltung/page/settings/settings/settings_page.dart';
 import 'package:lagerverwaltung/widget/showsnackbar.dart';
 import 'package:lagerverwaltung/utils/scan_artikel_code_after_lagerplatz.dart';
+import 'package:provider/provider.dart';
 
 final getIt = GetIt.instance;
 AutomatisiertChecker checker = AutomatisiertChecker();
@@ -33,6 +35,7 @@ void setUpServices() {
   getIt.registerLazySingleton<LoggerService>(() => LoggerService());
   getIt.registerLazySingleton<LocalSettingsManagerService>(
       () => LocalSettingsManagerService());
+  getIt.registerLazySingleton<ThemeChangingService>(() => ThemeChangingService());
 }
 
 void main() async {
@@ -42,7 +45,14 @@ void main() async {
       .clearLocalStorage(); // TODO: REMOVE WHEN FINISHED, JUST FOR TESTING!
   setUpServices();
   checker.checkTodo();
-  runApp(const MyApp());
+  final themeService = getIt<ThemeChangingService>();
+  await themeService.loadPrimaryColor();
+  runApp(
+    ChangeNotifierProvider(
+      create: (_) => themeService,
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -50,24 +60,27 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CupertinoApp(
-      theme: CupertinoThemeData(
-        primaryColor: CupertinoColors.activeBlue,
-        barBackgroundColor: CupertinoColors.systemBackground,
-        scaffoldBackgroundColor: CupertinoColors.systemGroupedBackground,
-        applyThemeToAll: true,
-        textTheme: CupertinoTextThemeData(
-          textStyle: TextStyle(
-            fontSize: 16,
-            color: CupertinoColors.label,
+    return Consumer<ThemeChangingService>(
+      builder: (context, themeService, child) {
+        return CupertinoApp(
+          theme: CupertinoThemeData(
+            primaryColor: themeService.primaryColor.color, // Aktualisierte Farbe
+            barBackgroundColor: CupertinoColors.systemBackground,
+            scaffoldBackgroundColor: CupertinoColors.systemGroupedBackground,
+            textTheme: CupertinoTextThemeData(
+              textStyle: TextStyle(
+                fontSize: 16,
+                color: CupertinoColors.label,
+              ),
+              actionTextStyle: TextStyle(
+                color: themeService.primaryColor.color,
+              ),
+            ),
           ),
-          actionTextStyle: TextStyle(
-            color: CupertinoColors.activeBlue,
-          ),
-        ),
-      ),
-      debugShowCheckedModeBanner: false,
-      home: const MyHomePage(title: 'Service-Tests'),
+          debugShowCheckedModeBanner: false,
+          home: const MyHomePage(title: 'Service-Tests'),
+        );
+      },
     );
   }
 }
