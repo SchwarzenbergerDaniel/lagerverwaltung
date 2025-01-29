@@ -21,10 +21,10 @@ class SettingsPage extends StatelessWidget {
           children: [
             //TODO: Actual Content
             createSettingTile(
-                "Account", Icons.person, Center(child: Text("Account-Page"))),
+                "Account", Icons.person_outline, Center(child: Text("Account-Page"))),
             createSettingTile(
-                "Mail-Empfänger", Icons.mail, EMailEmpfaengerAendernPage()),
-            createSettingTile("Farbgebung", Icons.color_lens, ColorChangingPage())
+                "Mail-Empfänger", Icons.mail_outline, EMailEmpfaengerAendernPage()),
+            createSettingTile("Farbgebung", Icons.color_lens_outlined, ColorChangingPage())
           ],
         ),
       ),
