@@ -1,13 +1,13 @@
-import 'dart:convert';
 import 'dart:io';
-import 'dart:math';
+import 'package:get_it/get_it.dart';
+import 'package:lagerverwaltung/service/jokegenerator_service.dart';
 import 'package:lagerverwaltung/service/mailsender/templates/html_template_generator.dart';
-import 'package:http/http.dart' as http;
 
 class LagerlisteBackupTemplate extends HTMLTemplateGenerator {
   // INSTANCES:
   late File file;
   late bool isAutomatic;
+  final jokeService = GetIt.instance<JokegeneratorService>();
 
   LagerlisteBackupTemplate({required this.file, required this.isAutomatic});
 
@@ -44,7 +44,7 @@ class LagerlisteBackupTemplate extends HTMLTemplateGenerator {
       <p>
       <p>
         Automatisierte Backups kommen mit einem Witz der Woche:<br />
-        <i>${await generateJoke()} </i>
+        <i>${await jokeService.generateJoke()} </i>
       </p>
       <p>Noch eine gute Woche!</p>
       ''';
@@ -62,28 +62,5 @@ class LagerlisteBackupTemplate extends HTMLTemplateGenerator {
     return isAutomatic
         ? "Gute Neuigkeiten: Ihr automatisches Backup wurde erstellt 🚀"
         : "Erfolg: Ihr manuelles Backup wurde erstellt ✅";
-  }
-
-  Future<String> generateJoke() async {
-    try {
-      final response = await http.get(
-        Uri.parse("https://witzapi.de/api/joke/?limit=1&language=de"),
-      );
-      final decodedResponse = json.decode(response.body);
-      return decodedResponse[0]['text'];
-    } catch (e) {
-      return getRandomPreDefinedJoke();
-    }
-  }
-
-  String getRandomPreDefinedJoke() {
-    List<String> preDefinedJokes = [
-      // TODO: HAUTS BANGER WITZE REIN.
-      "Warum können Geister so schlecht lügen? – Weil man durch sie hindurchsehen kann!",
-      "Warum hat der Pilz gute Laune? – Weil er aus der Erde springt!",
-      "Was macht ein Pirat am Computer? – Er drückt die Enter-Taste!"
-    ];
-    final random = Random();
-    return preDefinedJokes[random.nextInt(preDefinedJokes.length)];
   }
 }

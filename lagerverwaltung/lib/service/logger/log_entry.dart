@@ -1,3 +1,5 @@
+// ignore_for_file: constant_identifier_names
+
 enum LogReason {
   Einlagerung,
   Lagerplatz_angelegt,
@@ -10,7 +12,8 @@ enum LogReason {
   Trackingliste_gesendet,
   Abgelaufen_Artikel_gesendet,
   Eintrag_in_Lagerliste,
-  Artikel_entnehmen
+  Artikel_entnehmen,
+  Log_Liste_versendet
 }
 
 class LogEntryModel {

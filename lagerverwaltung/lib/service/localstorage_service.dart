@@ -17,10 +17,13 @@ class LocalStorageService {
   final loggerService = GetIt.instance<LoggerService>();
 
   // Keys:
-  static const String _lagerlisteKey = "lagerliste_key";
   static const String _lastBackupKey = "lagerliste_lastbackupmade_key";
   static const String _lastAbgelaufenMailSentKey =
       "abgelaufen_lastMailDate_key";
+
+  static const String _lastLogMailSentKey = "lastLogMail_key";
+  static const String _lagerplaetzeKey = "lagerplaetze_key";
+  static const String _artikelKey = "artikel_key";
 
   // SharedPreference-Cache:
   static SharedPreferences? _prefs;
@@ -28,6 +31,25 @@ class LocalStorageService {
   Future<SharedPreferences> _getSharePreference() async {
     _prefs ??= await SharedPreferences.getInstance();
     return _prefs!;
+  }
+
+  // Last Log Mail
+  void setLastTimeLogsMailWasSent() async {
+    DateTime today = DateTime.now();
+    today = DateTime(today.year, today.month, today.day);
+
+    final prefs = await _getSharePreference();
+    await prefs.setString(_lastLogMailSentKey, dateTimeToString(today));
+  }
+
+  Future<DateTime> getLastTimeLogsMailWasSent() async {
+    final prefs = await _getSharePreference();
+    String? lastTime = prefs.getString(_lastLogMailSentKey);
+
+    if (lastTime == null) {
+      return DateTime(1, 1, 1);
+    }
+    return DateTime.parse(lastTime);
   }
 
   // Last Abgelaufen Mail:
@@ -72,11 +94,10 @@ class LocalStorageService {
     return "${dateTime.year}-${dateTime.month}-${dateTime.day}";
   }
 
-  // Lagerliste
-
-  Future<List<LagerListenEntry>> getLagerliste() async {
+  // Lagerlistet
+  Future<List<LagerListenEntry>> getArtikel() async {
     final prefs = await _getSharePreference();
-    final jsonString = prefs.getString(_lagerlisteKey);
+    final jsonString = prefs.getString(_artikelKey);
     if (jsonString == null) {
       return [];
     }
@@ -84,27 +105,40 @@ class LocalStorageService {
     return jsonList.map((entry) => LagerListenEntry.fromJson(entry)).toList();
   }
 
-  void clearLagerliste() async {
-    _lagerlisteChanged([]);
-  }
-
-  void _lagerlisteChanged(List<LagerListenEntry> newList) async {
-    // Reason (not my brother wezon) is relevant for the logs.
+  Future<List<LagerListenEntry>> getLagerplaetze() async {
     final prefs = await _getSharePreference();
-
-    final jsonList = newList.map((entry) => entry.toJson()).toList();
-    await prefs.setString(_lagerlisteKey, jsonEncode(jsonList));
+    final jsonString = prefs.getString(_lagerplaetzeKey);
+    if (jsonString == null) {
+      return [];
+    }
+    final List<dynamic> jsonList = jsonDecode(jsonString);
+    return jsonList.map((entry) => LagerListenEntry.fromJson(entry)).toList();
   }
 
-  void import(List<LagerListenEntry> newList) {
-    _lagerlisteChanged(newList);
+  void clearArtikelListe() async {
+    _artikelListeChanged([]);
+  }
+
+  void _artikelListeChanged(List<LagerListenEntry> artikelList) async {
+    final prefs = await _getSharePreference();
+    await prefs.setString(_artikelKey,
+        jsonEncode(artikelList.map((entry) => entry.toJson()).toList()));
+  }
+
+  void _lagerplaetzeChanged(List<LagerListenEntry> lagerplaetze) async {
+    final prefs = await _getSharePreference();
+    await prefs.setString(_lagerplaetzeKey,
+        jsonEncode(lagerplaetze.map((entry) => entry.toJson()).toList()));
+  }
+
+  void import(List<LagerListenEntry> artikelList) {
+    _artikelListeChanged(artikelList);
     loggerService.log(LogEntryModel(
         timestamp: DateTime.now(), logReason: LogReason.Lagerliste_importiert));
   }
 
-  void removeEntry(
-      List<LagerListenEntry> newLagerlistenEntries, LagerListenEntry entry) {
-    _lagerlisteChanged(newLagerlistenEntries);
+  void removeEntry(List<LagerListenEntry> artikelList, LagerListenEntry entry) {
+    _artikelListeChanged(artikelList);
     loggerService.log(LogEntryModel(
         timestamp: DateTime.now(),
         logReason: LogReason.Artikel_entnehmen,
@@ -112,28 +146,25 @@ class LocalStorageService {
         lagerplatzId: entry.lagerplatzId));
   }
 
-  void addEntry(
-      List<LagerListenEntry> newLagerlistenEntries, LagerListenEntry entry) {
-    _lagerlisteChanged(newLagerlistenEntries);
-
+  void addEntry(List<LagerListenEntry> list, LagerListenEntry entry) {
     if (entry.istArtikel()) {
-      loggerService.log(LogEntryModel(
-          timestamp: DateTime.now(),
-          logReason: LogReason.Eintrag_in_Lagerliste,
-          artikelGWID: entry.artikelGWID,
-          lagerplatzId: entry.lagerplatzId));
+      _artikelListeChanged(list);
     } else {
-      // Leerer Lagerplatz wurde angelegt.
-      loggerService.log(LogEntryModel(
-          timestamp: DateTime.now(),
-          logReason: LogReason.Lagerplatz_angelegt,
-          lagerplatzId: entry.lagerplatzId));
+      _lagerplaetzeChanged(list);
     }
+
+    loggerService.log(LogEntryModel(
+        timestamp: DateTime.now(),
+        logReason: entry.istArtikel()
+            ? LogReason.Eintrag_in_Lagerliste
+            : LogReason.Lagerplatz_angelegt,
+        artikelGWID: entry.istArtikel() ? entry.artikelGWID : null,
+        lagerplatzId: entry.lagerplatzId));
   }
 
-  void amountChange(List<LagerListenEntry> lagerlistenEntries,
-      LagerListenEntry entry, int amountChange) {
-    _lagerlisteChanged(lagerlistenEntries);
+  void amountChange(List<LagerListenEntry> artikelList, LagerListenEntry entry,
+      int amountChange) {
+    _artikelListeChanged(artikelList);
 
     loggerService.log(
       LogEntryModel(

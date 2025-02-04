@@ -132,7 +132,7 @@ class _ArtikelPageState extends State<ArtikelPage> {
                     // Wenn das Produkt schon existiert, dann nicht ein neues erstellen, sondern updaten!!!!
                     //
                     lagerListenVerwaltungsService
-                        .addToLagerliste(lagerlistenEntry);
+                        .addArtikelToLagerliste(lagerlistenEntry);
                   }
                   isEditable = !isEditable;
                 });
@@ -146,8 +146,13 @@ class _ArtikelPageState extends State<ArtikelPage> {
 
   Widget _abgelaufenPicker() {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      const Text('Ablaufdatum',
-          style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: CupertinoColors.systemGrey5),),
+      const Text(
+        'Ablaufdatum',
+        style: TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.w500,
+            color: CupertinoColors.systemGrey5),
+      ),
       CupertinoButton(
         onPressed: () => _showDialog(
           CupertinoDatePicker(
@@ -161,9 +166,14 @@ class _ArtikelPageState extends State<ArtikelPage> {
         ),
         padding: const EdgeInsets.symmetric(horizontal: 5),
         child: Text(
-          '${ablaufDatum!.day}-${ablaufDatum!.month}-${ablaufDatum!.year}',
-          style: TextStyle(fontSize: 16.0, color: isEditable ? CupertinoTheme.of(context).primaryColor : CupertinoTheme.of(context).primaryColor.withValues(alpha: 0.6))
-        ),
+            '${ablaufDatum!.day}-${ablaufDatum!.month}-${ablaufDatum!.year}',
+            style: TextStyle(
+                fontSize: 16.0,
+                color: isEditable
+                    ? CupertinoTheme.of(context).primaryColor
+                    : CupertinoTheme.of(context)
+                        .primaryColor
+                        .withValues(alpha: 0.6))),
       ),
       const SizedBox(height: 6)
     ]);
@@ -176,7 +186,10 @@ class _ArtikelPageState extends State<ArtikelPage> {
       children: [
         Text(
           label,
-          style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: CupertinoColors.systemGrey5),
+          style: const TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w500,
+              color: CupertinoColors.systemGrey5),
         ),
         const SizedBox(height: 8),
         Container(

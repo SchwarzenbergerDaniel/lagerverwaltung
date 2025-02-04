@@ -6,7 +6,7 @@ import 'package:lagerverwaltung/config/constants.dart';
 class CustomBackButton extends StatefulWidget {
   final VoidCallback? onPressed;
 
-  const CustomBackButton({Key? key, this.onPressed}) : super(key: key);
+  const CustomBackButton({super.key, this.onPressed});
 
   @override
   _CustomBackButtonState createState() => _CustomBackButtonState();
