@@ -1,0 +1,21 @@
+1) Artikel hinzufügen => Existiert LagerplatzID noch nicht: Fragen ob erstellt werden soll, neu gescannt oder abgebrochen werden. Wenn ArtikelGWID schon vorhanden: Hey hier in dem Lagerplatz ist das schon willst du nicht lieber die Menge hinzufügen => Zur menge bearbeiten seite überleiten
+
+
+2) Lagerplatz hinzufügen => Nichts wird hinzugefügt, Lagerplatz ist leer. 
+
+3) Artikel hinzufügen bzw entnehmen => Fragen mit so popup was er machen will. Lagerplatz oder Artikel Scannen => Bei Artikel Infos zu Regal ausgeben, weiter drücken dann bearbeitungsseite. Bei Lagerplatz => Alle Artikel im Lagerplatz auflisten, Klick drauf und man ist auf der Bearbeitungsseite.
+	Wenn fertig: Muss Mail versendet werden?
+
+4) Lagerliste exportieren 
+
+5) Lagerliste importieren 
+
+6) Inventur durchführen => Schau ma am Ende
+
+7) LOGS => Logs können gefiltert, sortiert werden. Bei klick auf Button => Mail versenden mit der Trackingliste. In Settings: Konfigurieren, nach welchen Zeitraum Logs gelöscht werden können. Für Mail: Template erstellen. Trigger fürs löschen: checkToDo
+
+8) Settings => Sämtliche Konfigurationsgeschichten rein geben 
+
+
+ANDERES:
+Feedback erfragen auf Confluence zu en Mail-Templates. 
