@@ -6,13 +6,13 @@
 3) Artikel hinzufügen bzw entnehmen => Fragen mit so popup was er machen will. Lagerplatz oder Artikel Scannen => Bei Artikel Infos zu Regal ausgeben, weiter drücken dann bearbeitungsseite. Bei Lagerplatz => Alle Artikel im Lagerplatz auflisten, Klick drauf und man ist auf der Bearbeitungsseite.
 	Wenn fertig: Muss Mail versendet werden?
 
-4) Lagerliste exportieren 
+4) DONE: Lagerliste exportieren 
 
-5) Lagerliste importieren 
+5) DONE: Lagerliste importieren 
 
 6) Inventur durchführen => Schau ma am Ende
 
-7) LOGS => Logs können gefiltert, sortiert werden. Bei klick auf Button => Mail versenden mit der Trackingliste. In Settings: Konfigurieren, nach welchen Zeitraum Logs gelöscht werden können. Für Mail: Template erstellen. Trigger fürs löschen: checkToDo
+7) DONE: LOGS => Logs können gefiltert, sortiert werden. Bei klick auf Button => Mail versenden mit der Trackingliste. In Settings: Konfigurieren, nach welchen Zeitraum Logs gelöscht werden können. Für Mail: Template erstellen. Trigger fürs löschen: checkToDo
 
 8) Settings => Sämtliche Konfigurationsgeschichten rein geben 
 
