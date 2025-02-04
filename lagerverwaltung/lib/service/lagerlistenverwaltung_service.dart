@@ -21,22 +21,25 @@ class LagerlistenVerwaltungsService {
   // Instanzen
   final localStorageService = GetIt.instance<LocalStorageService>();
   final mailSenderService = GetIt.instance<MailSenderService>();
-  final csvConverterService = GetIt.instance<CsvConverterService>();
+  final fileConverterService = GetIt.instance<FileConverterService>();
   final localSettingsManagerService =
       GetIt.instance<LocalSettingsManagerService>();
 
-  Future<List<LagerListenEntry>> get lagerlistenEntries async =>
-      await localStorageService.getLagerliste();
+  Future<List<LagerListenEntry>> get artikelEntries async =>
+      await localStorageService.getArtikel();
+
+  Future<List<LagerListenEntry>> get lagerplatzEntries async =>
+      await localStorageService.getArtikel();
 
   // Methods:
 
   Future<bool> lagerplatzExist(String lagerplatzId) async {
-    return (await lagerlistenEntries)
+    return (await lagerplatzEntries)
         .any((val) => val.lagerplatzId == lagerplatzId);
   }
 
   void deleteArtikel(String artikelGWID, String lagerplatzID) async {
-    final list = await lagerlistenEntries;
+    final list = await artikelEntries;
     LagerListenEntry? entry = list.firstWhere((element) =>
         element.artikelGWID == artikelGWID &&
         element.lagerplatzId == lagerplatzID);
@@ -47,44 +50,50 @@ class LagerlistenVerwaltungsService {
   void updateArtikel(
       String artikelGWID, String lagerplatzID, LagerListenEntry entry) {
     deleteArtikel(artikelGWID, lagerplatzID);
-    addToLagerliste(entry);
+    addArtikelToLagerliste(entry);
   }
 
   Future<bool> artikelGWIDExist(String gwidCode) async {
-    return (await lagerlistenEntries).any((val) => val.artikelGWID == gwidCode);
+    return (await artikelEntries).any((val) => val.artikelGWID == gwidCode);
   }
 
-  void addToLagerliste(LagerListenEntry entry) async {
-    final list = await lagerlistenEntries;
-    list.add(entry);
-    localStorageService.addEntry(list, entry);
+  void addArtikelToLagerliste(LagerListenEntry artikel) async {
+    final list = await artikelEntries;
+    list.add(artikel);
+    localStorageService.addEntry(list, artikel);
+  }
+
+  void addLagerplatzToLagerliste(LagerListenEntry lagerplatz) async {
+    final list = await lagerplatzEntries;
+    list.add(lagerplatz);
+    localStorageService.addEntry(list, lagerplatz);
   }
 
   void addEmptyLagerplatz(String lagerplatzCode) {
     LagerListenEntry entry = LagerListenEntry(lagerplatzId: lagerplatzCode);
-    addToLagerliste(entry);
+    addLagerplatzToLagerliste(entry);
   }
 
   Future<List<LagerListenEntry>> getLagerlisteByLagerplatz(
       String lagerplatzCode) async {
-    return (await lagerlistenEntries)
+    return (await artikelEntries)
         .where((val) => val.lagerplatzId == lagerplatzCode && val.istArtikel())
         .toList();
   }
 
   Future<LagerListenEntry> getArtikelByGWID(String gwidCode) async {
-    return (await lagerlistenEntries)
+    return (await artikelEntries)
         .where((val) => val.artikelGWID == gwidCode)
         .first;
   }
 
   Future<String?> changeAmount(String artikelGWID, int amountChange) async {
-    LagerListenEntry? entry = (await lagerlistenEntries)
+    LagerListenEntry? entry = (await artikelEntries)
         .where((val) => val.artikelGWID == artikelGWID)
         .firstOrNull;
 
     if (entry == null) {
-      return ErrorMessageConstants.COULD_NOT_FIND_ARTICLE;
+      return ErrorMessageConstants.COULD_NOT_CONVERT_CSV;
     }
     entry.menge = entry.menge! + amountChange;
     if (entry.menge! < 0) {
@@ -92,7 +101,7 @@ class LagerlistenVerwaltungsService {
     }
 
     localStorageService.amountChange(
-        (await lagerlistenEntries), entry, amountChange);
+        (await artikelEntries), entry, amountChange);
 
     if (entry.menge! <= entry.mindestMenge!) {
       mailSenderService.sendMindestmengeErreicht(
@@ -103,22 +112,26 @@ class LagerlistenVerwaltungsService {
     return null;
   }
 
-  void exportLagerListe() async {
-    File file = await csvConverterService.toCsv(await lagerlistenEntries);
+  void exportLagerListe({bool isAutomatic = false}) async {
+    File file = await fileConverterService.toCsv(await artikelEntries);
     mailSenderService.sendLagerListe(
-        file, localSettingsManagerService.getMail(), false);
+        file, localSettingsManagerService.getMail(), isAutomatic);
   }
 
-  String? importFromFile(File file) {
-    var newList = csvConverterService.convertToList(file);
+  String importFromFile(String filePath) {
+    if (filePath.endsWith(".csv") == false) {
+      return ErrorMessageConstants.MUST_BE_CSV;
+    }
+    File file = File(filePath);
+    var newList = fileConverterService.convertToList(file);
     if (newList == null) {
-      return ErrorMessageConstants.COULD_NOT_FIND_ARTICLE;
+      return ErrorMessageConstants.COULD_NOT_CONVERT_CSV;
     }
 
-    exportLagerListe();
-    localStorageService.clearLagerliste();
+    exportLagerListe(isAutomatic: true);
+    localStorageService.clearArtikelListe();
     localStorageService.import(newList);
 
-    return null;
+    return "Die Lagerliste wurde erfolgreich überschrieben";
   }
 }

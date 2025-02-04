@@ -40,6 +40,15 @@ class LoggerService {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_logsKey);
   }
+
+  Future<void> setLogs(List<LogEntryModel> logs) async {
+    final prefs = await _getSharedPreferences();
+
+    List<String> logsAsJsonList =
+        logs.map((element) => jsonEncode(element.toMap())).toList();
+
+    await prefs.setStringList(_logsKey, logsAsJsonList);
+  }
 }
 
 

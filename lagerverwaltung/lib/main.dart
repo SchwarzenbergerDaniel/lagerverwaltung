@@ -1,5 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
@@ -8,6 +9,8 @@ import 'package:lagerverwaltung/config/constants.dart';
 import 'package:lagerverwaltung/model/LagerlistenEntry.dart';
 import 'package:lagerverwaltung/page/artikel_page.dart';
 import 'package:lagerverwaltung/page/lagerliste_page.dart';
+import 'package:lagerverwaltung/page/logs/log_page.dart';
+import 'package:lagerverwaltung/service/jokegenerator_service.dart';
 import 'package:lagerverwaltung/service/localsettings_manager_service.dart';
 import 'package:lagerverwaltung/service/theme_changing_service.dart';
 import 'package:lagerverwaltung/testhelper/testhelper.dart';
@@ -22,28 +25,35 @@ import 'package:lagerverwaltung/page/settings/settings/settings_page.dart';
 import 'package:lagerverwaltung/widget/showsnackbar.dart';
 import 'package:lagerverwaltung/utils/scan_artikel_code_after_lagerplatz.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 final getIt = GetIt.instance;
 AutomatisiertChecker checker = AutomatisiertChecker();
-void setUpServices() {
+Future setUpServices() async {
   getIt.registerLazySingleton<LocalStorageService>(() => LocalStorageService());
   getIt.registerLazySingleton<CodeScannerService>(() => CodeScannerService());
   getIt.registerLazySingleton<MailSenderService>(() => MailSenderService());
   getIt.registerLazySingleton<LagerlistenVerwaltungsService>(
       () => LagerlistenVerwaltungsService());
-  getIt.registerLazySingleton<CsvConverterService>(() => CsvConverterService());
+  getIt.registerLazySingleton<FileConverterService>(
+      () => FileConverterService());
   getIt.registerLazySingleton<LoggerService>(() => LoggerService());
   getIt.registerLazySingleton<LocalSettingsManagerService>(
       () => LocalSettingsManagerService());
   getIt.registerLazySingleton<ThemeChangingService>(
       () => ThemeChangingService());
+  getIt.registerLazySingleton<JokegeneratorService>(
+      () => JokegeneratorService());
+
+  final localSettingsManager = GetIt.instance<LocalSettingsManagerService>();
+  await localSettingsManager.ensureInitialized();
 }
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
   // await Testhelper.clearLocalStorage(); //TODO: REMOVE BEFORE PUBLISHING
-  setUpServices();
+  await setUpServices();
+
   checker.checkTodo();
   final themeService = getIt<ThemeChangingService>();
   await themeService.loadPrimaryColor();
@@ -65,17 +75,29 @@ class MyApp extends StatelessWidget {
         return CupertinoApp(
           localizationsDelegates: [DefaultMaterialLocalizations.delegate],
           theme: CupertinoThemeData(
-            primaryColor:
-                themeService.primaryColor.color, // Aktualisierte Farbe
+            primaryColor: CupertinoDynamicColor.withBrightness(
+              color: themeService.primaryColor.color, // Default (light mode)
+              darkColor: CupertinoDynamicColor.withBrightness(
+                color: themeService.primaryColor.color,
+                darkColor: themeService.primaryColor.color, // Adjust if needed
+              ), // Adjusted for dark mode
+            ),
             barBackgroundColor: CupertinoColors.systemBackground,
             scaffoldBackgroundColor: CupertinoColors.systemGroupedBackground,
             textTheme: CupertinoTextThemeData(
               textStyle: TextStyle(
                 fontSize: 16,
-                color: CupertinoColors.label,
+                color: CupertinoColors.label, // Adapts automatically to theme
               ),
               actionTextStyle: TextStyle(
-                color: themeService.primaryColor.color,
+                color: CupertinoDynamicColor.withBrightness(
+                  color: themeService.primaryColor.color,
+                  darkColor: CupertinoDynamicColor.withBrightness(
+                    color: themeService.primaryColor.color,
+                    darkColor:
+                        themeService.primaryColor.color, // Adjust if needed
+                  ),
+                ),
               ),
             ),
           ),
@@ -97,46 +119,36 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  final localStorageService = GetIt.instance<LocalStorageService>();
   final codeScannerService = GetIt.instance<CodeScannerService>();
   final mailSenderService = GetIt.instance<MailSenderService>();
-  final csvConverterService = GetIt.instance<CsvConverterService>();
+  final fileConverterService = GetIt.instance<FileConverterService>();
   final lagerListenVerwaltungsService =
       GetIt.instance<LagerlistenVerwaltungsService>();
   final loggerService = GetIt.instance<LoggerService>();
   final localSettingsManagerService =
       GetIt.instance<LocalSettingsManagerService>();
 
-  void sendMail() async {
-    // TESTEN: csvConverter, files senden
-    List<Map<String, dynamic>> jsonArray = [
-      {
-        "fach": "A1",
-        "regal": "R1",
-        "lagerplatzId": "101",
-        "artikelGWID": "G123",
-        "arikelFirmenId": "F456",
-        "beschreibung": "Artikelbeschreibung 1",
-        "kunde": "Kunde 1",
-        "ablaufdatum": "2025-12-31",
-        "menge": 5,
-        "mindestMenge": 10,
-      }
-    ];
-    List<LagerListenEntry> entries =
-        jsonArray.map((json) => LagerListenEntry.fromJson(json)).toList();
-    mailSenderService.sendLagerListe(await csvConverterService.toCsv(entries),
-        localSettingsManagerService.getMail(), false);
-    mailSenderService.sendLagerListe(await csvConverterService.toCsv(entries),
-        localSettingsManagerService.getMail(), true);
+  void export() async {
+    mailSenderService.sendLagerListe(
+        await fileConverterService
+            .toCsv(await lagerListenVerwaltungsService.artikelEntries),
+        localSettingsManagerService.getMail(),
+        false);
+    Showsnackbar.showSnackBar(context,
+        "Lagerliste exportiert an ${localSettingsManagerService.getMail()}");
+  }
 
-    mailSenderService.sendMindestmengeErreicht(
-        entries[0], 1, localSettingsManagerService.getMail());
+  void import() async {
+    FilePickerResult? result = await FilePicker.platform.pickFiles();
 
-    mailSenderService.sendMindestmengeErreicht(
-        entries[0], -1, localSettingsManagerService.getMail());
-    mailSenderService.sendAbgelaufen(
-        entries + entries, localSettingsManagerService.getMail());
+    if (result != null && result.files.single.path != null) {
+      String filePath = result.files.single.path!;
+      String importMessage =
+          lagerListenVerwaltungsService.importFromFile(filePath);
+      Showsnackbar.showSnackBar(context, importMessage);
+    } else {
+      Showsnackbar.showSnackBar(context, "Es wurde keine File ausgewählt.");
+    }
   }
 
   void scanLagerplatzCode() async {
@@ -227,8 +239,22 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             const SizedBox(height: 20),
             CupertinoButton.filled(
-              onPressed: sendMail,
-              child: const Text('Send Mail'),
+              onPressed: export,
+              child: const Text('Lagerliste Exportieren'),
+            ),
+            const SizedBox(height: 20),
+            CupertinoButton.filled(
+              onPressed: import,
+              child: const Text('Lagerliste Importieren'),
+            ),
+
+            const SizedBox(height: 20),
+            CupertinoButton.filled(
+              onPressed: () => {
+                Navigator.push(context,
+                    CupertinoPageRoute(builder: (context) => LogPage()))
+              },
+              child: const Text('Logs'),
             ),
 
             //TEST
@@ -236,20 +262,21 @@ class _MyHomePageState extends State<MyHomePage> {
             CupertinoButton.filled(
               onPressed: () {
                 LagerListenEntry exampleEntry = LagerListenEntry(
-                  fach: 'A1',
-                  regal: 'R1',
-                  lagerplatzId: "12345",
+                  fach: 'A2',
+                  regal: 'R2',
+                  lagerplatzId: "1",
                   artikelGWID: 'GW12345',
-                  arikelFirmenId: 'Firma123',
-                  beschreibung: 'Beispielartikel',
-                  kunde: 'Max Mustermann',
+                  arikelFirmenId: '12',
+                  beschreibung: 'beschreibung',
+                  kunde: 'Daniel Schwarzenberger',
                   ablaufdatum: DateTime.now()
-                      .add(Duration(days: 30)), // Ablaufdatum in 30 Tagen
+                      .add(Duration(days: 50)), // Ablaufdatum in 30 Tagen
                   menge: 10,
                   mindestMenge: 5,
                 );
 
-                lagerListenVerwaltungsService.addToLagerliste(exampleEntry);
+                lagerListenVerwaltungsService
+                    .addArtikelToLagerliste(exampleEntry);
               },
               child: const Text('Create Artikel'),
             ),

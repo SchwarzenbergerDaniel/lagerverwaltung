@@ -5,14 +5,15 @@ import 'package:lagerverwaltung/config/constants.dart';
 import 'package:lagerverwaltung/model/LagerlistenEntry.dart';
 import 'package:lagerverwaltung/page/settings/csv_column_order/csv_column_order_changer_page.dart';
 import 'package:lagerverwaltung/service/localsettings_manager_service.dart';
+import 'package:lagerverwaltung/service/logger/log_entry.dart';
 import 'package:path_provider/path_provider.dart';
 
-class CsvConverterService {
+class FileConverterService {
   // Service-Setup:
-  CsvConverterService._privateConstructor();
-  static final CsvConverterService _instance =
-      CsvConverterService._privateConstructor();
-  factory CsvConverterService() {
+  FileConverterService._privateConstructor();
+  static final FileConverterService _instance =
+      FileConverterService._privateConstructor();
+  factory FileConverterService() {
     return _instance;
   }
 
@@ -53,8 +54,18 @@ class CsvConverterService {
       ..writeAll(entries.map((entry) => entry.toCsvRow(csvOrder)), "\n");
 
     file.writeAsStringSync(csvContent.toString());
+    return file;
+  }
 
-    print(csvContent.toString());
+  Future<File> toLogFile(List<LogEntryModel> entries) async {
+    final directory = await getTemporaryDirectory();
+    final filePath = '${directory.path}/aktivitaet.log';
+
+    final file = File(filePath);
+
+    final csvContent = StringBuffer()..writeAll(entries, "\n");
+
+    file.writeAsStringSync(csvContent.toString());
     return file;
   }
 }
