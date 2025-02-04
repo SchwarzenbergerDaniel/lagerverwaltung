@@ -5,6 +5,13 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:lagerverwaltung/automatisierte_aufgaben/automatisiert_checker.dart';
+import 'package:lagerverwaltung/buttons/add_lagerplatz_button.dart';
+import 'package:lagerverwaltung/buttons/artikel_amount_change_button.dart';
+import 'package:lagerverwaltung/buttons/create_artikel_button.dart';
+import 'package:lagerverwaltung/buttons/export_list_button.dart';
+import 'package:lagerverwaltung/buttons/import_list_button.dart';
+import 'package:lagerverwaltung/buttons/inventur_durchfuehren_button.dart';
+import 'package:lagerverwaltung/buttons/logs_ansehen_button.dart';
 import 'package:lagerverwaltung/config/constants.dart';
 import 'package:lagerverwaltung/model/LagerlistenEntry.dart';
 import 'package:lagerverwaltung/page/artikel_page.dart';
@@ -102,7 +109,7 @@ class MyApp extends StatelessWidget {
             ),
           ),
           debugShowCheckedModeBanner: false,
-          home: const MyHomePage(title: 'Service-Tests'),
+          home: const MyHomePage(title: 'Gradwohl Lagerverwaltung'),
         );
       },
     );
@@ -127,29 +134,6 @@ class _MyHomePageState extends State<MyHomePage> {
   final loggerService = GetIt.instance<LoggerService>();
   final localSettingsManagerService =
       GetIt.instance<LocalSettingsManagerService>();
-
-  void export() async {
-    mailSenderService.sendLagerListe(
-        await fileConverterService
-            .toCsv(await lagerListenVerwaltungsService.artikelEntries),
-        localSettingsManagerService.getMail(),
-        false);
-    Showsnackbar.showSnackBar(context,
-        "Lagerliste exportiert an ${localSettingsManagerService.getMail()}");
-  }
-
-  void import() async {
-    FilePickerResult? result = await FilePicker.platform.pickFiles();
-
-    if (result != null && result.files.single.path != null) {
-      String filePath = result.files.single.path!;
-      String importMessage =
-          lagerListenVerwaltungsService.importFromFile(filePath);
-      Showsnackbar.showSnackBar(context, importMessage);
-    } else {
-      Showsnackbar.showSnackBar(context, "Es wurde keine File ausgewählt.");
-    }
-  }
 
   void scanLagerplatzCode() async {
     final scannedID = await codeScannerService.getCodeByScan(context);
@@ -214,75 +198,62 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
-      navigationBar: CupertinoNavigationBar(
-        middle: Text(widget.title),
-        trailing: CupertinoButton(
-            child: Icon(Icons.settings_outlined),
-            onPressed: () {
-              Navigator.push(context,
-                  CupertinoPageRoute(builder: (context) => SettingsPage()));
-            }),
-        backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
-      ),
-      child: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            CupertinoButton.filled(
-              onPressed: scanLagerplatzCode,
-              child: const Text('Lagerplatz Scannen'),
-            ),
-            const SizedBox(height: 20),
-            CupertinoButton.filled(
-              onPressed: scanArtikelCode,
-              child: const Text('Artikel Scannen'),
-            ),
-            const SizedBox(height: 20),
-            CupertinoButton.filled(
-              onPressed: export,
-              child: const Text('Lagerliste Exportieren'),
-            ),
-            const SizedBox(height: 20),
-            CupertinoButton.filled(
-              onPressed: import,
-              child: const Text('Lagerliste Importieren'),
-            ),
-
-            const SizedBox(height: 20),
-            CupertinoButton.filled(
-              onPressed: () => {
-                Navigator.push(context,
-                    CupertinoPageRoute(builder: (context) => LogPage()))
-              },
-              child: const Text('Logs'),
-            ),
-
-            //TEST
-            const SizedBox(height: 20),
-            CupertinoButton.filled(
+        navigationBar: CupertinoNavigationBar(
+          middle: Text(widget.title),
+          trailing: CupertinoButton(
+              child: Icon(Icons.settings_outlined),
               onPressed: () {
-                LagerListenEntry exampleEntry = LagerListenEntry(
-                  fach: 'A2',
-                  regal: 'R2',
-                  lagerplatzId: "1",
-                  artikelGWID: 'GW12345',
-                  arikelFirmenId: '12',
-                  beschreibung: 'beschreibung',
-                  kunde: 'Daniel Schwarzenberger',
-                  ablaufdatum: DateTime.now()
-                      .add(Duration(days: 50)), // Ablaufdatum in 30 Tagen
-                  menge: 10,
-                  mindestMenge: 5,
-                );
-
-                lagerListenVerwaltungsService
-                    .addArtikelToLagerliste(exampleEntry);
-              },
-              child: const Text('Create Artikel'),
-            ),
-          ],
+                Navigator.push(context,
+                    CupertinoPageRoute(builder: (context) => SettingsPage()));
+              }),
+          backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
         ),
-      ),
-    );
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(
+                horizontal: 20), // Rand auf beiden Seiten hinzufügen
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                // LOGO:
+                Image.asset(
+                  'assets/logo-gradwohl.png',
+                  width: 150,
+                  height: 150,
+                ),
+                const SizedBox(height: 20),
+
+                // BUTTONS IN ROWS OF TWO:
+                Column(
+                  children: [
+                    Row(
+                      children: [
+                        Expanded(child: ExportListButton()),
+                        Expanded(child: ImportListButton()),
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        Expanded(child: LogsAnsehenButton()),
+                        Expanded(child: InventurDurchfuehrenButton()),
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        Expanded(child: AddLagerplatzButton()),
+                        Expanded(child: CreateArtikelButton()),
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        Expanded(child: ArtikelAmountChangeButton()),
+                      ],
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ));
   }
 }
