@@ -223,6 +223,7 @@ class _LogPageState extends State<LogPage> {
             onPressed: sendLogs,
             child: const Text("Logs via Mail versenden"),
           ),
+          const SizedBox(height: 15),
         ],
       ),
     );

@@ -91,7 +91,7 @@ class LocalStorageService {
   }
 
   String dateTimeToString(DateTime dateTime) {
-    return "${dateTime.year}-${dateTime.month}-${dateTime.day}";
+    return dateTime.toString();
   }
 
   // Lagerlistet

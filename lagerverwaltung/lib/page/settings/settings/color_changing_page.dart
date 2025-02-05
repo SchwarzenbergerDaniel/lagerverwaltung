@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:lagerverwaltung/service/theme_changing_service.dart';
 import 'package:lagerverwaltung/widget/custom_leading_button.dart';
@@ -13,7 +14,8 @@ class ColorChangingPage extends StatefulWidget {
 
 class _ColorChangingPageState extends State<ColorChangingPage> {
   final themeService = GetIt.instance<ThemeChangingService>();
-    final colors = [
+
+  final colors = [
     CupertinoColors.activeBlue,
     CupertinoColors.activeGreen,
     CupertinoColors.activeOrange,
@@ -26,79 +28,120 @@ class _ColorChangingPageState extends State<ColorChangingPage> {
     CupertinoColors.systemGrey,
   ];
 
-  void _openColorPicker(BuildContext context) {
-  showCupertinoDialog(
-    context: context,
-    builder: (context) {
-      return CupertinoAlertDialog(
-        title: const Text('Wähle eine Farbe'),
-        content: SizedBox(
-          height: 200,
-          child: SingleChildScrollView(
-            child: Wrap(
-              alignment: WrapAlignment.center, 
-              spacing: 8.0,
-              runSpacing: 8.0,
-              children: colors.map((color) {
-                return GestureDetector(
-                  onTap: () {
-                    Provider.of<ThemeChangingService>(context, listen: false)
-                        .setPrimaryColor(CupertinoDynamicColor.withBrightness(
-                      color: color,
-                      darkColor: color,
-                    ));
-                    Navigator.of(context).pop();
-                  },
-                  child: Container(
-                    width: 40,
-                    height: 40,
-                    decoration: BoxDecoration(
-                      color: color,
-                      border: Border.all(color: CupertinoColors.systemGrey2),
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                  ),
-                );
-              }).toList(),
-            ),
-          ),
-        ),
-        actions: [
-          CupertinoDialogAction(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Abbrechen'),
-          ),
-        ],
-      );
-    },
-  );
-}
+  late Color selectedBackgroundColor;
+  late Color selectedPrimaryColor;
+
+  @override
+  void initState() {
+    super.initState();
+    selectedBackgroundColor = themeService.backgroundColor;
+    selectedPrimaryColor = themeService.primaryColor;
+  }
 
   @override
   Widget build(BuildContext context) {
+    final backgroundColors = {
+      'Weiß': CupertinoColors.white,
+      'Schwarz': CupertinoColors.black,
+    };
+
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
-        middle: const Text('Primärfarbe ändern'),
+        middle: const Text('Anpassung der Farben'),
         backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
         leading: CustomBackButton(),
       ),
       child: SafeArea(
-        child: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Container(
-                width: 100,
-                height: 100,
-                decoration: BoxDecoration(
-                  color: CupertinoTheme.of(context).primaryColor,
-                  borderRadius: BorderRadius.circular(10),
-                ),
+              const Text(
+                'Hintergrundfarbe ändern:',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
-              const SizedBox(height: 20),
-              CupertinoButton.filled(
-                onPressed: () => _openColorPicker(context),
-                child: const Text('Farbe auswählen'),
+              const SizedBox(height: 10),
+              Wrap(
+                alignment: WrapAlignment.center,
+                spacing: 10.0,
+                children: backgroundColors.keys.map((label) {
+                  final color = backgroundColors[label]!;
+                  final isSelected = color == selectedBackgroundColor;
+                  return CupertinoButton(
+                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    color: CupertinoColors.systemGrey,
+                    borderRadius: BorderRadius.circular(8),
+                    onPressed: () {
+                      setState(() {
+                        selectedBackgroundColor = color;
+                        themeService.setBackgroundColor(
+                            CupertinoDynamicColor.withBrightness(
+                          color: selectedBackgroundColor,
+                          darkColor: selectedBackgroundColor,
+                        ));
+                      });
+                    },
+                    child: Text(
+                      label,
+                      style: TextStyle(
+                          color: CupertinoColors.black,
+                          fontWeight: FontWeight.bold),
+                    ),
+                  );
+                }).toList(),
+              ),
+              const SizedBox(height: 30),
+              const Text(
+                'Wähle eine Primärfarbe:',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 10),
+              Wrap(
+                alignment: WrapAlignment.center,
+                spacing: 10.0,
+                runSpacing: 10.0,
+                children: colors.map((color) {
+                  final isSelected = color == selectedPrimaryColor;
+                  return GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        selectedPrimaryColor = color;
+                        themeService.setPrimaryColor(
+                            CupertinoDynamicColor.withBrightness(
+                          color: color,
+                          darkColor: color,
+                        ));
+                      });
+                    },
+                    child: Container(
+                      width: 50,
+                      height: 50,
+                      decoration: BoxDecoration(
+                        color: color,
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: isSelected
+                              ? CupertinoColors.black
+                              : CupertinoColors.systemGrey2,
+                          width: isSelected ? 3.0 : 1.0,
+                        ),
+                      ),
+                      child: isSelected
+                          ? Center(
+                              child: Icon(
+                                Icons.check,
+                                color: color.computeLuminance() > 0.5
+                                    ? CupertinoColors.black
+                                    : CupertinoColors.white,
+                                size: 20,
+                              ),
+                            )
+                          : null,
+                    ),
+                  );
+                }).toList(),
               ),
             ],
           ),
