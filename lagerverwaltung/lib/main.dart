@@ -64,6 +64,7 @@ void main() async {
   checker.checkTodo();
   final themeService = getIt<ThemeChangingService>();
   await themeService.loadPrimaryColor();
+  await themeService.loadBackgroundColor();
   runApp(
     ChangeNotifierProvider(
       create: (_) => themeService,
@@ -79,32 +80,31 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<ThemeChangingService>(
       builder: (context, themeService, child) {
+        // Determine appropriate text color based on background brightness
+        final Color textColor =
+            themeService.backgroundColor.color.computeLuminance() > 0.5
+                ? CupertinoColors.black // Light background → Dark text
+                : CupertinoColors.white; // Dark background → Light text
+
         return CupertinoApp(
           localizationsDelegates: [DefaultMaterialLocalizations.delegate],
           theme: CupertinoThemeData(
             primaryColor: CupertinoDynamicColor.withBrightness(
-              color: themeService.primaryColor.color, // Default (light mode)
-              darkColor: CupertinoDynamicColor.withBrightness(
-                color: themeService.primaryColor.color,
-                darkColor: themeService.primaryColor.color, // Adjust if needed
-              ), // Adjusted for dark mode
+              color:
+                  themeService.primaryColor.color, // Light mode primary color
+              darkColor: themeService
+                  .primaryColor.darkColor, // Dark mode primary color
             ),
-            barBackgroundColor: CupertinoColors.systemBackground,
-            scaffoldBackgroundColor: CupertinoColors.systemGroupedBackground,
+            barBackgroundColor: themeService.backgroundColor,
+            scaffoldBackgroundColor: themeService.backgroundColor,
             textTheme: CupertinoTextThemeData(
               textStyle: TextStyle(
                 fontSize: 16,
-                color: CupertinoColors.label, // Adapts automatically to theme
+                color: textColor, // Dynamically adjusted text color
               ),
               actionTextStyle: TextStyle(
-                color: CupertinoDynamicColor.withBrightness(
-                  color: themeService.primaryColor.color,
-                  darkColor: CupertinoDynamicColor.withBrightness(
-                    color: themeService.primaryColor.color,
-                    darkColor:
-                        themeService.primaryColor.color, // Adjust if needed
-                  ),
-                ),
+                color:
+                    textColor, // Also apply the contrast rule for action texts
               ),
             ),
           ),

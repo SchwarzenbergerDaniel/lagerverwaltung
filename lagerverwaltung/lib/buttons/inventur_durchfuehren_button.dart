@@ -7,7 +7,7 @@ class InventurDurchfuehrenButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return HomePageButtonBase(
-        title: "Inventur durchfuehren",
+        title: "Inventur durchführen",
         icon: Icons.assignment,
         backgroundColor: Color.fromRGBO(135, 241, 211, 1),
         onPressed: () => inventurDurchfuehren(context));

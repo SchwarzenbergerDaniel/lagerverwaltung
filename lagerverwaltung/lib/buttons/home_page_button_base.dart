@@ -37,7 +37,7 @@ class HomePageButtonBase extends StatelessWidget {
                 textAlign: TextAlign.center,
                 softWrap: true, // Zeilenumbruch erlauben
                 style: const TextStyle(
-                  fontSize: 16,
+                  fontSize: 14,
                   fontWeight: FontWeight.bold,
                   color: Colors.black,
                 ),
