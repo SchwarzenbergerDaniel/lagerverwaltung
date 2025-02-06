@@ -11,6 +11,7 @@ import 'package:lagerverwaltung/service/mailsender/templates/html_template_gener
 import 'package:lagerverwaltung/service/mailsender/google_auth_api.dart';
 import 'package:lagerverwaltung/service/mailsender/templates/log_entries_template.dart';
 import 'package:lagerverwaltung/service/mailsender/templates/mindestmenge_erreicht_template.dart';
+import 'package:lagerverwaltung/service/mailsender/templates/mindestmenge_liste_template.dart';
 import 'package:mailer/mailer.dart';
 import 'package:mailer/smtp_server/gmail.dart';
 
@@ -120,6 +121,20 @@ class MailSenderService {
           timestamp: DateTime.now(),
           logReason: LogReason.Log_Liste_versendet,
           zusatzInformationen: "Empfänger-Email: $toMail"),
+    );
+  }
+
+  void sendMindestmengeListe(List<LagerlistenEntry> entries, String toMail) {
+    _sendMessage(
+        toMail: toMail,
+        templateGenerator: MindestmengeListeTemplate(artikel: entries));
+
+    loggerService.log(
+      LogEntryModel(
+          timestamp: DateTime.now(),
+          logReason: LogReason.Alle_abgelaufenen_Artikel_versendet,
+          zusatzInformationen:
+              "Empfänger-Email: $toMail | Anzahl versendeter Artikel: ${entries.length}"),
     );
   }
 }

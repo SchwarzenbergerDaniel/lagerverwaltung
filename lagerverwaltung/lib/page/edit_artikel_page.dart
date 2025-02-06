@@ -74,7 +74,10 @@ class _EditArtikelPageState extends State<EditArtikelPage> {
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
-        middle: const Text('Artikel'),
+        middle: Text(
+          'Artikel',
+          style: CupertinoTheme.of(context).textTheme.textStyle,
+        ),
         backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
         leading: CustomBackButton(),
       ),
@@ -178,7 +181,10 @@ class _EditArtikelPageState extends State<EditArtikelPage> {
 
   CupertinoButton speichernBearbeitenButton() {
     return CupertinoButton(
-      child: Text(isEditable ? 'Speichern' : 'Bearbeiten'),
+      child: Text(
+        isEditable ? 'Speichern' : 'Bearbeiten',
+        style: CupertinoTheme.of(context).textTheme.textStyle,
+      ),
       onPressed: () {
         setState(() {
           if (isEditable) {

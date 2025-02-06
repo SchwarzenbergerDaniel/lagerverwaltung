@@ -24,9 +24,9 @@ class LogConigPage extends StatelessWidget {
 
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
-        middle: const Text(
+        middle: Text(
           'Log-Konfigurationen',
-          style: TextStyle(fontWeight: FontWeight.bold),
+          style: CupertinoTheme.of(context).textTheme.textStyle,
         ),
         backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
         leading: CustomBackButton(),

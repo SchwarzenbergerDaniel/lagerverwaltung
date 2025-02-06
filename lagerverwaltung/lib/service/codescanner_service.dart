@@ -36,6 +36,7 @@ class CodeScannerService {
   }
 }
 
+// ignore: must_be_immutable
 class CodeScannerScreen extends StatefulWidget {
   String title;
   CodeScannerScreen({super.key, required this.title});
@@ -52,7 +53,10 @@ class _CodeScannerScreenState extends State<CodeScannerScreen> {
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
-        middle: Text(widget.title),
+        middle: Text(
+          widget.title,
+          style: CupertinoTheme.of(context).textTheme.textStyle,
+        ),
         leading: CustomBackButton(onPressed: () {
           Navigator.of(context).pop(Constants.EXIT_RETURN_VALUE);
         }),

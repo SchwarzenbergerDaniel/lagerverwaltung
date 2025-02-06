@@ -4,23 +4,35 @@ import 'package:flutter/material.dart';
 class SettingTile extends StatelessWidget {
   final String bezeichnung;
   final Icon icon;
-  final Widget page;
+  Widget? page;
+  VoidCallback? onTap;
 
-  const SettingTile({
-    Key? key,
-    required this.bezeichnung,
-    required this.icon,
-    required this.page,
-  }) : super(key: key);
+  SettingTile(
+      {super.key,
+      required this.bezeichnung,
+      required this.icon,
+      this.page,
+      this.onTap});
+
+  void onGesture(BuildContext context) {
+    if (page != null) {
+      Navigator.push(
+        context,
+        CupertinoPageRoute(builder: (context) => page!),
+      );
+    } else {
+      onTap!.call();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Navigator.push(
-          context,
-          CupertinoPageRoute(builder: (context) => page),
-        );
+        onGesture(context);
+      },
+      onHorizontalDragEnd: (details) {
+        onGesture(context);
       },
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),

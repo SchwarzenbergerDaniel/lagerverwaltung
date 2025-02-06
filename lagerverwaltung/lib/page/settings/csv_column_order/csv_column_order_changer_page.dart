@@ -18,7 +18,7 @@ enum Columns {
 }
 
 class CsvColumnOrderChangerPage extends StatefulWidget {
-  CsvColumnOrderChangerPage({super.key});
+  const CsvColumnOrderChangerPage({super.key});
 
   @override
   _CsvColumnOrderChangerPageState createState() =>
@@ -41,7 +41,10 @@ class _CsvColumnOrderChangerPageState extends State<CsvColumnOrderChangerPage> {
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
-          middle: const Text('Export Spalten Reihenfolge ändern'),
+          middle: Text(
+            'Export Spalten Reihenfolge ändern',
+            style: CupertinoTheme.of(context).textTheme.textStyle,
+          ),
           backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
           leading: CustomBackButton()),
       child: SafeArea(

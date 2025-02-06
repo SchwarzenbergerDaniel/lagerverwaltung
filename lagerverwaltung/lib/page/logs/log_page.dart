@@ -64,7 +64,10 @@ class _LogPageState extends State<LogPage> {
         return StatefulBuilder(
           builder: (context, setModalState) {
             return CupertinoActionSheet(
-              title: const Text("Filter Logs"),
+              title: Text(
+                "Filter Logs",
+                style: CupertinoTheme.of(context).textTheme.textStyle,
+              ),
               actions: LogReason.values.map((reason) {
                 final isSelected = relevantLogReasons.contains(reason.name);
                 return CupertinoActionSheetAction(
@@ -181,24 +184,39 @@ class _LogPageState extends State<LogPage> {
                                   Padding(
                                     padding: const EdgeInsets.only(bottom: 2.0),
                                     child: Text(
-                                        "Lagerplatz: ${entry.lagerplatzId}"),
+                                        "Lagerplatz: ${entry.lagerplatzId}",
+                                        style: const TextStyle(
+                                            color: CupertinoColors.systemGrey),
+                                        softWrap: true,
+                                        overflow: TextOverflow.visible),
                                   ),
                                 if (entry.artikelGWID != null)
                                   Padding(
                                     padding: const EdgeInsets.only(bottom: 2.0),
-                                    child:
-                                        Text("Artikel: ${entry.artikelGWID}"),
+                                    child: Text("Artikel: ${entry.artikelGWID}",
+                                        style: const TextStyle(
+                                            color: CupertinoColors.systemGrey),
+                                        softWrap: true,
+                                        overflow: TextOverflow.visible),
                                   ),
                                 if (entry.menge != null)
                                   Padding(
                                     padding: const EdgeInsets.only(bottom: 2.0),
-                                    child: Text("Menge: ${entry.menge}"),
+                                    child: Text("Menge: ${entry.menge}",
+                                        style: const TextStyle(
+                                            color: CupertinoColors.systemGrey),
+                                        softWrap: true,
+                                        overflow: TextOverflow.visible),
                                   ),
                                 if (entry.neueMenge != null)
                                   Padding(
                                     padding: const EdgeInsets.only(bottom: 2.0),
-                                    child:
-                                        Text("Neue Menge: ${entry.neueMenge}"),
+                                    child: Text(
+                                        "Neue Menge: ${entry.neueMenge}",
+                                        style: const TextStyle(
+                                            color: CupertinoColors.systemGrey),
+                                        softWrap: true,
+                                        overflow: TextOverflow.visible),
                                   ),
                                 if (entry.zusatzInformationen != null)
                                   Padding(

@@ -4,7 +4,7 @@ import 'package:lagerverwaltung/buttons/home_page_button_base.dart';
 import 'package:lagerverwaltung/page/logs/log_page.dart';
 
 class LogsAnsehenButton extends StatelessWidget {
-  LogsAnsehenButton({super.key});
+  const LogsAnsehenButton({super.key});
 
   @override
   Widget build(BuildContext context) {

@@ -14,7 +14,8 @@ enum LogReason {
   Eintrag_in_Lagerliste,
   Artikel_entnehmen,
   Log_Liste_versendet,
-  Mindestmenge_erreicht_Mail
+  Mindestmenge_erreicht_Mail,
+  Alle_abgelaufenen_Artikel_versendet
 }
 
 class LogEntryModel {

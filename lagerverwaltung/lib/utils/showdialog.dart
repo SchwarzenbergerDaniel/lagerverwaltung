@@ -12,9 +12,9 @@ class ShowDialogTwoOptions {
               content: Text(content),
               actions: [
                 CupertinoDialogAction(
-                  child: Text(option1),
                   isDefaultAction: isFirstDefaultAction,
                   onPressed: () => Navigator.pop(context, true),
+                  child: Text(option1),
                 ),
                 CupertinoDialogAction(
                   isDefaultAction: !isFirstDefaultAction,
