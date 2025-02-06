@@ -139,6 +139,23 @@ class LagerlistenVerwaltungsService {
     return null;
   }
 
+  Future<List<LagerlistenEntry>> getAbgelaufeneArtikel() async {
+    DateTime today = DateTime.now();
+    today = DateTime(today.year, today.month, today.day);
+
+    return (await artikelEntries).where((val) {
+      if (val.ablaufdatum != null) {
+        DateTime ablaufDate = DateTime(
+          val.ablaufdatum!.year,
+          val.ablaufdatum!.month,
+          val.ablaufdatum!.day,
+        );
+        return ablaufDate.isBefore(today) || ablaufDate.isAtSameMomentAs(today);
+      }
+      return false;
+    }).toList();
+  }
+
   void exportLagerListe({bool isAutomatic = false}) async {
     File file = await fileConverterService.toCsv(await artikelEntries);
     mailSenderService.sendLagerListe(

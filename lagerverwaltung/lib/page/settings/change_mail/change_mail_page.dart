@@ -25,9 +25,9 @@ class EMailEmpfaengerAendernPage extends StatelessWidget {
 
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
-        middle: const Text(
+        middle: Text(
           'E-Mail-Empfänger ändern',
-          style: TextStyle(fontWeight: FontWeight.bold),
+          style: CupertinoTheme.of(context).textTheme.textStyle,
         ),
         backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
         leading: CustomBackButton(),
@@ -81,12 +81,15 @@ class EMailEmpfaengerAendernPage extends StatelessWidget {
                           "Bitte eine gültige E-Mail-Adresse eingeben.");
                     }
                   },
-                  child: const Row(
+                  child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Icon(Icons.check, size: 20),
                       SizedBox(width: 8),
-                      Text("Speichern"),
+                      Text(
+                        "Speichern",
+                        style: CupertinoTheme.of(context).textTheme.textStyle,
+                      ),
                     ],
                   ),
                 ),

@@ -14,7 +14,6 @@ import 'package:lagerverwaltung/buttons/logs_ansehen_button.dart';
 import 'package:lagerverwaltung/service/jokegenerator_service.dart';
 import 'package:lagerverwaltung/service/localsettings_manager_service.dart';
 import 'package:lagerverwaltung/service/theme_changing_service.dart';
-import 'package:lagerverwaltung/testhelper/testhelper.dart';
 import 'package:lagerverwaltung/service/logger/logger_service.dart';
 import 'package:lagerverwaltung/service/codescanner_service.dart';
 import 'package:lagerverwaltung/service/csv_converter_service.dart';
@@ -49,7 +48,7 @@ Future setUpServices() async {
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // await Testhelper.clearLocalStorage(); //TODO: REMOVE BEFORE PUBLISHING
+  // await Testhelper.clearLocalStorage();
   await setUpServices();
 
   checker.checkTodo();
@@ -130,7 +129,10 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
-        middle: Text(widget.title),
+        middle: Text(
+          widget.title,
+          style: CupertinoTheme.of(context).textTheme.textStyle,
+        ),
         trailing: CupertinoButton(
             child: Icon(Icons.settings_outlined),
             onPressed: () {

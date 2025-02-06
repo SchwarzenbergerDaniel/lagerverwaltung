@@ -12,4 +12,9 @@ class GoogleAuthApi {
 
     return await _googleSignIn.signIn();
   }
+
+  static Future changeUser() async {
+    await _googleSignIn.signOut();
+    await _googleSignIn.signIn();
+  }
 }

@@ -1,6 +1,6 @@
 // ignore_for_file: constant_identifier_names
 
-// CAN BE CONFIGURED BY THE USER. TODO: Make it package local for settings page once the settings service, once the LocalSettingsManagerService is finished.
+// CAN BE CONFIGURED BY THE USER.
 import 'package:lagerverwaltung/page/settings/csv_column_order/csv_column_order_changer_page.dart';
 
 class DefaultValues {

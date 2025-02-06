@@ -24,7 +24,10 @@ class _LagerlistePageState extends State<LagerlistePage> {
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
-        middle: Text("Artikel in Lagerplatz: ${widget.lagerplatzId}"),
+        middle: Text(
+          "Artikel in Lagerplatz: ${widget.lagerplatzId}",
+          style: CupertinoTheme.of(context).textTheme.textStyle,
+        ),
         backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
         leading: CustomBackButton(),
       ),
@@ -39,7 +42,10 @@ class _LagerlistePageState extends State<LagerlistePage> {
 
                 setState(() {}); // Rebuild the page
               },
-              child: const Text('Neuen Artikel hinzufügen'),
+              child: Text(
+                'Neuen Artikel hinzufügen',
+                style: CupertinoTheme.of(context).textTheme.textStyle,
+              ),
             ),
             const SizedBox(height: 16),
             Expanded(
@@ -50,9 +56,17 @@ class _LagerlistePageState extends State<LagerlistePage> {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const Center(child: CupertinoActivityIndicator());
                   } else if (snapshot.hasError) {
-                    return Center(child: Text("Fehler: ${snapshot.error}"));
+                    return Center(
+                        child: Text(
+                      "Fehler: ${snapshot.error}",
+                      style: CupertinoTheme.of(context).textTheme.textStyle,
+                    ));
                   } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                    return const Center(child: Text("Keine Artikel gefunden."));
+                    return Center(
+                        child: Text(
+                      "Keine Artikel gefunden.",
+                      style: CupertinoTheme.of(context).textTheme.textStyle,
+                    ));
                   }
 
                   final entries = snapshot.data!;

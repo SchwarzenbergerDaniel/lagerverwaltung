@@ -46,7 +46,10 @@ class _ColorChangingPageState extends State<ColorChangingPage> {
 
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
-        middle: const Text('Anpassung der Farben'),
+        middle: Text(
+          'Anpassung der Farben',
+          style: CupertinoTheme.of(context).textTheme.textStyle,
+        ),
         backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
         leading: CustomBackButton(),
       ),
@@ -67,9 +70,13 @@ class _ColorChangingPageState extends State<ColorChangingPage> {
                 spacing: 10.0,
                 children: backgroundColors.keys.map((label) {
                   final color = backgroundColors[label]!;
+                  final isSelected = color == selectedBackgroundColor;
+
                   return CupertinoButton(
                     padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                    color: CupertinoColors.systemGrey,
+                    color: isSelected
+                        ? CupertinoColors.activeBlue
+                        : CupertinoColors.systemGrey,
                     borderRadius: BorderRadius.circular(8),
                     onPressed: () {
                       setState(() {
@@ -81,11 +88,28 @@ class _ColorChangingPageState extends State<ColorChangingPage> {
                         ));
                       });
                     },
-                    child: Text(
-                      label,
-                      style: TextStyle(
-                          color: CupertinoColors.black,
-                          fontWeight: FontWeight.bold),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          label,
+                          style: TextStyle(
+                            color: isSelected
+                                ? CupertinoColors.white
+                                : CupertinoColors.black,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        if (isSelected)
+                          Padding(
+                            padding: const EdgeInsets.only(left: 8.0),
+                            child: Icon(
+                              Icons.check,
+                              color: CupertinoColors.white,
+                              size: 20,
+                            ),
+                          ),
+                      ],
                     ),
                   );
                 }).toList(),
