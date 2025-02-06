@@ -1,27 +1,23 @@
 // ignore_for_file: use_build_context_synchronously
 
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:lagerverwaltung/automatisierte_aufgaben/automatisiert_checker.dart';
-import 'package:lagerverwaltung/buttons/add_lagerplatz_button.dart';
+import 'package:lagerverwaltung/buttons/scan_lagerplatz.dart';
 import 'package:lagerverwaltung/buttons/artikel_amount_change_button.dart';
-import 'package:lagerverwaltung/buttons/create_artikel_button.dart';
+import 'package:lagerverwaltung/buttons/scan_artikel.dart';
 import 'package:lagerverwaltung/buttons/export_list_button.dart';
 import 'package:lagerverwaltung/buttons/import_list_button.dart';
 import 'package:lagerverwaltung/buttons/inventur_durchfuehren_button.dart';
 import 'package:lagerverwaltung/buttons/logs_ansehen_button.dart';
 import 'package:lagerverwaltung/config/constants.dart';
 import 'package:lagerverwaltung/model/LagerlistenEntry.dart';
-import 'package:lagerverwaltung/page/artikel_page.dart';
-import 'package:lagerverwaltung/page/lagerliste_page.dart';
-import 'package:lagerverwaltung/page/logs/log_page.dart';
+import 'package:lagerverwaltung/page/edit_artikel_page.dart';
 import 'package:lagerverwaltung/service/jokegenerator_service.dart';
 import 'package:lagerverwaltung/service/localsettings_manager_service.dart';
 import 'package:lagerverwaltung/service/theme_changing_service.dart';
 import 'package:lagerverwaltung/testhelper/testhelper.dart';
-import 'package:lagerverwaltung/widget/lagerplatz_code_scanned_modal.dart';
 import 'package:lagerverwaltung/service/logger/logger_service.dart';
 import 'package:lagerverwaltung/service/codescanner_service.dart';
 import 'package:lagerverwaltung/service/csv_converter_service.dart';
@@ -29,8 +25,7 @@ import 'package:lagerverwaltung/service/lagerlistenverwaltung_service.dart';
 import 'package:lagerverwaltung/service/localstorage_service.dart';
 import 'package:lagerverwaltung/service/mailsender/mailsender_service.dart';
 import 'package:lagerverwaltung/page/settings/settings/settings_page.dart';
-import 'package:lagerverwaltung/widget/showsnackbar.dart';
-import 'package:lagerverwaltung/utils/scan_artikel_code_after_lagerplatz.dart';
+import 'package:lagerverwaltung/utils/showsnackbar.dart';
 import 'package:provider/provider.dart';
 
 final getIt = GetIt.instance;
@@ -135,45 +130,9 @@ class _MyHomePageState extends State<MyHomePage> {
   final localSettingsManagerService =
       GetIt.instance<LocalSettingsManagerService>();
 
-  void scanLagerplatzCode() async {
-    final scannedID = await codeScannerService.getCodeByScan(context);
-    if (scannedID != null) {
-      if (scannedID == Constants.EXIT_RETURN_VALUE) {
-        //Wenn man durch den Backarrow zurück will, das kein Error kommt
-        return;
-      }
-      if (await lagerListenVerwaltungsService.lagerplatzExist(scannedID)) {
-        List<LagerListenEntry> artikelListe =
-            await lagerListenVerwaltungsService
-                .getLagerlisteByLagerplatz(scannedID);
-        Navigator.push(
-            context,
-            CupertinoPageRoute(
-                builder: (context) => LagerlistePage(
-                      entries: artikelListe,
-                      lagerplatzId: scannedID,
-                    )));
-      } else {
-        final result = await LagerplatzCodeScannedModal.showActionSheet(
-            context, scannedID);
-        //True = Neuer Artikel
-        //False = Neuer Lagerplatz
-        //Null = Exit
-        if (result == true) {
-          lagerListenVerwaltungsService.addEmptyLagerplatz(scannedID);
-          scanArtikelCodeAfterLagerplatz(context, scannedID);
-        } else if (result == false) {
-          lagerListenVerwaltungsService.addEmptyLagerplatz(scannedID);
-          Showsnackbar.showSnackBar(context, "Lagerliste wurde erstellt");
-        }
-      }
-    } else {
-      Showsnackbar.showSnackBar(context, "kein Code gefunden!");
-    }
-  }
-
   void scanArtikelCode() async {
-    final scannedID = await codeScannerService.getCodeByScan(context);
+    final scannedID =
+        await codeScannerService.getCodeByScan(context, "Artikel Code scannen");
     if (scannedID != null) {
       if (scannedID == Constants.EXIT_RETURN_VALUE) {
         //Wenn man durch den Backarrow zurück will, das kein Error kommt
@@ -185,7 +144,7 @@ class _MyHomePageState extends State<MyHomePage> {
         Navigator.push(
             context,
             CupertinoPageRoute(
-                builder: (context) => ArtikelPage(entry: artikel)));
+                builder: (context) => EditArtikelPage(entry: artikel)));
       } else {
         Showsnackbar.showSnackBar(
             context, "kein Artikel mit dieser ID gefunden!");
@@ -228,6 +187,18 @@ class _MyHomePageState extends State<MyHomePage> {
                   children: [
                     Row(
                       children: [
+                        Expanded(child: ScanLagerplatzButton()),
+                        Expanded(child: ScanArtikelButton()),
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        Expanded(child: ArtikelAmountChangeButton()),
+                        Expanded(child: InventurDurchfuehrenButton()),
+                      ],
+                    ),
+                    Row(
+                      children: [
                         Expanded(child: ExportListButton()),
                         Expanded(child: ImportListButton()),
                       ],
@@ -235,18 +206,6 @@ class _MyHomePageState extends State<MyHomePage> {
                     Row(
                       children: [
                         Expanded(child: LogsAnsehenButton()),
-                        Expanded(child: InventurDurchfuehrenButton()),
-                      ],
-                    ),
-                    Row(
-                      children: [
-                        Expanded(child: AddLagerplatzButton()),
-                        Expanded(child: CreateArtikelButton()),
-                      ],
-                    ),
-                    Row(
-                      children: [
-                        Expanded(child: ArtikelAmountChangeButton()),
                       ],
                     ),
                   ],

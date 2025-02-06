@@ -5,7 +5,7 @@ import 'package:lagerverwaltung/service/csv_converter_service.dart';
 import 'package:lagerverwaltung/service/lagerlistenverwaltung_service.dart';
 import 'package:lagerverwaltung/service/localsettings_manager_service.dart';
 import 'package:lagerverwaltung/service/mailsender/mailsender_service.dart';
-import 'package:lagerverwaltung/widget/showsnackbar.dart';
+import 'package:lagerverwaltung/utils/showsnackbar.dart';
 
 class ExportListButton extends StatelessWidget {
   ExportListButton({super.key});

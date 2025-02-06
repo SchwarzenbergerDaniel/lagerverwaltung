@@ -29,7 +29,7 @@ class LagerlistenVerwaltungsService {
       await localStorageService.getArtikel();
 
   Future<List<LagerListenEntry>> get lagerplatzEntries async =>
-      await localStorageService.getArtikel();
+      await localStorageService.getLagerplaetze();
 
   // Methods:
 
@@ -38,26 +38,32 @@ class LagerlistenVerwaltungsService {
         .any((val) => val.lagerplatzId == lagerplatzId);
   }
 
-  void deleteArtikel(String artikelGWID, String lagerplatzID) async {
+  Future<void> deleteArtikel(String artikelGWID, String lagerplatzID) async {
     final list = await artikelEntries;
-    LagerListenEntry? entry = list.firstWhere((element) =>
-        element.artikelGWID == artikelGWID &&
-        element.lagerplatzId == lagerplatzID);
-    list.remove(entry);
-    localStorageService.removeEntry(list, entry);
+
+    try {
+      LagerListenEntry entry = list.firstWhere(
+        (element) =>
+            element.artikelGWID == artikelGWID &&
+            element.lagerplatzId == lagerplatzID,
+      );
+
+      list.remove(entry);
+      await localStorageService.removeEntry(list, entry);
+    } catch (e) {}
   }
 
   void updateArtikel(
-      String artikelGWID, String lagerplatzID, LagerListenEntry entry) {
-    deleteArtikel(artikelGWID, lagerplatzID);
-    addArtikelToLagerliste(entry);
+      String artikelGWID, String lagerplatzID, LagerListenEntry entry) async {
+    await deleteArtikel(artikelGWID, lagerplatzID);
+    await addArtikelToLagerliste(entry);
   }
 
   Future<bool> artikelGWIDExist(String gwidCode) async {
     return (await artikelEntries).any((val) => val.artikelGWID == gwidCode);
   }
 
-  void addArtikelToLagerliste(LagerListenEntry artikel) async {
+  Future addArtikelToLagerliste(LagerListenEntry artikel) async {
     final list = await artikelEntries;
     list.add(artikel);
     localStorageService.addEntry(list, artikel);
@@ -77,7 +83,7 @@ class LagerlistenVerwaltungsService {
   Future<List<LagerListenEntry>> getLagerlisteByLagerplatz(
       String lagerplatzCode) async {
     return (await artikelEntries)
-        .where((val) => val.lagerplatzId == lagerplatzCode && val.istArtikel())
+        .where((val) => val.lagerplatzId == lagerplatzCode)
         .toList();
   }
 

@@ -4,17 +4,18 @@ import 'package:flutter/cupertino.dart';
 import 'package:get_it/get_it.dart';
 import 'package:lagerverwaltung/config/constants.dart';
 import 'package:lagerverwaltung/model/LagerlistenEntry.dart';
-import 'package:lagerverwaltung/page/artikel_page.dart';
+import 'package:lagerverwaltung/page/edit_artikel_page.dart';
 import 'package:lagerverwaltung/service/codescanner_service.dart';
 import 'package:lagerverwaltung/service/lagerlistenverwaltung_service.dart';
-import 'package:lagerverwaltung/widget/showsnackbar.dart';
+import 'package:lagerverwaltung/utils/showsnackbar.dart';
 
 Future<void> scanArtikelCodeAfterLagerplatz(
     BuildContext context, String lagerplatzId) async {
   final codeScannerService = GetIt.instance<CodeScannerService>();
   final lagerListenVerwaltungsService =
       GetIt.instance<LagerlistenVerwaltungsService>();
-  final scannedID = await codeScannerService.getCodeByScan(context);
+  final scannedID =
+      await codeScannerService.getCodeByScan(context, "Artikel Code scannen");
 
   if (scannedID != null) {
     if (scannedID == Constants.EXIT_RETURN_VALUE) {
@@ -25,18 +26,22 @@ Future<void> scanArtikelCodeAfterLagerplatz(
     if (await lagerListenVerwaltungsService.artikelGWIDExist(scannedID)) {
       LagerListenEntry artikel =
           await lagerListenVerwaltungsService.getArtikelByGWID(scannedID);
-
-      Navigator.push(
+      await Showsnackbar.showSnackBar(context,
+          "Der Artikel existiert bereits - Sie werden zur Bearbeitungsseite weitergeleitet");
+      await Navigator.push(
         context,
         CupertinoPageRoute(
-          builder: (context) => ArtikelPage(entry: artikel),
+          builder: (context) => EditArtikelPage(
+            entry: artikel,
+            isEditable: true,
+          ),
         ),
       );
     } else {
-      Navigator.push(
+      await Navigator.push(
           context,
           CupertinoPageRoute(
-              builder: (context) => ArtikelPage(
+              builder: (context) => EditArtikelPage(
                     entry: LagerListenEntry(
                       lagerplatzId: lagerplatzId,
                       artikelGWID: scannedID,

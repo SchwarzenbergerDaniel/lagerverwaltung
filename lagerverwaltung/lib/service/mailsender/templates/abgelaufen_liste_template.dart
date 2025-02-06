@@ -19,7 +19,7 @@ class AbgelaufenListeTemplate extends HTMLTemplateGenerator {
             <th style="padding: 10px; text-align: left;">Artikel</th>
             <th style="padding: 10px; text-align: center;">Menge</th>
             <th style="padding: 10px; text-align: center;">Mindestmenge</th>
-            <th style="padding: 10px; text-align: right;">Abgelaufen am</th>
+            <th style="padding: 10px; text-align: right;">Ablaufdatum</th>
           </tr>
         </thead>
         <tbody>
@@ -31,20 +31,29 @@ class AbgelaufenListeTemplate extends HTMLTemplateGenerator {
   ''';
   }
 
-  //TODO: Artikel, die heute erst ablaufen gelblich makieren.
   StringBuffer _getTableRows() {
     StringBuffer tableRows = StringBuffer();
+    DateTime today = DateTime.now();
 
     for (var entry in abgelaufenListe) {
+      // Prüfen, ob das Ablaufdatum heute ist
+      bool expiresToday = entry.ablaufdatum != null &&
+          entry.ablaufdatum!.year == today.year &&
+          entry.ablaufdatum!.month == today.month &&
+          entry.ablaufdatum!.day == today.day;
+
       tableRows.write('''
       <tr style="border-bottom: 1px solid #ddd;">
         <td style="padding: 8px; text-align: left;">${entry.beschreibung}</td>
         <td style="padding: 8px; text-align: center;">${entry.menge}</td>
         <td style="padding: 8px; text-align: center;">${entry.mindestMenge}</td>
-        <td style="padding: 8px; text-align: right; color: #ff0000;">${getMailDateTimeAsReadableString(date: entry.ablaufdatum)}</td>
+        <td style="padding: 8px; text-align: right; color: ${expiresToday ? '#ffcc00' : '#ff0000'};">
+          ${getMailDateTimeAsReadableString(date: entry.ablaufdatum)}
+        </td>
       </tr>
     ''');
     }
+
     return tableRows;
   }
 

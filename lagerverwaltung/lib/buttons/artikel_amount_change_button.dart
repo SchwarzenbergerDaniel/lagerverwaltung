@@ -7,7 +7,7 @@ class ArtikelAmountChangeButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return HomePageButtonBase(
-        title: "Menge erhöhen / vermindern",
+        title: "Artikelmenge verändern",
         icon: Icons.exposure,
         backgroundColor: Color.fromRGBO(247, 119, 162, 1),
         onPressed: () => changeAmount(context));

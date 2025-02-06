@@ -1,8 +1,8 @@
 import 'package:flutter/cupertino.dart';
 
 class Showsnackbar {
-  static void showSnackBar(BuildContext context, String message) {
-    showCupertinoDialog(
+  static Future showSnackBar(BuildContext context, String message) async {
+    await showCupertinoDialog(
       context: context,
       builder: (context) => CupertinoAlertDialog(
         title: const Text('Meldung'),
