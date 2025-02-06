@@ -1,5 +1,5 @@
 import 'package:get_it/get_it.dart';
-import 'package:lagerverwaltung/model/LagerlistenEntry.dart';
+import 'package:lagerverwaltung/model/lagerlistenentry.dart';
 import 'package:lagerverwaltung/service/csv_converter_service.dart';
 import 'package:lagerverwaltung/service/lagerlistenverwaltung_service.dart';
 import 'package:lagerverwaltung/service/localsettings_manager_service.dart';
@@ -46,7 +46,7 @@ class AutomatisiertChecker {
         lastTime.month != today.month ||
         lastTime.year != today.year) {
       // Mail mit abgelaufenen Artikeln schicken!
-      List<LagerListenEntry> abgelaufeneArtikel =
+      List<LagerlistenEntry> abgelaufeneArtikel =
           await _getAbgelaufeneArtikel();
       abgelaufeneArtikel = abgelaufeneArtikel
           .where((val) => val.ablaufdatum!
@@ -59,7 +59,7 @@ class AutomatisiertChecker {
     }
   }
 
-  Future<List<LagerListenEntry>> _getAbgelaufeneArtikel() async {
+  Future<List<LagerlistenEntry>> _getAbgelaufeneArtikel() async {
     DateTime today = DateTime.now();
     today = DateTime(today.year, today.month, today.day);
 

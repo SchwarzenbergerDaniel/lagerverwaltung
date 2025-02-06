@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
-import 'package:lagerverwaltung/model/LagerlistenEntry.dart';
+import 'package:lagerverwaltung/model/lagerlistenentry.dart';
 import 'package:lagerverwaltung/service/lagerlistenverwaltung_service.dart';
 import 'package:lagerverwaltung/utils/scan_artikel_code_after_lagerplatz.dart';
 import 'package:lagerverwaltung/widget/custom_leading_button.dart';
@@ -43,7 +43,7 @@ class _LagerlistePageState extends State<LagerlistePage> {
             ),
             const SizedBox(height: 16),
             Expanded(
-              child: FutureBuilder<List<LagerListenEntry>>(
+              child: FutureBuilder<List<LagerlistenEntry>>(
                 future: lagerlistenVerwaltungsService
                     .getLagerlisteByLagerplatz(widget.lagerplatzId),
                 builder: (context, snapshot) {

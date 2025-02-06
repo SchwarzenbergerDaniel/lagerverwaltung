@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:get_it/get_it.dart';
 import 'package:lagerverwaltung/config/constants.dart';
-import 'package:lagerverwaltung/model/LagerlistenEntry.dart';
+import 'package:lagerverwaltung/model/lagerlistenentry.dart';
 import 'package:lagerverwaltung/page/settings/csv_column_order/csv_column_order_changer_page.dart';
 import 'package:lagerverwaltung/service/localsettings_manager_service.dart';
 import 'package:lagerverwaltung/service/logger/log_entry.dart';
@@ -23,7 +23,7 @@ class FileConverterService {
 
   // METHODEN:
 
-  List<LagerListenEntry>? convertToList(File csvFile) {
+  List<LagerlistenEntry>? convertToList(File csvFile) {
     try {
       final input = csvFile.readAsStringSync();
       final lines = input.split('\n');
@@ -33,14 +33,14 @@ class FileConverterService {
               Columns.values.firstWhere((column) => column.name == value))
           .toList();
       return lines.skip(1).where((line) => line.trim().isNotEmpty).map((line) {
-        return LagerListenEntry.convertCSVLine(line, csvOrder);
+        return LagerlistenEntry.convertCSVLine(line, csvOrder);
       }).toList();
     } catch (e) {
       return null; // Falsches Format!
     }
   }
 
-  Future<File> toCsv(List<LagerListenEntry> entries) async {
+  Future<File> toCsv(List<LagerlistenEntry> entries) async {
     final directory = await getTemporaryDirectory();
     final filePath = '${directory.path}/lagerlisten.csv';
 
@@ -59,7 +59,7 @@ class FileConverterService {
 
   Future<File> toLogFile(List<LogEntryModel> entries) async {
     final directory = await getTemporaryDirectory();
-    final filePath = '${directory.path}/aktivitaet.log';
+    final filePath = '${directory.path}/aktivitaet.txt';
 
     final file = File(filePath);
 

@@ -1,9 +1,9 @@
-import 'package:lagerverwaltung/model/LagerlistenEntry.dart';
+import 'package:lagerverwaltung/model/lagerlistenentry.dart';
 import 'package:lagerverwaltung/service/mailsender/templates/html_template_generator.dart';
 
 class MindestmengeErreichtTemplate extends HTMLTemplateGenerator {
   // Instances
-  late LagerListenEntry artikel;
+  late LagerlistenEntry artikel;
   late int amountChange;
 
   MindestmengeErreichtTemplate(
@@ -21,10 +21,10 @@ class MindestmengeErreichtTemplate extends HTMLTemplateGenerator {
     return '''
     <p>Hallo!</p>
     <p>
-      Für den Artikel <b style="color: #007bff">${artikel.beschreibung!}</b> wurde soeben eine Nachfüllung durchgeführt. Die Menge wurde um <b style="color: #28a745">${amountChange.toString()} erhöht</b>.
+      Für den Artikel <b style="color: #007bff">${artikel.beschreibung!}</b> mit der ID: <b style="color: #007bff">${artikel.artikelGWID!}</b> wurde soeben eine Nachfüllung durchgeführt. Die Menge wurde um <b style="color: #28a745">${amountChange.toString()} erhöht</b>.
     </p>
    <p>
-      Der verbleibende <b>Lagerbestand</b> beträgt nun <b style="color: #dc3545">${artikel.menge!.toString()}/${artikel.mindestMenge!.toString()}</b>.
+      Der verbleibende <b>Lagerbestand</b> beträgt nun <b style="color: #dc3545">${artikel.menge!.toString()} die Mindestmenge beträgt: ${artikel.mindestMenge!.toString()}</b>.
     </p>
     <p>
       Zeitpunkt der Information: <b style="color: #6c757d">${getMailDateTimeAsReadableString()}</b>.
@@ -37,10 +37,10 @@ class MindestmengeErreichtTemplate extends HTMLTemplateGenerator {
     return '''
     <p>Hallo!</p>
     <p>
-      Beim Artikel <b style="color: #007bff">${artikel.beschreibung!}</b> wurde soeben eine Entnahme durchgeführt. Die Menge wurde um <b style="color: #dc3545">${(-amountChange).toString()} reduziert</b>.
+      Beim Artikel <b style="color: #007bff">${artikel.beschreibung!}</b> mit der ID: <b style="color: #007bff">${artikel.artikelGWID!}</b> wurde soeben eine Entnahme durchgeführt. Die Menge wurde um <b style="color: #dc3545">${(-amountChange).toString()} reduziert</b>.
     </p>
     <p>
-      Der verbleibende <b>Lagerbestand</b> beträgt nun <b style="color: #dc3545">${artikel.menge!.toString()}/${artikel.mindestMenge!.toString()}</b>.
+      Der verbleibende <b>Lagerbestand</b> beträgt nun <b style="color: #dc3545">${artikel.menge!.toString()} die Mindestmenge beträgt: ${artikel.mindestMenge!.toString()}</b>.
     </p>
     <p>
       Zeitpunkt der Information: <b style="color: #6c757d">${getMailDateTimeAsReadableString()}</b>.

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:lagerverwaltung/buttons/home_page_button_base.dart';
 import 'package:lagerverwaltung/config/constants.dart';
-import 'package:lagerverwaltung/model/LagerlistenEntry.dart';
+import 'package:lagerverwaltung/model/lagerlistenentry.dart';
 import 'package:lagerverwaltung/page/edit_artikel_page.dart';
 import 'package:lagerverwaltung/service/codescanner_service.dart';
 import 'package:lagerverwaltung/service/lagerlistenverwaltung_service.dart';
@@ -93,7 +93,7 @@ class ScanArtikelButton extends StatelessWidget {
           context,
           CupertinoPageRoute(
             builder: (context) => EditArtikelPage(
-              entry: LagerListenEntry(
+              entry: LagerlistenEntry(
                 artikelGWID: artikelGWID,
                 lagerplatzId: scannedLagerplatz,
               ),

@@ -1,8 +1,8 @@
-import 'package:lagerverwaltung/model/LagerlistenEntry.dart';
+import 'package:lagerverwaltung/model/lagerlistenentry.dart';
 import 'package:lagerverwaltung/service/mailsender/templates/html_template_generator.dart';
 
 class AbgelaufenListeTemplate extends HTMLTemplateGenerator {
-  late List<LagerListenEntry> abgelaufenListe;
+  late List<LagerlistenEntry> abgelaufenListe;
 
   AbgelaufenListeTemplate({required this.abgelaufenListe});
 

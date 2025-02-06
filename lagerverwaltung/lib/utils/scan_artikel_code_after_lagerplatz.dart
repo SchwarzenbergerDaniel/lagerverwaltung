@@ -3,7 +3,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:get_it/get_it.dart';
 import 'package:lagerverwaltung/config/constants.dart';
-import 'package:lagerverwaltung/model/LagerlistenEntry.dart';
+import 'package:lagerverwaltung/model/lagerlistenentry.dart';
 import 'package:lagerverwaltung/page/edit_artikel_page.dart';
 import 'package:lagerverwaltung/service/codescanner_service.dart';
 import 'package:lagerverwaltung/service/lagerlistenverwaltung_service.dart';
@@ -24,7 +24,7 @@ Future<void> scanArtikelCodeAfterLagerplatz(
     }
 
     if (await lagerListenVerwaltungsService.artikelGWIDExist(scannedID)) {
-      LagerListenEntry artikel =
+      LagerlistenEntry artikel =
           await lagerListenVerwaltungsService.getArtikelByGWID(scannedID);
       await Showsnackbar.showSnackBar(context,
           "Der Artikel existiert bereits - Sie werden zur Bearbeitungsseite weitergeleitet");
@@ -42,7 +42,7 @@ Future<void> scanArtikelCodeAfterLagerplatz(
           context,
           CupertinoPageRoute(
               builder: (context) => EditArtikelPage(
-                    entry: LagerListenEntry(
+                    entry: LagerlistenEntry(
                       lagerplatzId: lagerplatzId,
                       artikelGWID: scannedID,
                     ),
