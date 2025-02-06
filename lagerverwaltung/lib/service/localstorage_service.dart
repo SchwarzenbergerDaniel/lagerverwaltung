@@ -119,7 +119,7 @@ class LocalStorageService {
     _artikelListeChanged([]);
   }
 
-  void _artikelListeChanged(List<LagerListenEntry> artikelList) async {
+  Future _artikelListeChanged(List<LagerListenEntry> artikelList) async {
     final prefs = await _getSharePreference();
     await prefs.setString(_artikelKey,
         jsonEncode(artikelList.map((entry) => entry.toJson()).toList()));
@@ -137,8 +137,9 @@ class LocalStorageService {
         timestamp: DateTime.now(), logReason: LogReason.Lagerliste_importiert));
   }
 
-  void removeEntry(List<LagerListenEntry> artikelList, LagerListenEntry entry) {
-    _artikelListeChanged(artikelList);
+  Future removeEntry(
+      List<LagerListenEntry> artikelList, LagerListenEntry entry) async {
+    await _artikelListeChanged(artikelList);
     loggerService.log(LogEntryModel(
         timestamp: DateTime.now(),
         logReason: LogReason.Artikel_entnehmen,

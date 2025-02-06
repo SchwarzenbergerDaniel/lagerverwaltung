@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:lagerverwaltung/buttons/home_page_button_base.dart';
 import 'package:lagerverwaltung/service/lagerlistenverwaltung_service.dart';
-import 'package:lagerverwaltung/widget/showsnackbar.dart';
+import 'package:lagerverwaltung/utils/showsnackbar.dart';
 
 class ImportListButton extends StatelessWidget {
   ImportListButton({super.key});

@@ -69,8 +69,7 @@ abstract class HTMLTemplateGenerator {
       "November",
       "Dezember"
     ];
-    final formattedDate =
-        "${date.day}. ${months[date.month - 1]} ${date.year}, ${date.hour}:${date.minute.toString().padLeft(2, '0')}";
+    final formattedDate = "${date.day}. ${months[date.month - 1]} ${date.year}";
     return formattedDate;
   }
 

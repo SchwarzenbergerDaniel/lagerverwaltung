@@ -7,7 +7,7 @@ import 'package:lagerverwaltung/service/logger/log_entry.dart';
 import 'package:lagerverwaltung/service/logger/logger_service.dart';
 import 'package:lagerverwaltung/service/mailsender/mailsender_service.dart';
 import 'package:lagerverwaltung/widget/custom_leading_button.dart';
-import 'package:lagerverwaltung/widget/showsnackbar.dart';
+import 'package:lagerverwaltung/utils/showsnackbar.dart';
 
 class LogPage extends StatefulWidget {
   const LogPage({super.key});
@@ -152,63 +152,67 @@ class _LogPageState extends State<LogPage> {
                     itemCount: logEntries.length,
                     itemBuilder: (context, index) {
                       final entry = logEntries[index];
-                      return Padding(
-                        padding: const EdgeInsets.only(bottom: 12.0),
-                        child: CupertinoListTile(
-                          title: Padding(
-                            padding: const EdgeInsets.only(bottom: 4.0),
-                            child: Text(
-                              DateFormat('yyyy-MM-dd HH:mm')
-                                  .format(entry.timestamp),
-                              style: CupertinoTheme.of(context)
-                                  .textTheme
-                                  .textStyle,
-                            ),
-                          ),
-                          subtitle: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.only(bottom: 4.0),
-                                child: Text(
-                                  entry.logReason.name.replaceAll('_', ' '),
-                                  style: const TextStyle(
-                                      fontWeight: FontWeight.bold),
-                                ),
+                      return Container(
+                        decoration: BoxDecoration(
+                            border:
+                                Border.all(color: CupertinoColors.systemGrey)),
+                        child: Padding(
+                          padding: const EdgeInsets.only(bottom: 12.0, top: 15),
+                          child: CupertinoListTile(
+                            title: Padding(
+                              padding: const EdgeInsets.only(bottom: 4.0),
+                              child: Text(
+                                DateFormat('yyyy-MM-dd HH:mm')
+                                    .format(entry.timestamp),
                               ),
-                              if (entry.lagerplatzId != null)
+                            ),
+                            subtitle: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
                                 Padding(
-                                  padding: const EdgeInsets.only(bottom: 2.0),
-                                  child:
-                                      Text("Lagerplatz: ${entry.lagerplatzId}"),
-                                ),
-                              if (entry.artikelGWID != null)
-                                Padding(
-                                  padding: const EdgeInsets.only(bottom: 2.0),
-                                  child: Text("Artikel: ${entry.artikelGWID}"),
-                                ),
-                              if (entry.menge != null)
-                                Padding(
-                                  padding: const EdgeInsets.only(bottom: 2.0),
-                                  child: Text("Menge: ${entry.menge}"),
-                                ),
-                              if (entry.neueMenge != null)
-                                Padding(
-                                  padding: const EdgeInsets.only(bottom: 2.0),
-                                  child: Text("Neue Menge: ${entry.neueMenge}"),
-                                ),
-                              if (entry.zusatzInformationen != null)
-                                Padding(
-                                  padding: const EdgeInsets.only(top: 6.0),
+                                  padding: const EdgeInsets.only(bottom: 4.0),
                                   child: Text(
-                                    entry.zusatzInformationen!,
-                                    style: const TextStyle(
-                                        color: CupertinoColors.systemGrey),
-                                    softWrap: true,
-                                    overflow: TextOverflow.visible,
-                                  ),
+                                      entry.logReason.name.replaceAll('_', ' '),
+                                      style: CupertinoTheme.of(context)
+                                          .textTheme
+                                          .textStyle),
                                 ),
-                            ],
+                                if (entry.lagerplatzId != null)
+                                  Padding(
+                                    padding: const EdgeInsets.only(bottom: 2.0),
+                                    child: Text(
+                                        "Lagerplatz: ${entry.lagerplatzId}"),
+                                  ),
+                                if (entry.artikelGWID != null)
+                                  Padding(
+                                    padding: const EdgeInsets.only(bottom: 2.0),
+                                    child:
+                                        Text("Artikel: ${entry.artikelGWID}"),
+                                  ),
+                                if (entry.menge != null)
+                                  Padding(
+                                    padding: const EdgeInsets.only(bottom: 2.0),
+                                    child: Text("Menge: ${entry.menge}"),
+                                  ),
+                                if (entry.neueMenge != null)
+                                  Padding(
+                                    padding: const EdgeInsets.only(bottom: 2.0),
+                                    child:
+                                        Text("Neue Menge: ${entry.neueMenge}"),
+                                  ),
+                                if (entry.zusatzInformationen != null)
+                                  Padding(
+                                    padding: const EdgeInsets.only(top: 6.0),
+                                    child: Text(
+                                      entry.zusatzInformationen!,
+                                      style: const TextStyle(
+                                          color: CupertinoColors.systemGrey),
+                                      softWrap: true,
+                                      overflow: TextOverflow.visible,
+                                    ),
+                                  ),
+                              ],
+                            ),
                           ),
                         ),
                       );

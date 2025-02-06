@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lagerverwaltung/widget/custom_leading_button.dart';
-import 'package:lagerverwaltung/widget/showsnackbar.dart';
+import 'package:lagerverwaltung/utils/showsnackbar.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/cupertino.dart';
@@ -16,14 +16,16 @@ class CodeScannerService {
   }
 
   // Methods:
-  Future<String?> getCodeByScan(BuildContext context) async {
+  Future<String?> getCodeByScan(BuildContext context, String title) async {
     String? qrCodeResult;
 
     var status = await Permission.camera.request();
     if (status.isGranted) {
       qrCodeResult = await Navigator.of(context).push(
         MaterialPageRoute(
-          builder: (context) => CodeScannerScreen(),
+          builder: (context) => CodeScannerScreen(
+            title: title,
+          ),
         ),
       );
     } else {
@@ -35,7 +37,8 @@ class CodeScannerService {
 }
 
 class CodeScannerScreen extends StatefulWidget {
-  const CodeScannerScreen({super.key});
+  String title;
+  CodeScannerScreen({super.key, required this.title});
 
   @override
   _CodeScannerScreenState createState() => _CodeScannerScreenState();
@@ -49,7 +52,7 @@ class _CodeScannerScreenState extends State<CodeScannerScreen> {
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
-        middle: const Text('QR Code Scanner'),
+        middle: Text(widget.title),
         leading: CustomBackButton(onPressed: () {
           Navigator.of(context).pop(Constants.EXIT_RETURN_VALUE);
         }),

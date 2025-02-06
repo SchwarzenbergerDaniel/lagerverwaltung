@@ -1,24 +1,25 @@
 import 'package:flutter/cupertino.dart';
 
-class LagerplatzCodeScannedModal {
-  static Future<bool?> showActionSheet(BuildContext context, String result) async {
+class NewLagerplatzCodeScannedModal {
+  static Future<bool?> showActionSheet(
+      BuildContext context, String lagerplatzID) async {
     return await showCupertinoModalPopup<bool>(
       context: context,
       builder: (BuildContext context) => CupertinoActionSheet(
-        title: Text('Wähle eine Aktion für $result'),
+        title: Text('Wähle eine Aktion für $lagerplatzID'),
         actions: <CupertinoActionSheetAction>[
           CupertinoActionSheetAction(
             isDefaultAction: true,
             onPressed: () {
               Navigator.pop(context, true); // True = Neuer Artikel
             },
-            child: const Text('Neuer Artikel'),
+            child: const Text('Lagerplatz mit Artikel befüllen'),
           ),
           CupertinoActionSheetAction(
             onPressed: () {
               Navigator.pop(context, false); // False = Neuer Lagerplatz
             },
-            child: const Text('Neuer Lagerplatz'),
+            child: const Text('Lagerplatz leer anlegen'),
           ),
         ],
         cancelButton: CupertinoActionSheetAction(

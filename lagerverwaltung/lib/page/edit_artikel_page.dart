@@ -3,21 +3,21 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:lagerverwaltung/model/LagerlistenEntry.dart';
 import 'package:lagerverwaltung/service/lagerlistenverwaltung_service.dart';
+import 'package:lagerverwaltung/utils/showdialog.dart';
 import 'package:lagerverwaltung/widget/custom_leading_button.dart';
-import 'package:lagerverwaltung/widget/showsnackbar.dart';
+import 'package:lagerverwaltung/utils/showsnackbar.dart';
 
-class ArtikelPage extends StatefulWidget {
+class EditArtikelPage extends StatefulWidget {
   final LagerListenEntry? entry;
   final bool isEditable;
 
-  ArtikelPage({Key? key, required this.entry, this.isEditable = false})
-      : super(key: key);
-
+  const EditArtikelPage(
+      {super.key, required this.entry, this.isEditable = false});
   @override
-  _ArtikelPageState createState() => _ArtikelPageState();
+  _EditArtikelPageState createState() => _EditArtikelPageState();
 }
 
-class _ArtikelPageState extends State<ArtikelPage> {
+class _EditArtikelPageState extends State<EditArtikelPage> {
   final lagerListenVerwaltungsService =
       GetIt.instance<LagerlistenVerwaltungsService>();
   late TextEditingController fachController;
@@ -96,48 +96,8 @@ class _ArtikelPageState extends State<ArtikelPage> {
                 inputType: TextInputType.number),
             _buildLabeledField('Mindestmenge', mindestMengeController,
                 inputType: TextInputType.number),
-            CupertinoButton(
-              child: Text(isEditable ? 'Speichern' : 'Bearbeiten'),
-              onPressed: () {
-                setState(() {
-                  if (isEditable) {
-                    if (fachController.text.isEmpty ||
-                        regalController.text.isEmpty ||
-                        lagerplatzIdController.text.isEmpty ||
-                        artikelGWIDController.text.isEmpty ||
-                        arikelFirmenIdController.text.isEmpty ||
-                        beschreibungController.text.isEmpty ||
-                        kundeController.text.isEmpty ||
-                        mengeController.text.isEmpty ||
-                        mindestMengeController.text.isEmpty ||
-                        ablaufDatum == null) {
-                      Showsnackbar.showSnackBar(
-                          context, "Felder sind leer!\nKorrigiere diese bitte");
-                      return;
-                    }
-
-                    final lagerlistenEntry = LagerListenEntry(
-                      fach: fachController.text,
-                      regal: regalController.text,
-                      lagerplatzId: lagerplatzIdController.text,
-                      artikelGWID: artikelGWIDController.text,
-                      arikelFirmenId: arikelFirmenIdController.text,
-                      beschreibung: beschreibungController.text,
-                      kunde: kundeController.text,
-                      menge: int.tryParse(mengeController.text),
-                      mindestMenge: int.tryParse(mindestMengeController.text),
-                      ablaufdatum: ablaufDatum,
-                    );
-                    //TODO
-                    // Wenn das Produkt schon existiert, dann nicht ein neues erstellen, sondern updaten!!!!
-                    //
-                    lagerListenVerwaltungsService
-                        .addArtikelToLagerliste(lagerlistenEntry);
-                  }
-                  isEditable = !isEditable;
-                });
-              },
-            ),
+            speichernBearbeitenButton(),
+            deleteButton()
           ],
         ),
       ),
@@ -214,6 +174,76 @@ class _ArtikelPageState extends State<ArtikelPage> {
         ),
         const SizedBox(height: 16),
       ],
+    );
+  }
+
+  CupertinoButton speichernBearbeitenButton() {
+    return CupertinoButton(
+      child: Text(isEditable ? 'Speichern' : 'Bearbeiten'),
+      onPressed: () {
+        setState(() {
+          if (isEditable) {
+            if (fachController.text.isEmpty ||
+                regalController.text.isEmpty ||
+                lagerplatzIdController.text.isEmpty ||
+                artikelGWIDController.text.isEmpty ||
+                arikelFirmenIdController.text.isEmpty ||
+                beschreibungController.text.isEmpty ||
+                kundeController.text.isEmpty ||
+                mengeController.text.isEmpty ||
+                mindestMengeController.text.isEmpty ||
+                ablaufDatum == null) {
+              Showsnackbar.showSnackBar(
+                  context, "Felder sind leer!\nKorrigiere diese bitte");
+              return;
+            }
+
+            final lagerlistenEntry = LagerListenEntry(
+              fach: fachController.text,
+              regal: regalController.text,
+              lagerplatzId: lagerplatzIdController.text,
+              artikelGWID: artikelGWIDController.text,
+              arikelFirmenId: arikelFirmenIdController.text,
+              beschreibung: beschreibungController.text,
+              kunde: kundeController.text,
+              menge: int.tryParse(mengeController.text),
+              mindestMenge: int.tryParse(mindestMengeController.text),
+              ablaufdatum: ablaufDatum,
+            );
+
+            lagerListenVerwaltungsService.updateArtikel(
+                lagerlistenEntry.artikelGWID!,
+                lagerlistenEntry.lagerplatzId!,
+                lagerlistenEntry);
+          }
+          isEditable = !isEditable;
+        });
+      },
+    );
+  }
+
+  CupertinoButton deleteButton() {
+    return CupertinoButton(
+      child: Text("Delete",
+          style: TextStyle(color: CupertinoColors.destructiveRed)),
+      onPressed: () async {
+        bool confirmDelete = await ShowDialogTwoOptions.isFirstOptionClicked(
+            context,
+            "Löschen bestätigen",
+            "Möchten Sie diesen Artikel wirklich löschen?",
+            "Abbrechen",
+            "Löschen");
+
+        if (confirmDelete) {
+          try {
+            await lagerListenVerwaltungsService.deleteArtikel(
+              widget.entry!.artikelGWID!,
+              widget.entry!.lagerplatzId!,
+            );
+            Navigator.pop(context);
+          } catch (e) {}
+        }
+      },
     );
   }
 }

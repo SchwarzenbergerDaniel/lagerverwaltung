@@ -1,3 +1,5 @@
+// ignore_for_file: constant_identifier_names
+
 import 'package:lagerverwaltung/config/default_values.dart';
 import 'package:lagerverwaltung/page/settings/csv_column_order/csv_column_order_changer_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';

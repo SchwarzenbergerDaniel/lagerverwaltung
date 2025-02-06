@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:lagerverwaltung/service/theme_changing_service.dart';
 import 'package:lagerverwaltung/widget/custom_leading_button.dart';
-import 'package:provider/provider.dart';
 
 class ColorChangingPage extends StatefulWidget {
   const ColorChangingPage({super.key});
@@ -68,7 +67,6 @@ class _ColorChangingPageState extends State<ColorChangingPage> {
                 spacing: 10.0,
                 children: backgroundColors.keys.map((label) {
                   final color = backgroundColors[label]!;
-                  final isSelected = color == selectedBackgroundColor;
                   return CupertinoButton(
                     padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     color: CupertinoColors.systemGrey,
