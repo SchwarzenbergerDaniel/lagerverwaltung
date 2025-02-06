@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:get_it/get_it.dart';
-import 'package:lagerverwaltung/model/LagerlistenEntry.dart';
+import 'package:lagerverwaltung/model/lagerlistenentry.dart';
 import 'package:lagerverwaltung/service/logger/log_entry.dart';
 import 'package:lagerverwaltung/service/logger/logger_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -95,50 +95,50 @@ class LocalStorageService {
   }
 
   // Lagerlistet
-  Future<List<LagerListenEntry>> getArtikel() async {
+  Future<List<LagerlistenEntry>> getArtikel() async {
     final prefs = await _getSharePreference();
     final jsonString = prefs.getString(_artikelKey);
     if (jsonString == null) {
       return [];
     }
     final List<dynamic> jsonList = jsonDecode(jsonString);
-    return jsonList.map((entry) => LagerListenEntry.fromJson(entry)).toList();
+    return jsonList.map((entry) => LagerlistenEntry.fromJson(entry)).toList();
   }
 
-  Future<List<LagerListenEntry>> getLagerplaetze() async {
+  Future<List<LagerlistenEntry>> getLagerplaetze() async {
     final prefs = await _getSharePreference();
     final jsonString = prefs.getString(_lagerplaetzeKey);
     if (jsonString == null) {
       return [];
     }
     final List<dynamic> jsonList = jsonDecode(jsonString);
-    return jsonList.map((entry) => LagerListenEntry.fromJson(entry)).toList();
+    return jsonList.map((entry) => LagerlistenEntry.fromJson(entry)).toList();
   }
 
   void clearArtikelListe() async {
     _artikelListeChanged([]);
   }
 
-  Future _artikelListeChanged(List<LagerListenEntry> artikelList) async {
+  Future _artikelListeChanged(List<LagerlistenEntry> artikelList) async {
     final prefs = await _getSharePreference();
     await prefs.setString(_artikelKey,
         jsonEncode(artikelList.map((entry) => entry.toJson()).toList()));
   }
 
-  void _lagerplaetzeChanged(List<LagerListenEntry> lagerplaetze) async {
+  void _lagerplaetzeChanged(List<LagerlistenEntry> lagerplaetze) async {
     final prefs = await _getSharePreference();
     await prefs.setString(_lagerplaetzeKey,
         jsonEncode(lagerplaetze.map((entry) => entry.toJson()).toList()));
   }
 
-  void import(List<LagerListenEntry> artikelList) {
+  void import(List<LagerlistenEntry> artikelList) {
     _artikelListeChanged(artikelList);
     loggerService.log(LogEntryModel(
         timestamp: DateTime.now(), logReason: LogReason.Lagerliste_importiert));
   }
 
   Future removeEntry(
-      List<LagerListenEntry> artikelList, LagerListenEntry entry) async {
+      List<LagerlistenEntry> artikelList, LagerlistenEntry entry) async {
     await _artikelListeChanged(artikelList);
     loggerService.log(LogEntryModel(
         timestamp: DateTime.now(),
@@ -147,7 +147,7 @@ class LocalStorageService {
         lagerplatzId: entry.lagerplatzId));
   }
 
-  void addEntry(List<LagerListenEntry> list, LagerListenEntry entry) {
+  void addEntry(List<LagerlistenEntry> list, LagerlistenEntry entry) {
     if (entry.istArtikel()) {
       _artikelListeChanged(list);
     } else {
@@ -163,7 +163,7 @@ class LocalStorageService {
         lagerplatzId: entry.lagerplatzId));
   }
 
-  void amountChange(List<LagerListenEntry> artikelList, LagerListenEntry entry,
+  void amountChange(List<LagerlistenEntry> artikelList, LagerlistenEntry entry,
       int amountChange) {
     _artikelListeChanged(artikelList);
 

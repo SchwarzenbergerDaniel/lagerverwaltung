@@ -1,14 +1,13 @@
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
-import 'package:lagerverwaltung/model/LagerlistenEntry.dart';
+import 'package:lagerverwaltung/model/lagerlistenentry.dart';
 import 'package:lagerverwaltung/service/lagerlistenverwaltung_service.dart';
 import 'package:lagerverwaltung/utils/showdialog.dart';
 import 'package:lagerverwaltung/widget/custom_leading_button.dart';
 import 'package:lagerverwaltung/utils/showsnackbar.dart';
 
 class EditArtikelPage extends StatefulWidget {
-  final LagerListenEntry? entry;
+  final LagerlistenEntry? entry;
   final bool isEditable;
 
   const EditArtikelPage(
@@ -198,7 +197,7 @@ class _EditArtikelPageState extends State<EditArtikelPage> {
               return;
             }
 
-            final lagerlistenEntry = LagerListenEntry(
+            final lagerlistenEntry = LagerlistenEntry(
               fach: fachController.text,
               regal: regalController.text,
               lagerplatzId: lagerplatzIdController.text,
@@ -231,8 +230,8 @@ class _EditArtikelPageState extends State<EditArtikelPage> {
             context,
             "Löschen bestätigen",
             "Möchten Sie diesen Artikel wirklich löschen?",
-            "Abbrechen",
-            "Löschen");
+            "Löschen",
+            "Abbrechen");
 
         if (confirmDelete) {
           try {

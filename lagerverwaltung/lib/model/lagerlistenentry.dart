@@ -1,7 +1,7 @@
 import 'package:lagerverwaltung/config/constants.dart';
 import 'package:lagerverwaltung/page/settings/csv_column_order/csv_column_order_changer_page.dart';
 
-class LagerListenEntry {
+class LagerlistenEntry {
   // Instanzen
   String? fach;
   String? regal;
@@ -50,8 +50,8 @@ class LagerListenEntry {
   }
 
   // Used to convert from LocalStorage to Object.
-  factory LagerListenEntry.fromJson(Map<String, dynamic> json) {
-    return LagerListenEntry(
+  factory LagerlistenEntry.fromJson(Map<String, dynamic> json) {
+    return LagerlistenEntry(
       fach: json['fach'],
       regal: json['regal'],
       lagerplatzId: json['lagerplatzId'],
@@ -68,7 +68,7 @@ class LagerListenEntry {
   }
 
   // Konstruktor
-  LagerListenEntry({
+  LagerlistenEntry({
     this.fach,
     this.regal,
     this.lagerplatzId,
@@ -87,7 +87,7 @@ class LagerListenEntry {
   }
 
   // CSV - STUFF
-  static LagerListenEntry convertCSVLine(
+  static LagerlistenEntry convertCSVLine(
       String csvLine, List<Columns> csvOrder) {
     List<String> split = csvLine.split(Constants.CSV_DELIMITER_VALUE);
 
@@ -97,7 +97,7 @@ class LagerListenEntry {
       values[csvOrder[i]] = split[i];
     }
 
-    return LagerListenEntry(
+    return LagerlistenEntry(
       lagerplatzId: values[Columns.lagerplatzId]?.isNotEmpty == true
           ? values[Columns.lagerplatzId]
           : null,

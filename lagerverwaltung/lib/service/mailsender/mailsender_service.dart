@@ -1,6 +1,6 @@
 import 'dart:io';
 import 'package:get_it/get_it.dart';
-import 'package:lagerverwaltung/model/LagerlistenEntry.dart';
+import 'package:lagerverwaltung/model/lagerlistenentry.dart';
 import 'package:lagerverwaltung/service/csv_converter_service.dart';
 import 'package:lagerverwaltung/service/localstorage_service.dart';
 import 'package:lagerverwaltung/service/logger/log_entry.dart';
@@ -69,26 +69,25 @@ class MailSenderService {
         timestamp: DateTime.now(),
         logReason: LogReason.Backup_Lagerliste_gesendet,
         zusatzInformationen:
-            "Empfänger: $toMail | Manuell getriggered: ${isAutomatic ? "Ja" : "Nein"}"));
+            "Empfänger: $toMail | ${isAutomatic ? "Automatisch" : "Manuell"}"));
   }
 
   void sendMindestmengeErreicht(
-      LagerListenEntry entry, int amountChange, String toMail) {
+      LagerlistenEntry entry, int amountChange, String toMail) {
     _sendMessage(
         toMail: toMail,
         templateGenerator: MindestmengeErreichtTemplate(
             artikel: entry, amountChange: amountChange));
     loggerService.log(LogEntryModel(
         timestamp: DateTime.now(),
-        logReason:
-            amountChange > 0 ? LogReason.Einlagerung : LogReason.Auslagerung,
+        logReason: LogReason.Mindestmenge_erreicht_Mail,
         lagerplatzId: entry.lagerplatzId,
         artikelGWID: entry.artikelGWID,
         zusatzInformationen: "Mindestmenge erreicht, EMail gesendet"));
   }
 
   void sendAbgelaufen(
-      List<LagerListenEntry> abgelaufeneArtikel, String toMail) {
+      List<LagerlistenEntry> abgelaufeneArtikel, String toMail) {
     _sendMessage(
         toMail: toMail,
         templateGenerator:

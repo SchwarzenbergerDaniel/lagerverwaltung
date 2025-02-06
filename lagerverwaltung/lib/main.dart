@@ -11,9 +11,6 @@ import 'package:lagerverwaltung/buttons/export_list_button.dart';
 import 'package:lagerverwaltung/buttons/import_list_button.dart';
 import 'package:lagerverwaltung/buttons/inventur_durchfuehren_button.dart';
 import 'package:lagerverwaltung/buttons/logs_ansehen_button.dart';
-import 'package:lagerverwaltung/config/constants.dart';
-import 'package:lagerverwaltung/model/LagerlistenEntry.dart';
-import 'package:lagerverwaltung/page/edit_artikel_page.dart';
 import 'package:lagerverwaltung/service/jokegenerator_service.dart';
 import 'package:lagerverwaltung/service/localsettings_manager_service.dart';
 import 'package:lagerverwaltung/service/theme_changing_service.dart';
@@ -25,7 +22,6 @@ import 'package:lagerverwaltung/service/lagerlistenverwaltung_service.dart';
 import 'package:lagerverwaltung/service/localstorage_service.dart';
 import 'package:lagerverwaltung/service/mailsender/mailsender_service.dart';
 import 'package:lagerverwaltung/page/settings/settings/settings_page.dart';
-import 'package:lagerverwaltung/utils/showsnackbar.dart';
 import 'package:provider/provider.dart';
 
 final getIt = GetIt.instance;
@@ -130,89 +126,66 @@ class _MyHomePageState extends State<MyHomePage> {
   final localSettingsManagerService =
       GetIt.instance<LocalSettingsManagerService>();
 
-  void scanArtikelCode() async {
-    final scannedID =
-        await codeScannerService.getCodeByScan(context, "Artikel Code scannen");
-    if (scannedID != null) {
-      if (scannedID == Constants.EXIT_RETURN_VALUE) {
-        //Wenn man durch den Backarrow zurück will, das kein Error kommt
-        return;
-      }
-      if (await lagerListenVerwaltungsService.artikelGWIDExist(scannedID)) {
-        LagerListenEntry artikel =
-            await lagerListenVerwaltungsService.getArtikelByGWID(scannedID);
-        Navigator.push(
-            context,
-            CupertinoPageRoute(
-                builder: (context) => EditArtikelPage(entry: artikel)));
-      } else {
-        Showsnackbar.showSnackBar(
-            context, "kein Artikel mit dieser ID gefunden!");
-      }
-    } else {
-      Showsnackbar.showSnackBar(context, "kein Code gefunden!");
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
-        navigationBar: CupertinoNavigationBar(
-          middle: Text(widget.title),
-          trailing: CupertinoButton(
-              child: Icon(Icons.settings_outlined),
-              onPressed: () {
-                Navigator.push(context,
-                    CupertinoPageRoute(builder: (context) => SettingsPage()));
-              }),
-          backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
-        ),
-        child: Center(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(
-                horizontal: 20), // Rand auf beiden Seiten hinzufügen
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                // LOGO:
-                Image.asset(
-                  'assets/logo-gradwohl.png',
-                  width: 150,
-                  height: 150,
-                ),
-                const SizedBox(height: 20),
+      navigationBar: CupertinoNavigationBar(
+        middle: Text(widget.title),
+        trailing: CupertinoButton(
+            child: Icon(Icons.settings_outlined),
+            onPressed: () {
+              Navigator.push(context,
+                  CupertinoPageRoute(builder: (context) => SettingsPage()));
+            }),
+        backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
+      ),
+      child: Center(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
+              horizontal: 20), // Rand auf beiden Seiten hinzufügen
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              // LOGO:
+              Image.asset(
+                'assets/logo-gradwohl.png',
+                width: 150,
+                height: 150,
+              ),
+              const SizedBox(height: 20),
 
-                // BUTTONS IN ROWS OF TWO:
-                Column(
-                  children: [
-                    Row(
-                      children: [
-                        Expanded(child: ScanLagerplatzButton()),
-                        Expanded(child: ScanArtikelButton()),
-                      ],
-                    ),
-                    Row(
-                      children: [
-                        Expanded(child: ArtikelAmountChangeButton()),
-                        Expanded(child: InventurDurchfuehrenButton()),
-                      ],
-                    ),
-                    Row(
-                      children: [
-                        Expanded(child: ExportListButton()),
-                        Expanded(child: ImportListButton()),
-                      ],
-                    ),
-                    Row(
-                      children: [
-                        Expanded(child: LogsAnsehenButton()),
-                      ],
-                    ),
-                  ],
-                ),
-              ],
-            ),
+              // BUTTONS IN ROWS OF TWO:
+              Column(
+                children: [
+                  Row(
+                    children: [
+                      Expanded(child: ScanLagerplatzButton()),
+                      Expanded(child: ScanArtikelButton()),
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      Expanded(child: ArtikelAmountChangeButton()),
+                      Expanded(child: InventurDurchfuehrenButton()),
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      Expanded(child: ExportListButton()),
+                      Expanded(child: ImportListButton()),
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      Expanded(child: LogsAnsehenButton()),
+                    ],
+                  ),
+                ],
+              ),
+            ],
           ),
-        ));
+        ),
+      ),
+    );
   }
 }
