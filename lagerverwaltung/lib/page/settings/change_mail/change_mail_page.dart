@@ -26,7 +26,7 @@ class EMailEmpfaengerAendernPage extends StatelessWidget {
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
         middle: Text(
-          'E-Mail-Empfänger ändern',
+          'Gradwohl Logo ändern',
           style: CupertinoTheme.of(context).textTheme.textStyle,
         ),
         backgroundColor: CupertinoTheme.of(context).barBackgroundColor,

@@ -1,11 +1,13 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:lagerverwaltung/config/errormessage_constants.dart';
 import 'package:lagerverwaltung/service/csv_converter_service.dart';
 import 'package:lagerverwaltung/service/lagerlistenverwaltung_service.dart';
 import 'package:lagerverwaltung/service/localsettings_manager_service.dart';
 import 'package:lagerverwaltung/service/logger/logger_service.dart';
 import 'package:lagerverwaltung/service/mailsender/mailsender_service.dart';
+import 'package:lagerverwaltung/utils/loading_dialog.dart';
 import 'package:lagerverwaltung/utils/showsnackbar.dart';
 import 'package:lagerverwaltung/widget/custom_leading_button.dart';
 
@@ -21,48 +23,81 @@ class SendMailPage extends StatelessWidget {
   final loggerService = GetIt.instance<LoggerService>();
 
   void send_abgelaufen_liste(BuildContext context) async {
+    LoadingDialog.showLoadingDialog(context, "Liste wird versendet...");
     final abgelaufen =
         await lagerListenVerwaltungsService.getAbgelaufeneArtikel();
+
     if (abgelaufen.isEmpty) {
+      LoadingDialog.hideLoadingDialog(context);
       Showsnackbar.showSnackBar(context,
           "Gute Nachrichten: Es wurden keine abgelaufenen Artikel gefunden!");
       return;
     }
 
-    mailSenderService.sendAbgelaufen(
+    bool success = await mailSenderService.sendAbgelaufen(
         abgelaufen, localSettingsManagerService.getMail());
-    Showsnackbar.showSnackBar(context,
-        "Alle abgelaufenen Artikel wurden an ${localSettingsManagerService.getMail()} versendet!");
+
+    LoadingDialog.hideLoadingDialog(context);
+    if (success) {
+      Showsnackbar.showSnackBar(context,
+          "Alle abgelaufenen Artikel wurden an ${localSettingsManagerService.getMail()} versendet!");
+    } else {
+      Showsnackbar.showSnackBar(context, ErrorMessageConstants.MAIL_FAILED);
+    }
   }
 
   void send_lagerliste_backup(BuildContext context) async {
-    mailSenderService.sendLagerListe(
+    LoadingDialog.showLoadingDialog(context, "Backup wird versendet...");
+
+    bool success = await mailSenderService.sendLagerListe(
         await fileConverterService
             .toCsv(await lagerListenVerwaltungsService.artikelEntries),
         localSettingsManagerService.getMail(),
         false);
 
-    Showsnackbar.showSnackBar(context,
-        "Ein Backup der Lagerliste wurde an ${localSettingsManagerService.getMail()} versendet!");
+    LoadingDialog.hideLoadingDialog(context);
+    if (success) {
+      Showsnackbar.showSnackBar(context,
+          "Ein Backup der Lagerliste wurde an ${localSettingsManagerService.getMail()} versendet!");
+    } else {
+      Showsnackbar.showSnackBar(context, ErrorMessageConstants.MAIL_FAILED);
+    }
   }
 
   void send_log_list(BuildContext context) async {
-    mailSenderService.sendLogs(await loggerService.getLogs(),
-        localSettingsManagerService.getMail(), false);
-    Showsnackbar.showSnackBar(context,
-        "Die Aktivitätsliste wurde an ${localSettingsManagerService.getMail()} versendet!");
+    LoadingDialog.showLoadingDialog(
+        context, "Aktivitätsliste wird versendet...");
+
+    bool success = await mailSenderService.sendLogs(
+        await loggerService.getLogs(),
+        localSettingsManagerService.getMail(),
+        false);
+
+    LoadingDialog.hideLoadingDialog(context);
+    if (success) {
+      Showsnackbar.showSnackBar(context,
+          "Die Aktivitätsliste wurde an ${localSettingsManagerService.getMail()} versendet!");
+    } else {
+      Showsnackbar.showSnackBar(context, ErrorMessageConstants.MAIL_FAILED);
+    }
   }
 
   void send_mindestmenge_artikel(BuildContext context) async {
+    LoadingDialog.showLoadingDialog(
+        context, "Abgelaufene Artikel werden versendet...");
     final artikel = await lagerListenVerwaltungsService.getAbgelaufeneArtikel();
+
     if (artikel.isEmpty) {
+      LoadingDialog.hideLoadingDialog(context);
       Showsnackbar.showSnackBar(context,
           "Gute Nachrichten: Kein Artikel hat die Mindestmenge erreicht");
       return;
     }
 
-    mailSenderService.sendMindestmengeListe(
+    await mailSenderService.sendMindestmengeListe(
         artikel, localSettingsManagerService.getMail());
+
+    LoadingDialog.hideLoadingDialog(context);
     Showsnackbar.showSnackBar(context,
         "Alle Artikel, deren Mindestmenge erreicht wurde, wurden an ${localSettingsManagerService.getMail()} versendet!");
   }

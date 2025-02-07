@@ -33,7 +33,7 @@ class MailSenderService {
   static const String _fromName = "Lagerliste";
 
   // Methods:
-  Future<void> _sendMessage(
+  Future<bool> _sendMessage(
       {required String toMail,
       List<FileAttachment>? attachments,
       required HTMLTemplateGenerator templateGenerator}) async {
@@ -56,85 +56,108 @@ class MailSenderService {
       final smtpServer = gmailSaslXoauth2(user.email, token);
 
       await send(mailMessage, smtpServer);
-    } catch (e) {}
+      return true;
+    } catch (e) {
+      return false;
+    }
   }
 
-  void sendLagerListe(File file, String toMail, bool isAutomatic) {
-    _sendMessage(
+  Future<bool> sendLagerListe(
+      File file, String toMail, bool isAutomatic) async {
+    bool success = await _sendMessage(
       toMail: toMail,
       templateGenerator:
           LagerlisteBackupTemplate(file: file, isAutomatic: isAutomatic),
       attachments: [FileAttachment(file)],
     );
-    loggerService.log(LogEntryModel(
-        timestamp: DateTime.now(),
-        logReason: LogReason.Backup_Lagerliste_gesendet,
-        zusatzInformationen:
-            "Empfänger: $toMail | ${isAutomatic ? "Automatisch" : "Manuell"}"));
+    if (success) {
+      loggerService.log(LogEntryModel(
+          timestamp: DateTime.now(),
+          logReason: LogReason.Backup_Lagerliste_gesendet,
+          zusatzInformationen:
+              "Empfänger: $toMail | ${isAutomatic ? "Automatisch" : "Manuell"}"));
+    }
+
+    return success;
   }
 
-  void sendMindestmengeErreicht(
-      LagerlistenEntry entry, int amountChange, String toMail) {
-    _sendMessage(
+  Future<bool> sendMindestmengeErreicht(
+      LagerlistenEntry entry, int amountChange, String toMail) async {
+    bool success = await _sendMessage(
         toMail: toMail,
         templateGenerator: MindestmengeErreichtTemplate(
             artikel: entry, amountChange: amountChange));
-    loggerService.log(LogEntryModel(
-        timestamp: DateTime.now(),
-        logReason: LogReason.Mindestmenge_erreicht_Mail,
-        lagerplatzId: entry.lagerplatzId,
-        artikelGWID: entry.artikelGWID,
-        zusatzInformationen: "Mindestmenge erreicht, EMail gesendet"));
+
+    if (success) {
+      loggerService.log(LogEntryModel(
+          timestamp: DateTime.now(),
+          logReason: LogReason.Mindestmenge_erreicht_Mail,
+          lagerplatzId: entry.lagerplatzId,
+          artikelGWID: entry.artikelGWID,
+          zusatzInformationen: "Mindestmenge erreicht, EMail gesendet"));
+    }
+
+    return success;
   }
 
-  void sendAbgelaufen(
-      List<LagerlistenEntry> abgelaufeneArtikel, String toMail) {
-    _sendMessage(
+  Future<bool> sendAbgelaufen(
+      List<LagerlistenEntry> abgelaufeneArtikel, String toMail) async {
+    bool success = await _sendMessage(
         toMail: toMail,
         templateGenerator:
             AbgelaufenListeTemplate(abgelaufenListe: abgelaufeneArtikel));
-    localStorageService.setLastTimeAbgelaufenMailSent();
-
-    loggerService.log(
-      LogEntryModel(
-          timestamp: DateTime.now(),
-          logReason: LogReason.Abgelaufen_Artikel_gesendet,
-          zusatzInformationen:
-              "Empfänger-Email: $toMail | Anzahl abgelaufener Artikel: ${abgelaufeneArtikel.length}"),
-    );
+    if (success) {
+      loggerService.log(
+        LogEntryModel(
+            timestamp: DateTime.now(),
+            logReason: LogReason.Abgelaufen_Artikel_gesendet,
+            zusatzInformationen:
+                "Empfänger-Email: $toMail | Anzahl abgelaufener Artikel: ${abgelaufeneArtikel.length}"),
+      );
+      localStorageService.setLastTimeAbgelaufenMailSent();
+    }
+    return success;
   }
 
-  void sendLogs(
+  Future<bool> sendLogs(
       List<LogEntryModel> logEntries, String toMail, bool wasAutomatic) async {
     logEntries.sort((left, right) => left.timestamp.compareTo(right.timestamp));
     File attachment = await fileConverterService.toLogFile(logEntries);
 
-    _sendMessage(
+    bool success = await _sendMessage(
         toMail: toMail,
         attachments: [FileAttachment(attachment)],
         templateGenerator: LogsEntriesTemplate(
             entries: logEntries, isAutomatic: wasAutomatic));
-    localStorageService.setLastTimeLogsMailWasSent();
 
-    loggerService.log(
-      LogEntryModel(
-          timestamp: DateTime.now(),
-          logReason: LogReason.Log_Liste_versendet,
-          zusatzInformationen: "Empfänger-Email: $toMail"),
-    );
+    if (success) {
+      localStorageService.setLastTimeLogsMailWasSent();
+
+      loggerService.log(
+        LogEntryModel(
+            timestamp: DateTime.now(),
+            logReason: LogReason.Log_Liste_versendet,
+            zusatzInformationen: "Empfänger-Email: $toMail"),
+      );
+    }
+    return success;
   }
 
-  void sendMindestmengeListe(List<LagerlistenEntry> entries, String toMail) {
-    _sendMessage(
+  Future<bool> sendMindestmengeListe(
+      List<LagerlistenEntry> entries, String toMail) async {
+    bool success = await _sendMessage(
         toMail: toMail,
         templateGenerator: MindestmengeListeTemplate(artikel: entries));
 
-    loggerService.log(
-      LogEntryModel(
-          timestamp: DateTime.now(),
-          logReason: LogReason.Alle_abgelaufenen_Artikel_versendet,
-          zusatzInformationen:
-              "Empfänger-Email: $toMail | Anzahl versendeter Artikel: ${entries.length}"),
-    );
+    if (success) {
+      loggerService.log(
+        LogEntryModel(
+            timestamp: DateTime.now(),
+            logReason: LogReason.Alle_abgelaufenen_Artikel_versendet,
+            zusatzInformationen:
+                "Empfänger-Email: $toMail | Anzahl versendeter Artikel: ${entries.length}"),
+      );
+    }
+    return success;
   }
 }

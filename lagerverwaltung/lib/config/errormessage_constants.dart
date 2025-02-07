@@ -14,4 +14,7 @@ class ErrorMessageConstants {
       "Sie können nicht mehr entnehmen als im Lager vorhanden ist!";
 
   static const String MUST_BE_CSV = "Die Datei muss eine CSV-Datei sein!";
+
+  static const String MAIL_FAILED =
+      "Mail konnte nicht versendet werden, bitte übeprüfen Sie Ihre Internetverbindung!";
 }

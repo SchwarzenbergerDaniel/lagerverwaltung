@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:lagerverwaltung/buttons/home_page_button_base.dart';
+import 'package:lagerverwaltung/config/errormessage_constants.dart';
 import 'package:lagerverwaltung/service/csv_converter_service.dart';
 import 'package:lagerverwaltung/service/lagerlistenverwaltung_service.dart';
 import 'package:lagerverwaltung/service/localsettings_manager_service.dart';
 import 'package:lagerverwaltung/service/mailsender/mailsender_service.dart';
+import 'package:lagerverwaltung/utils/loading_dialog.dart';
 import 'package:lagerverwaltung/utils/showsnackbar.dart';
 
 class ExportListButton extends StatelessWidget {
@@ -26,12 +28,20 @@ class ExportListButton extends StatelessWidget {
   }
 
   void export(BuildContext context) async {
-    mailSenderService.sendLagerListe(
+    LoadingDialog.showLoadingDialog(context, "Backup wird versendet...");
+
+    bool success = await mailSenderService.sendLagerListe(
         await fileConverterService
             .toCsv(await lagerListenVerwaltungsService.artikelEntries),
         localSettingsManagerService.getMail(),
         false);
-    Showsnackbar.showSnackBar(context,
-        "Lagerliste exportiert an ${localSettingsManagerService.getMail()}");
+
+    LoadingDialog.hideLoadingDialog(context);
+    if (success) {
+      Showsnackbar.showSnackBar(context,
+          "Ein Backup der Lagerliste wurde an ${localSettingsManagerService.getMail()} versendet!");
+    } else {
+      Showsnackbar.showSnackBar(context, ErrorMessageConstants.MAIL_FAILED);
+    }
   }
 }
