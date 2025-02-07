@@ -67,7 +67,7 @@ class LogEntryModel {
     final List<String> parts = [];
 
     parts.add("$timestamp");
-    parts.add(logReason.toString().replaceAll('_', ' '));
+    parts.add(logReason.name.replaceAll('_', ' '));
 
     if (lagerplatzId != null) {
       parts.add("Lagerplatz-ID: $lagerplatzId");

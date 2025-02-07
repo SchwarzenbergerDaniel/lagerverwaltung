@@ -2,10 +2,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:intl/intl.dart';
+import 'package:lagerverwaltung/config/errormessage_constants.dart';
 import 'package:lagerverwaltung/service/localsettings_manager_service.dart';
 import 'package:lagerverwaltung/service/logger/log_entry.dart';
 import 'package:lagerverwaltung/service/logger/logger_service.dart';
 import 'package:lagerverwaltung/service/mailsender/mailsender_service.dart';
+import 'package:lagerverwaltung/utils/loading_dialog.dart';
 import 'package:lagerverwaltung/widget/custom_leading_button.dart';
 import 'package:lagerverwaltung/utils/showsnackbar.dart';
 
@@ -33,10 +35,21 @@ class _LogPageState extends State<LogPage> {
   }
 
   void sendLogs() async {
-    mailSenderService.sendLogs(await loggerService.getLogs(),
-        localSettingsManagerService.getMail(), false);
-    Showsnackbar.showSnackBar(context,
-        "Log Mail an ${localSettingsManagerService.getMail()} versendet");
+    LoadingDialog.showLoadingDialog(
+        context, "Aktivitätsliste wird versendet...");
+
+    bool success = await mailSenderService.sendLogs(
+        await loggerService.getLogs(),
+        localSettingsManagerService.getMail(),
+        false);
+
+    LoadingDialog.hideLoadingDialog(context);
+    if (success) {
+      Showsnackbar.showSnackBar(context,
+          "Die Aktivitätsliste wurde an ${localSettingsManagerService.getMail()} versendet!");
+    } else {
+      Showsnackbar.showSnackBar(context, ErrorMessageConstants.MAIL_FAILED);
+    }
   }
 
   Future<List<LogEntryModel>> getLogs() async {

@@ -2,6 +2,7 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
 import 'package:lagerverwaltung/automatisierte_aufgaben/automatisiert_checker.dart';
 import 'package:lagerverwaltung/buttons/scan_lagerplatz.dart';
@@ -20,7 +21,7 @@ import 'package:lagerverwaltung/service/csv_converter_service.dart';
 import 'package:lagerverwaltung/service/lagerlistenverwaltung_service.dart';
 import 'package:lagerverwaltung/service/localstorage_service.dart';
 import 'package:lagerverwaltung/service/mailsender/mailsender_service.dart';
-import 'package:lagerverwaltung/page/settings/settings/settings_page.dart';
+import 'package:lagerverwaltung/page/settings/settings_page.dart';
 import 'package:provider/provider.dart';
 
 final getIt = GetIt.instance;
@@ -47,7 +48,10 @@ Future setUpServices() async {
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
+  await SystemChrome.setPreferredOrientations([
+    // Nur Hochformat
+    DeviceOrientation.portraitUp,
+  ]);
   // await Testhelper.clearLocalStorage();
   await setUpServices();
 
