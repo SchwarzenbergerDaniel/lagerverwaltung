@@ -1,8 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:lagerverwaltung/provider/colormodeprovider.dart';
+import 'package:lagerverwaltung/service/localsettings_manager_service.dart';
+import 'package:lagerverwaltung/service/localstorage_service.dart';
 import 'package:lagerverwaltung/service/theme_changing_service.dart';
 import 'package:lagerverwaltung/widget/custom_leading_button.dart';
+import 'package:provider/provider.dart';
 
 class ColorChangingPage extends StatefulWidget {
   const ColorChangingPage({super.key});
@@ -13,7 +17,8 @@ class ColorChangingPage extends StatefulWidget {
 
 class _ColorChangingPageState extends State<ColorChangingPage> {
   final themeService = GetIt.instance<ThemeChangingService>();
-
+  final localSettingsManagerService =
+      GetIt.instance<LocalSettingsManagerService>();
   final colors = [
     CupertinoColors.activeBlue,
     CupertinoColors.activeGreen,
@@ -27,18 +32,30 @@ class _ColorChangingPageState extends State<ColorChangingPage> {
     CupertinoColors.systemGrey,
   ];
 
+  late ColorModeProvider colorModeProvider;
   late Color selectedBackgroundColor;
   late Color selectedPrimaryColor;
+  late bool isBunt;
 
   @override
   void initState() {
     super.initState();
     selectedBackgroundColor = themeService.backgroundColor;
     selectedPrimaryColor = themeService.primaryColor;
+    isBunt = localSettingsManagerService.getIstBunt();
+  }
+
+  void change() {
+    setState(() {
+      isBunt = !isBunt;
+      colorModeProvider.change(isBunt);
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    colorModeProvider = Provider.of<ColorModeProvider>(context);
+
     final backgroundColors = {
       'Weiß': CupertinoColors.white,
       'Schwarz': CupertinoColors.black,
@@ -61,6 +78,23 @@ class _ColorChangingPageState extends State<ColorChangingPage> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               const Text(
+                'Farbmodus:',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 10),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text('Schlicht'),
+                  CupertinoSwitch(
+                    value: isBunt,
+                    onChanged: (value) => change(),
+                  ),
+                  const Text('Bunt'),
+                ],
+              ),
+              const SizedBox(height: 30),
+              const Text(
                 'Hintergrundfarbe ändern:',
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
@@ -73,7 +107,8 @@ class _ColorChangingPageState extends State<ColorChangingPage> {
                   final isSelected = color == selectedBackgroundColor;
 
                   return CupertinoButton(
-                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     color: isSelected
                         ? CupertinoColors.activeBlue
                         : CupertinoColors.systemGrey,
@@ -101,8 +136,8 @@ class _ColorChangingPageState extends State<ColorChangingPage> {
                           ),
                         ),
                         if (isSelected)
-                          Padding(
-                            padding: const EdgeInsets.only(left: 8.0),
+                          const Padding(
+                            padding: EdgeInsets.only(left: 8.0),
                             child: Icon(
                               Icons.check,
                               color: CupertinoColors.white,

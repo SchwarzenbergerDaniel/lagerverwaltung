@@ -23,6 +23,7 @@ class LocalSettingsManagerService {
   static const String _LOG_INTERVALL_MAIL_DAYS_KEY =
       "_LOG_INTERVALL_MAIL_DAYS_KEY";
   static const String _CSV_ORDER_LIST_KEY = "CSV_ORDER_LIST_KEY";
+  static const String _IST_BUNT_KEY = "_IST_BUNT_KEY";
 
   // SharedPreference-Cache:
   static SharedPreferences? _prefs;
@@ -47,6 +48,7 @@ class LocalSettingsManagerService {
         .toList());
     await setIntervallLogMailDays(prefs.getInt(_LOG_INTERVALL_MAIL_DAYS_KEY));
     await setDeleteLogsAfterDays(prefs.getInt(_DELETE_LOGS_AFTER_DAYS_KEY));
+    await setIstBunt(prefs.getBool(_IST_BUNT_KEY));
   }
 
   // INSTANZEN
@@ -54,6 +56,7 @@ class LocalSettingsManagerService {
   int? _logIntervallDays;
   int? _deleteLogsAfterDays;
   List<Columns>? _csv_order;
+  bool? _istBunt;
 
   // MAIL-EMpfänger:
   String getMail() {
@@ -102,5 +105,17 @@ class LocalSettingsManagerService {
     _csv_order = newOrder;
     prefs.setStringList(
         _CSV_ORDER_LIST_KEY, newOrder.map((val) => val.name).toList());
+  }
+
+  // BUNTE-Farbgebung:
+  bool getIstBunt() {
+    return _istBunt!;
+  }
+
+  Future setIstBunt(bool? istBunt) async {
+    istBunt = istBunt ?? true;
+    final prefs = await _getSharePreference();
+    this._istBunt = istBunt;
+    prefs.setBool(_IST_BUNT_KEY, this._istBunt!);
   }
 }

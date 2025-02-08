@@ -12,6 +12,7 @@ import 'package:lagerverwaltung/buttons/export_list_button.dart';
 import 'package:lagerverwaltung/buttons/import_list_button.dart';
 import 'package:lagerverwaltung/buttons/inventur_durchfuehren_button.dart';
 import 'package:lagerverwaltung/buttons/logs_ansehen_button.dart';
+import 'package:lagerverwaltung/provider/colormodeprovider.dart';
 import 'package:lagerverwaltung/service/jokegenerator_service.dart';
 import 'package:lagerverwaltung/service/localsettings_manager_service.dart';
 import 'package:lagerverwaltung/service/theme_changing_service.dart';
@@ -60,8 +61,13 @@ void main() async {
   await themeService.loadPrimaryColor();
   await themeService.loadBackgroundColor();
   runApp(
-    ChangeNotifierProvider(
-      create: (_) => themeService,
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (_) => themeService,
+        ),
+        ChangeNotifierProvider(create: (_) => ColorModeProvider()),
+      ],
       child: const MyApp(),
     ),
   );
