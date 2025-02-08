@@ -134,9 +134,13 @@ class _MyHomePageState extends State<MyHomePage> {
   final loggerService = GetIt.instance<LoggerService>();
   final localSettingsManagerService =
       GetIt.instance<LocalSettingsManagerService>();
+  final themeService = getIt<ThemeChangingService>();
 
   @override
   Widget build(BuildContext context) {
+    bool isDarkmode =
+        themeService.backgroundColor.color.computeLuminance() < 0.5;
+
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
         middle: Text(
@@ -160,7 +164,9 @@ class _MyHomePageState extends State<MyHomePage> {
             children: <Widget>[
               // LOGO:
               Image.asset(
-                'assets/logo-gradwohl.png',
+                isDarkmode
+                    ? 'assets/logo-gradwohl-dunkel.png'
+                    : 'assets/logo-gradwohl.png',
                 width: 150,
                 height: 150,
               ),
