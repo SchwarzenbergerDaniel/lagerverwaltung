@@ -1,5 +1,7 @@
 import 'dart:io';
+
 import 'package:get_it/get_it.dart';
+import 'package:intl/intl.dart';
 import 'package:lagerverwaltung/model/lagerlistenentry.dart';
 import 'package:lagerverwaltung/service/csv_converter_service.dart';
 import 'package:lagerverwaltung/service/localstorage_service.dart';
@@ -43,6 +45,7 @@ class MailSenderService {
       final auth = await user!.authentication;
       final token = auth.accessToken!;
       attachments = attachments ?? [];
+      changeFilenames(attachments);
 
       final mailMessage = Message()
         ..from = Address(user.email, _fromName)
@@ -59,6 +62,15 @@ class MailSenderService {
       return true;
     } catch (e) {
       return false;
+    }
+  }
+
+  void changeFilenames(List<FileAttachment> attachments) {
+    final String timestamp =
+        DateFormat("dd.MM.yyyy_HH:mm").format(DateTime.now());
+
+    for (var attachment in attachments) {
+      attachment.fileName = "${attachment.fileName}_$timestamp";
     }
   }
 
