@@ -30,7 +30,7 @@ class HomePageButtonBase extends StatelessWidget {
       height: 90,
       margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 2),
       child: CupertinoButton(
-        color: isBunt ? backgroundColor : Colors.grey,
+        color: isBunt ? backgroundColor : Theme.of(context).primaryColor,
         padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 25),
         borderRadius: BorderRadius.circular(15),
         onPressed: onPressed,
