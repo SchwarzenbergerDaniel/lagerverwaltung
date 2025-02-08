@@ -1,5 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
+import 'package:lagerverwaltung/provider/colormodeprovider.dart';
+import 'package:lagerverwaltung/service/localsettings_manager_service.dart';
+import 'package:provider/provider.dart';
 
 class HomePageButtonBase extends StatelessWidget {
   final String title;
@@ -7,7 +11,10 @@ class HomePageButtonBase extends StatelessWidget {
   final Color backgroundColor;
   final VoidCallback onPressed;
 
-  const HomePageButtonBase({
+  final localSettingsManagerService =
+      GetIt.instance<LocalSettingsManagerService>();
+
+  HomePageButtonBase({
     super.key,
     required this.title,
     required this.icon,
@@ -17,11 +24,13 @@ class HomePageButtonBase extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isBunt = Provider.of<ColorModeProvider>(context).isBunt;
+
     return Container(
       height: 90,
       margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 2),
       child: CupertinoButton(
-        color: backgroundColor,
+        color: isBunt ? backgroundColor : Colors.grey,
         padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 25),
         borderRadius: BorderRadius.circular(15),
         onPressed: onPressed,
@@ -35,7 +44,7 @@ class HomePageButtonBase extends StatelessWidget {
               child: Text(
                 title,
                 textAlign: TextAlign.center,
-                softWrap: true, // Zeilenumbruch erlauben
+                softWrap: true,
                 style: const TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.bold,
