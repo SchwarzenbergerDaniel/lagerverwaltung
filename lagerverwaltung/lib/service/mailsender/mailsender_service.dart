@@ -67,10 +67,19 @@ class MailSenderService {
 
   void changeFilenames(List<FileAttachment> attachments) {
     final String timestamp =
-        DateFormat("dd.MM.yyyy_HH:mm").format(DateTime.now());
+        DateFormat("dd.MM.yyyy_HH-mm").format(DateTime.now());
 
     for (var attachment in attachments) {
-      attachment.fileName = "${attachment.fileName}_$timestamp";
+      String fileName = attachment.fileName!;
+      int lastDotIndex = fileName.lastIndexOf('.');
+
+      if (lastDotIndex != -1) {
+        String nameWithoutExtension = fileName.substring(0, lastDotIndex);
+        String extension = fileName.substring(lastDotIndex);
+        attachment.fileName = "${nameWithoutExtension}_$timestamp$extension";
+      } else {
+        attachment.fileName = "${fileName}_$timestamp";
+      }
     }
   }
 
