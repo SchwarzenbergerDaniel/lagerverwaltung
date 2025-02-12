@@ -22,7 +22,7 @@ class ExportListButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return HomePageButtonBase(
         title: "Liste exportieren",
-        icon: Icons.file_download,
+        icon: Icons.file_upload,
         backgroundColor: Color.fromRGBO(233, 175, 134, 1),
         onPressed: () => export(context));
   }

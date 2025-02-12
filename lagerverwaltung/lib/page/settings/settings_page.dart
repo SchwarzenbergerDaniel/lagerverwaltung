@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:lagerverwaltung/page/settings/change_logo/change_logo_page.dart';
 import 'package:lagerverwaltung/page/settings/change_mail/change_mail_page.dart';
 import 'package:lagerverwaltung/page/settings/csv_column_order/csv_column_order_changer_page.dart';
 import 'package:lagerverwaltung/page/settings/send_mail/send_mail_page.dart';
@@ -35,8 +34,6 @@ class SettingsPage extends StatelessWidget {
             createHeading("Personalisierung"),
             createSettingTile(
                 "Farbgebung", Icons.color_lens_outlined, ColorChangingPage()),
-            createSettingTile("Logo ändern", Icons.design_services,
-                ChangeLogoPage()), //TODO: Passendes ICON
             createHeading("E-Mail Verwaltung"),
             createSettingTile("Mail-Empfänger", Icons.mail_outline,
                 EMailEmpfaengerAendernPage()),
