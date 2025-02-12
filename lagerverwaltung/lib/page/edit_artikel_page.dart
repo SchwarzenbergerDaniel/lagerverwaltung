@@ -78,7 +78,6 @@ class _EditArtikelPageState extends State<EditArtikelPage> {
           'Artikel',
           style: CupertinoTheme.of(context).textTheme.textStyle,
         ),
-        backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
         leading: CustomBackButton(),
       ),
       child: SafeArea(
@@ -110,10 +109,7 @@ class _EditArtikelPageState extends State<EditArtikelPage> {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       const Text(
         'Ablaufdatum',
-        style: TextStyle(
-            fontSize: 12,
-            fontWeight: FontWeight.w500,
-            color: CupertinoColors.systemGrey5),
+        style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
       ),
       CupertinoButton(
         onPressed: () => _showDialog(
@@ -131,11 +127,7 @@ class _EditArtikelPageState extends State<EditArtikelPage> {
             '${ablaufDatum!.day}-${ablaufDatum!.month}-${ablaufDatum!.year}',
             style: TextStyle(
                 fontSize: 16.0,
-                color: isEditable
-                    ? CupertinoTheme.of(context).primaryColor
-                    : CupertinoTheme.of(context)
-                        .primaryColor
-                        .withValues(alpha: 0.6))),
+                color: CupertinoTheme.of(context).primaryColor)),
       ),
       const SizedBox(height: 6)
     ]);
@@ -148,10 +140,7 @@ class _EditArtikelPageState extends State<EditArtikelPage> {
       children: [
         Text(
           label,
-          style: const TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w500,
-              color: CupertinoColors.systemGrey5),
+          style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
         ),
         const SizedBox(height: 8),
         Container(
@@ -167,11 +156,11 @@ class _EditArtikelPageState extends State<EditArtikelPage> {
             enabled: isEditable,
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
             style: TextStyle(
-              color: isEditable
-                  ? CupertinoColors.label
-                  : CupertinoColors.inactiveGray,
-            ),
-            decoration: null,
+                color: isEditable
+                    ? CupertinoTheme.of(context).textTheme.textStyle.color
+                    : CupertinoTheme.of(context).textTheme.textStyle.color),
+            decoration: BoxDecoration(
+                color: CupertinoTheme.of(context).scaffoldBackgroundColor),
           ),
         ),
         const SizedBox(height: 16),
@@ -183,7 +172,6 @@ class _EditArtikelPageState extends State<EditArtikelPage> {
     return CupertinoButton(
       child: Text(
         isEditable ? 'Speichern' : 'Bearbeiten',
-        style: CupertinoTheme.of(context).textTheme.textStyle,
       ),
       onPressed: () {
         setState(() {

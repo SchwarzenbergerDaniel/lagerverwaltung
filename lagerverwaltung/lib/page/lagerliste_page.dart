@@ -101,14 +101,21 @@ class _LagerlistePageState extends State<LagerlistePage> {
                           ),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(
-                                entry.beschreibung ?? "Unbennant!",
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  color: CupertinoColors.white,
+                              Expanded(
+                                child: Text(
+                                  entry.beschreibung ?? "Unbenannt!",
+                                  softWrap: true,
+                                  maxLines: null,
+                                  overflow: TextOverflow.visible,
+                                  style: CupertinoTheme.of(context)
+                                      .textTheme
+                                      .textStyle
+                                      .merge(TextStyle(fontSize: 16)),
                                 ),
                               ),
+                              const SizedBox(width: 8),
                               const Icon(
                                 Icons.edit_outlined,
                                 color: CupertinoColors.systemGrey,

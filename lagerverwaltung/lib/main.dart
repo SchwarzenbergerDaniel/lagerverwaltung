@@ -23,6 +23,7 @@ import 'package:lagerverwaltung/service/lagerlistenverwaltung_service.dart';
 import 'package:lagerverwaltung/service/localstorage_service.dart';
 import 'package:lagerverwaltung/service/mailsender/mailsender_service.dart';
 import 'package:lagerverwaltung/page/settings/settings_page.dart';
+import 'package:lagerverwaltung/testhelper/testhelper.dart';
 import 'package:provider/provider.dart';
 
 final getIt = GetIt.instance;
@@ -53,8 +54,11 @@ void main() async {
     // Nur Hochformat
     DeviceOrientation.portraitUp,
   ]);
-  // await Testhelper.clearLocalStorage();
+
+  await Testhelper.clearLocalStorage();
   await setUpServices();
+
+  await Testhelper.add_default_values();
 
   checker.checkTodo();
   final themeService = getIt<ThemeChangingService>();

@@ -1,8 +1,18 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
+import 'package:lagerverwaltung/page/inventur_page.dart';
+import 'package:lagerverwaltung/config/constants.dart';
+import 'package:lagerverwaltung/utils/showdialog.dart';
 import 'package:lagerverwaltung/buttons/home_page_button_base.dart';
+import 'package:lagerverwaltung/service/codescanner_service.dart';
+import 'package:lagerverwaltung/service/lagerlistenverwaltung_service.dart';
 
 class InventurDurchfuehrenButton extends StatelessWidget {
-  const InventurDurchfuehrenButton({super.key});
+  InventurDurchfuehrenButton({super.key});
+  final codeScannerService = GetIt.instance<CodeScannerService>();
+  final lagerListenVerwaltungsService =
+      GetIt.instance<LagerlistenVerwaltungsService>();
 
   @override
   Widget build(BuildContext context) {
@@ -14,6 +24,38 @@ class InventurDurchfuehrenButton extends StatelessWidget {
   }
 
   void inventurDurchfuehren(BuildContext context) async {
-    // TODO: IMPLEMENT:
+    // Lagerplatz-ID scannen
+
+    bool scanNew = false;
+    String? scannedLagerplatz;
+    do {
+      scannedLagerplatz = await codeScannerService.getCodeByScan(
+        context,
+        "Lagerplatz-ID scannen",
+      );
+      if (scannedLagerplatz == Constants.EXIT_RETURN_VALUE) {
+        return;
+      }
+
+      if (!await lagerListenVerwaltungsService
+          .lagerplatzExist(scannedLagerplatz!)) {
+        scanNew = await ShowDialogTwoOptions.isFirstOptionClicked(
+            context,
+            "Lagerplatz nicht gefunden",
+            "Wie möchten Sie fortfahren?",
+            "Lagerplatz erneut scannen",
+            "Inventur beenden",
+            isFirstDefaultAction: false);
+        if (scanNew == false) {
+          return;
+        }
+      }
+    } while (scanNew);
+    Navigator.push(
+      context,
+      CupertinoPageRoute(
+        builder: (context) => InventurPage(lagerplatzId: scannedLagerplatz!),
+      ),
+    );
   }
 }

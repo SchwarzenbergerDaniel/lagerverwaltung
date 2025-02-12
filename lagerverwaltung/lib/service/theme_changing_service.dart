@@ -35,8 +35,8 @@ class ThemeChangingService with ChangeNotifier {
   /// Load the background color from SharedPreferences
   Future<void> loadBackgroundColor() async {
     final prefs = await SharedPreferences.getInstance();
-    final colorValue = prefs.getInt('backgroundColor') ??
-        CupertinoColors.systemBackground.value;
+    final colorValue =
+        prefs.getInt('backgroundColor') ?? CupertinoColors.black.value;
 
     _backgroundColor = CupertinoDynamicColor.withBrightness(
       color: Color(colorValue),

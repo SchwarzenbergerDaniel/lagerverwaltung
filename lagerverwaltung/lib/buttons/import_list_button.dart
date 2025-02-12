@@ -14,7 +14,7 @@ class ImportListButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return HomePageButtonBase(
         title: "Liste importieren",
-        icon: Icons.file_upload,
+        icon: Icons.file_download,
         backgroundColor: Color.fromRGBO(231, 218, 112, 1),
         onPressed: () => import(context));
   }
