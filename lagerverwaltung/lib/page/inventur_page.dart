@@ -1,11 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:lagerverwaltung/config/constants.dart';
 import 'package:lagerverwaltung/model/lagerlistenentry.dart';
 import 'package:lagerverwaltung/service/codescanner_service.dart';
 import 'package:lagerverwaltung/service/lagerlistenverwaltung_service.dart';
-import 'package:lagerverwaltung/utils/showdialog.dart';
 import 'package:lagerverwaltung/utils/showsnackbar.dart';
+import 'package:lagerverwaltung/widget/custom_leading_button.dart';
 
 class InventurPage extends StatefulWidget {
   final String lagerplatzId;
@@ -16,7 +17,8 @@ class InventurPage extends StatefulWidget {
 }
 
 class _InventurPageState extends State<InventurPage> {
-  final lagerListenVerwaltungsService = GetIt.instance<LagerlistenVerwaltungsService>();
+  final lagerListenVerwaltungsService =
+      GetIt.instance<LagerlistenVerwaltungsService>();
   final codeScannerService = GetIt.instance<CodeScannerService>();
 
   List<LagerlistenEntry> sollBestand = [];
@@ -30,21 +32,22 @@ class _InventurPageState extends State<InventurPage> {
 
   /// Sollbestand wird geladen
   void _loadSollBestand() async {
-    var bestand = await lagerListenVerwaltungsService.getLagerlisteByLagerplatz(widget.lagerplatzId);
+    var bestand = await lagerListenVerwaltungsService
+        .getLagerlisteByLagerplatz(widget.lagerplatzId);
     setState(() {
       sollBestand = List.from(bestand);
-      istBestand = List.from(bestand.map((e) => LagerlistenEntry(
-            artikelGWID: e.artikelGWID,
-            lagerplatzId: e.lagerplatzId,
-            menge: e.menge ?? 0,
-          )));
+      istBestand = List.from(bestand.map(
+          (e) => LagerlistenEntry(menge: e.menge, artikelGWID: e.artikelGWID)));
     });
   }
 
   /// Gescannter Artikel wird Ist Liste hinzugefügt
   Future<void> _artikelScannen() async {
-    String? artikelGWID = await codeScannerService.getCodeByScan(context, "Artikel Code scannen");
-    if (artikelGWID == null || artikelGWID.isEmpty) return;
+    String? artikelGWID =
+        await codeScannerService.getCodeByScan(context, "Artikel Code scannen");
+    if (artikelGWID == null ||
+        artikelGWID.isEmpty ||
+        artikelGWID == Constants.EXIT_RETURN_VALUE) return;
 
     setState(() {
       bool existiert = false;
@@ -56,7 +59,13 @@ class _InventurPageState extends State<InventurPage> {
         }
       }
       if (!existiert) {
-        istBestand.add(LagerlistenEntry(artikelGWID: artikelGWID, lagerplatzId: widget.lagerplatzId, menge: 1));
+        final entry = LagerlistenEntry(
+            artikelGWID: artikelGWID,
+            lagerplatzId: widget.lagerplatzId,
+            menge: 1);
+
+        istBestand.add(entry);
+        lagerListenVerwaltungsService.addArtikelToLagerliste(entry);
       }
     });
   }
@@ -70,6 +79,7 @@ class _InventurPageState extends State<InventurPage> {
 
   /// Speicherung der Inventur
   void _inventurAbschliessen() {
+    //TODO:
     //lagerListenVerwaltungsService.speichereInventur(widget.lagerplatzId, istBestand);
     Showsnackbar.showSnackBar(context, "Inventur abgeschlossen!");
     Navigator.pop(context);
@@ -79,12 +89,16 @@ class _InventurPageState extends State<InventurPage> {
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
-        middle: Text("Inventur: ${widget.lagerplatzId}"),
+        middle: Text(
+          "Inventur: ${widget.lagerplatzId}",
+          style: CupertinoTheme.of(context).textTheme.textStyle,
+        ),
         trailing: CupertinoButton(
           padding: EdgeInsets.zero,
-          child: Text("Fertig"),
           onPressed: _inventurAbschliessen,
+          child: const Text("Fertig"),
         ),
+        leading: CustomBackButton(),
       ),
       child: SafeArea(
         child: Column(
@@ -92,8 +106,8 @@ class _InventurPageState extends State<InventurPage> {
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: CupertinoButton.filled(
-                child: Text("Artikel scannen"),
                 onPressed: _artikelScannen,
+                child: Text("Artikel hinzufügen"),
               ),
             ),
             Expanded(
@@ -101,51 +115,60 @@ class _InventurPageState extends State<InventurPage> {
                 itemCount: istBestand.length,
                 itemBuilder: (context, index) {
                   var entry = istBestand[index];
-
-                  return CupertinoListTile(
-                    title: Text("Artikel: ${entry.artikelGWID}"),
-                    subtitle: Text(
-                      "Soll: ${sollBestand.where((e) => e.artikelGWID == entry.artikelGWID).fold(0, (sum, e) => sum + (e.menge ?? 0))} | Ist: ${entry.menge}",
-                     
-                    ),
-                    trailing: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        CupertinoButton(
-                          padding: EdgeInsets.zero,
-                          child: Icon(CupertinoIcons.minus_circle, color: CupertinoColors.systemRed),
-                          onPressed: () {
-                            if ((entry.menge ?? 0) > 0) {
-                              _updateMenge(index, (entry.menge ?? 0) - 1);
-                            }
-                          },
-                        ),
-                        SizedBox(
-                          width: 50,
-                          child: CupertinoTextField(
-                            keyboardType: TextInputType.number,
-                            textAlign: TextAlign.center,
-                            onChanged: (value) {
-                              int? menge = int.tryParse(value);
-                              if (menge != null) {
-                                _updateMenge(index, menge);
-                              }
-                            },
-                            placeholder: "${entry.menge}",
-                          ),
-                        ),
-                        CupertinoButton(
-                          padding: EdgeInsets.zero,
-                          child: Icon(CupertinoIcons.add_circled, color: CupertinoColors.systemGreen),
-                          onPressed: () {
-                            _updateMenge(index, (entry.menge ?? 0) + 1);
-                          },
-                        ),
-                      ],
-                    ),
-                  );
+                  return createListTile(entry, index);
                 },
               ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget createListTile(LagerlistenEntry entry, int index) {
+    return Padding(
+      padding: EdgeInsets.all(8.0),
+      child: CupertinoListTile(
+        title: Text("Artikel: ${entry.artikelGWID}"),
+        subtitle: Text(
+          "Soll: ${sollBestand.where((e) => e.artikelGWID == entry.artikelGWID).fold(0, (sum, e) => sum + (e.menge ?? 0))} | Ist: ${entry.menge}",
+          style: CupertinoTheme.of(context).textTheme.textStyle,
+        ),
+        trailing: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            CupertinoButton(
+              padding: EdgeInsets.zero,
+              child: Icon(Icons.remove, color: CupertinoColors.systemRed),
+              onPressed: () {
+                if ((entry.menge ?? 0) > 0) {
+                  _updateMenge(index, (entry.menge ?? 0) - 1);
+                }
+              },
+            ),
+            SizedBox(
+              width: 50,
+              child: CupertinoTextField(
+                keyboardType: TextInputType.number,
+                textAlign: TextAlign.center,
+                onChanged: (value) {
+                  int? menge = int.tryParse(value);
+                  if (menge != null) {
+                    _updateMenge(index, menge);
+                  }
+                },
+                placeholderStyle: const TextStyle(
+                    color: CupertinoColors.white,
+                    backgroundColor: CupertinoColors.black),
+                placeholder: "${entry.menge}",
+              ),
+            ),
+            CupertinoButton(
+              padding: EdgeInsets.zero,
+              child: Icon(Icons.add, color: CupertinoColors.systemGreen),
+              onPressed: () {
+                _updateMenge(index, (entry.menge ?? 0) + 1);
+              },
             ),
           ],
         ),

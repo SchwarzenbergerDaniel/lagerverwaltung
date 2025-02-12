@@ -69,15 +69,15 @@ class LagerlistenVerwaltungsService {
     localStorageService.addEntry(list, artikel);
   }
 
-  void addLagerplatzToLagerliste(LagerlistenEntry lagerplatz) async {
+  Future addLagerplatzToLagerliste(LagerlistenEntry lagerplatz) async {
     final list = await lagerplatzEntries;
     list.add(lagerplatz);
     localStorageService.addEntry(list, lagerplatz);
   }
 
-  void addEmptyLagerplatz(String lagerplatzCode) {
+  Future addEmptyLagerplatz(String lagerplatzCode) async {
     LagerlistenEntry entry = LagerlistenEntry(lagerplatzId: lagerplatzCode);
-    addLagerplatzToLagerliste(entry);
+    await addLagerplatzToLagerliste(entry);
   }
 
   Future<List<LagerlistenEntry>> getLagerlisteByLagerplatz(
