@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
-import 'package:lagerverwaltung/buttons/home_page_button_base.dart';
+import 'package:lagerverwaltung/buttons/base/primary_button_base.dart';
 import 'package:lagerverwaltung/config/constants.dart';
 import 'package:lagerverwaltung/model/lagerlistenentry.dart';
 import 'package:lagerverwaltung/service/codescanner_service.dart';
@@ -17,10 +17,9 @@ class ArtikelAmountChangeButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return HomePageButtonBase(
+    return PrimaryButtonBase(
         title: "Artikelmenge verändern",
-        icon: Icons.exposure,
-        backgroundColor: Color.fromRGBO(247, 119, 162, 1),
+        accentColor: Color.fromRGBO(247, 119, 162, 1),
         onPressed: () => changeAmount(context));
   }
 
