@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:lagerverwaltung/page/settings/logs/log_page.dart';
 import 'package:lagerverwaltung/page/settings/change_mail/change_mail_page.dart';
 import 'package:lagerverwaltung/page/settings/csv_column_order/csv_column_order_changer_page.dart';
 import 'package:lagerverwaltung/page/settings/send_mail/send_mail_page.dart';
@@ -7,8 +8,10 @@ import 'package:lagerverwaltung/page/settings/color_change/color_changing_page.d
 import 'package:lagerverwaltung/page/settings/log_intervall/log_intervall_mail_page.dart';
 import 'package:lagerverwaltung/page/settings/setting_tile.dart';
 import 'package:lagerverwaltung/service/mailsender/google_auth_api.dart';
+import 'package:lagerverwaltung/widget/background/animated_background.dart';
 import 'package:lagerverwaltung/widget/custom_leading_button.dart';
 
+//TODO: Add logs Button
 class SettingsPage extends StatelessWidget {
   const SettingsPage({super.key});
 
@@ -20,26 +23,30 @@ class SettingsPage extends StatelessWidget {
           'Einstellungen',
           style: CupertinoTheme.of(context).textTheme.textStyle,
         ),
-        backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
         leading: CustomBackButton(),
+        backgroundColor: CupertinoColors.transparent, // Transparent background
+        border: null,
       ),
-      child: SafeArea(
-        child: ListView(
-          children: [
-            createHeading("Datenverwaltung"),
-            createSettingTile("Export Spalten Reihenfolge ändern",
-                Icons.exposure_outlined, CsvColumnOrderChangerPage()),
-            createSettingTile(
-                "Log Konfigurationen", Icons.timelapse, LogConigPage()),
-            createHeading("Personalisierung"),
-            createSettingTile(
-                "Farbgebung", Icons.color_lens_outlined, ColorChangingPage()),
-            createHeading("E-Mail Verwaltung"),
-            createSettingTile("Mail-Empfänger", Icons.mail_outline,
-                EMailEmpfaengerAendernPage()),
-            createSettingTile("Mail versenden", Icons.mail, SendMailPage()),
-            createGoogleAuthorizeButton(),
-          ],
+      child: AnimatedBackground(
+        child: SafeArea(
+          child: ListView(
+            children: [
+              createHeading("Datenverwaltung"),
+              createSettingTile("Logs ansehen", Icons.time_to_leave, LogPage()),
+              createSettingTile(
+                  "Log Konfigurationen", Icons.timelapse, LogConigPage()),
+              createSettingTile("Export Spalten Reihenfolge ändern",
+                  Icons.exposure_outlined, CsvColumnOrderChangerPage()),
+              createHeading("Personalisierung"),
+              createSettingTile(
+                  "Farbgebung", Icons.color_lens_outlined, ColorChangingPage()),
+              createHeading("E-Mail Verwaltung"),
+              createSettingTile("Mail-Empfänger", Icons.mail_outline,
+                  EMailEmpfaengerAendernPage()),
+              createSettingTile("Mail versenden", Icons.mail, SendMailPage()),
+              createGoogleAuthorizeButton(),
+            ],
+          ),
         ),
       ),
     );

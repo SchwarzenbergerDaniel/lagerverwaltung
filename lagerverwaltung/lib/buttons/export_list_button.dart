@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
-import 'package:lagerverwaltung/buttons/home_page_button_base.dart';
+import 'package:lagerverwaltung/buttons/base/secondary_button_base.dart';
 import 'package:lagerverwaltung/config/errormessage_constants.dart';
 import 'package:lagerverwaltung/service/csv_converter_service.dart';
 import 'package:lagerverwaltung/service/lagerlistenverwaltung_service.dart';
@@ -20,10 +20,9 @@ class ExportListButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return HomePageButtonBase(
+    return SecondaryButtonBase(
         title: "Liste exportieren",
-        icon: Icons.file_upload,
-        backgroundColor: Color.fromRGBO(233, 175, 134, 1),
+        accentColor: Color.fromRGBO(233, 175, 134, 1),
         onPressed: () => export(context));
   }
 

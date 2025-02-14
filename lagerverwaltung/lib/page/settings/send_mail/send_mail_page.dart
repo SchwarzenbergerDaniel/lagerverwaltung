@@ -7,8 +7,10 @@ import 'package:lagerverwaltung/service/lagerlistenverwaltung_service.dart';
 import 'package:lagerverwaltung/service/localsettings_manager_service.dart';
 import 'package:lagerverwaltung/service/logger/logger_service.dart';
 import 'package:lagerverwaltung/service/mailsender/mailsender_service.dart';
+import 'package:lagerverwaltung/utils/heading_text.dart';
 import 'package:lagerverwaltung/utils/loading_dialog.dart';
 import 'package:lagerverwaltung/utils/showsnackbar.dart';
+import 'package:lagerverwaltung/widget/background/animated_background.dart';
 import 'package:lagerverwaltung/widget/custom_leading_button.dart';
 
 class SendMailPage extends StatelessWidget {
@@ -108,18 +110,14 @@ class SendMailPage extends StatelessWidget {
       navigationBar: CupertinoNavigationBar(
         leading: CustomBackButton(),
         backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
-        middle: Text(
-          'Mail verschicken',
-          style: CupertinoTheme.of(context).textTheme.textStyle,
-        ),
       ),
       child: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
+        child: AnimatedBackground(
           child: Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
+                HeadingText(text: "Mail verschicken"),
                 Wrap(
                   spacing: 20,
                   runSpacing: 20,

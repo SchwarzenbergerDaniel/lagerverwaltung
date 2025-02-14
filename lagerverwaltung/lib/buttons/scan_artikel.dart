@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
-import 'package:lagerverwaltung/buttons/home_page_button_base.dart';
+import 'package:lagerverwaltung/buttons/base/primary_button_base.dart';
 import 'package:lagerverwaltung/config/constants.dart';
 import 'package:lagerverwaltung/model/lagerlistenentry.dart';
 import 'package:lagerverwaltung/page/edit_artikel_page.dart';
@@ -14,10 +14,9 @@ class ScanArtikelButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return HomePageButtonBase(
-        title: "Artikel scannen",
-        icon: Icons.add_box,
-        backgroundColor: Color.fromRGBO(211, 153, 241, 1),
+    return PrimaryButtonBase(
+        title: "Artikel\nScannen",
+        accentColor: Color.fromRGBO(211, 153, 241, 1),
         onPressed: () => scanArtikel(context));
   }
 

@@ -11,7 +11,6 @@ import 'package:lagerverwaltung/buttons/scan_artikel.dart';
 import 'package:lagerverwaltung/buttons/export_list_button.dart';
 import 'package:lagerverwaltung/buttons/import_list_button.dart';
 import 'package:lagerverwaltung/buttons/inventur_durchfuehren_button.dart';
-import 'package:lagerverwaltung/buttons/logs_ansehen_button.dart';
 import 'package:lagerverwaltung/provider/colormodeprovider.dart';
 import 'package:lagerverwaltung/service/jokegenerator_service.dart';
 import 'package:lagerverwaltung/service/localsettings_manager_service.dart';
@@ -24,6 +23,8 @@ import 'package:lagerverwaltung/service/localstorage_service.dart';
 import 'package:lagerverwaltung/service/mailsender/mailsender_service.dart';
 import 'package:lagerverwaltung/page/settings/settings_page.dart';
 import 'package:lagerverwaltung/testhelper/testhelper.dart';
+import 'package:lagerverwaltung/utils/heading_text.dart';
+import 'package:lagerverwaltung/widget/background/animated_background.dart';
 import 'package:provider/provider.dart';
 
 final getIt = GetIt.instance;
@@ -48,6 +49,7 @@ Future setUpServices() async {
   await localSettingsManager.ensureInitialized();
 }
 
+//TODO: Appbar schaut Arsch aus => Text weg und transparent, nur backbutton links oben.
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await SystemChrome.setPreferredOrientations([
@@ -55,7 +57,7 @@ void main() async {
     DeviceOrientation.portraitUp,
   ]);
 
-  await Testhelper.clearLocalStorage();
+  // await Testhelper.clearLocalStorage();
   await setUpServices();
 
   await Testhelper.add_default_values();
@@ -99,21 +101,20 @@ class MyApp extends StatelessWidget {
               darkColor: themeService
                   .primaryColor.darkColor, // Dark mode primary color
             ),
-            barBackgroundColor: themeService.backgroundColor,
+            barBackgroundColor: CupertinoColors.transparent,
             scaffoldBackgroundColor: themeService.backgroundColor,
             textTheme: CupertinoTextThemeData(
               textStyle: TextStyle(
                 fontSize: 16,
-                color: textColor, // Dynamically adjusted text color
+                color: textColor,
               ),
               actionTextStyle: TextStyle(
-                color:
-                    textColor, // Also apply the contrast rule for action texts
+                color: textColor,
               ),
             ),
           ),
           debugShowCheckedModeBanner: false,
-          home: const MyHomePage(title: 'Gradwohl Lagerverwaltung'),
+          home: const MyHomePage(),
         );
       },
     );
@@ -121,15 +122,13 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  final String title;
+  const MyHomePage({super.key});
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   final codeScannerService = GetIt.instance<CodeScannerService>();
   final mailSenderService = GetIt.instance<MailSenderService>();
   final fileConverterService = GetIt.instance<FileConverterService>();
@@ -138,75 +137,107 @@ class _MyHomePageState extends State<MyHomePage> {
   final loggerService = GetIt.instance<LoggerService>();
   final localSettingsManagerService =
       GetIt.instance<LocalSettingsManagerService>();
-  final themeService = getIt<ThemeChangingService>();
-
   @override
   Widget build(BuildContext context) {
-    bool isDarkmode =
-        themeService.backgroundColor.color.computeLuminance() < 0.5;
-
     return CupertinoPageScaffold(
-      navigationBar: CupertinoNavigationBar(
-        middle: Text(
-          widget.title,
-          style: CupertinoTheme.of(context).textTheme.textStyle,
-        ),
-        trailing: CupertinoButton(
-            child: Icon(Icons.settings_outlined),
-            onPressed: () {
-              Navigator.push(context,
-                  CupertinoPageRoute(builder: (context) => SettingsPage()));
-            }),
-        backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
-      ),
-      child: Center(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(
-              horizontal: 20), // Rand auf beiden Seiten hinzufügen
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              // LOGO:
-              Image.asset(
-                isDarkmode
-                    ? 'assets/logo-gradwohl-dunkel.png'
-                    : 'assets/logo-gradwohl.png',
-                width: 150,
-                height: 150,
-              ),
-              const SizedBox(height: 20),
+      child: Stack(
+        children: [
+          AnimatedBackground(
+            child: Center(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      HeadingText(text: "Lagerverwaltung"),
+                      const SizedBox(height: 20),
 
-              // BUTTONS IN ROWS OF TWO:
-              Column(
-                children: [
-                  Row(
-                    children: [
-                      Expanded(child: ScanLagerplatzButton()),
-                      Expanded(child: ScanArtikelButton()),
+                      // Zeile 1: Standort & Artikel Scannen
+                      _buildHeading("Standort & Artikel Scannen"),
+                      const SizedBox(height: 10),
+                      Row(
+                        children: [
+                          Expanded(child: ScanLagerplatzButton()),
+                          const SizedBox(width: 10),
+                          Expanded(child: ScanArtikelButton()),
+                        ],
+                      ),
+                      const SizedBox(height: 20),
+
+                      // Zeile 2: Bestandsänderungen & Inventur
+                      _buildHeading("Bestandsänderungen & Inventur"),
+                      const SizedBox(height: 10),
+                      Row(
+                        children: [
+                          Expanded(child: ArtikelAmountChangeButton()),
+                          const SizedBox(width: 10),
+                          Expanded(child: InventurDurchfuehrenButton()),
+                        ],
+                      ),
+                      const SizedBox(height: 20),
+
+                      // Zeile 3: Datenimport & -export
+                      _buildHeading("Datenimport & -export"),
+                      const SizedBox(height: 10),
+                      Row(
+                        children: [
+                          Expanded(child: ExportListButton()),
+                          const SizedBox(width: 10),
+                          Expanded(child: ImportListButton()),
+                        ],
+                      ),
                     ],
                   ),
-                  Row(
-                    children: [
-                      Expanded(child: ArtikelAmountChangeButton()),
-                      Expanded(child: InventurDurchfuehrenButton()),
-                    ],
-                  ),
-                  Row(
-                    children: [
-                      Expanded(child: ExportListButton()),
-                      Expanded(child: ImportListButton()),
-                    ],
-                  ),
-                  Row(
-                    children: [
-                      Expanded(child: LogsAnsehenButton()),
-                    ],
-                  ),
-                ],
+                ),
               ),
-            ],
+            ),
           ),
-        ),
+          // Positionierter Settings-Button oben rechts
+          SafeArea(
+            child: Align(
+              alignment: Alignment.topRight,
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: CupertinoButton(
+                  padding: EdgeInsets.zero,
+                  child: Icon(Icons.settings_outlined),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      CupertinoPageRoute(builder: (context) => SettingsPage()),
+                    );
+                  },
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildHeading(String title) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Row(
+        children: [
+          Text(
+            title,
+            style: const TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Container(
+              margin: const EdgeInsets.only(left: 8.0),
+              height: 1,
+              color: CupertinoColors.inactiveGray,
+            ),
+          ),
+        ],
       ),
     );
   }

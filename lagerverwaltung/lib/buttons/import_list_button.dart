@@ -1,7 +1,7 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
-import 'package:lagerverwaltung/buttons/home_page_button_base.dart';
+import 'package:lagerverwaltung/buttons/base/secondary_button_base.dart';
 import 'package:lagerverwaltung/service/lagerlistenverwaltung_service.dart';
 import 'package:lagerverwaltung/utils/showsnackbar.dart';
 
@@ -12,10 +12,9 @@ class ImportListButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return HomePageButtonBase(
+    return SecondaryButtonBase(
         title: "Liste importieren",
-        icon: Icons.file_download,
-        backgroundColor: Color.fromRGBO(231, 218, 112, 1),
+        accentColor: Color.fromRGBO(231, 218, 112, 1),
         onPressed: () => import(context));
   }
 

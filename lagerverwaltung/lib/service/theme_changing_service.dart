@@ -11,7 +11,6 @@ class ThemeChangingService with ChangeNotifier {
   CupertinoDynamicColor get backgroundColor =>
       _backgroundColor; // Fixed this line
 
-  /// Load the primary color from SharedPreferences
   Future<void> loadPrimaryColor() async {
     final prefs = await SharedPreferences.getInstance();
     final colorValue =
@@ -21,18 +20,16 @@ class ThemeChangingService with ChangeNotifier {
       color: Color(colorValue),
       darkColor: Color(colorValue),
     );
-    notifyListeners(); // Update UI
+    notifyListeners();
   }
 
-  /// Save and set the primary color
   Future<void> setPrimaryColor(CupertinoDynamicColor color) async {
     _primaryColor = color;
     final prefs = await SharedPreferences.getInstance();
     await prefs.setInt('primaryColor', color.color.value);
-    notifyListeners(); // Update UI
+    notifyListeners();
   }
 
-  /// Load the background color from SharedPreferences
   Future<void> loadBackgroundColor() async {
     final prefs = await SharedPreferences.getInstance();
     final colorValue =
@@ -42,10 +39,9 @@ class ThemeChangingService with ChangeNotifier {
       color: Color(colorValue),
       darkColor: Color(colorValue),
     );
-    notifyListeners(); // Update UI
+    notifyListeners();
   }
 
-  /// Save and set the background color
   Future<void> setBackgroundColor(CupertinoDynamicColor color) async {
     _backgroundColor = color;
     final prefs = await SharedPreferences.getInstance();
