@@ -5,7 +5,7 @@ import 'package:lagerverwaltung/model/lagerlistenentry.dart';
 import 'package:lagerverwaltung/service/lagerlistenverwaltung_service.dart';
 import 'package:lagerverwaltung/utils/scan_artikel_code_after_lagerplatz.dart';
 import 'package:lagerverwaltung/widget/background/animated_background.dart';
-import 'package:lagerverwaltung/widget/custom_leading_button.dart';
+import 'package:lagerverwaltung/widget/custom_app_bar.dart';
 import 'package:lagerverwaltung/page/edit_artikel_page.dart';
 
 class LagerlistePage extends StatefulWidget {
@@ -24,14 +24,7 @@ class _LagerlistePageState extends State<LagerlistePage> {
   @override
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
-      navigationBar: CupertinoNavigationBar(
-        middle: Text(
-          "Artikel in Lagerplatz: ${widget.lagerplatzId}",
-          style: CupertinoTheme.of(context).textTheme.textStyle,
-        ),
-        backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
-        leading: CustomBackButton(),
-      ),
+      navigationBar: CustomAppBar(title: "Artikel in Lagerplatz: ${widget.lagerplatzId}"),
       child: AnimatedBackground(
         child: SafeArea(
           child: Column(
@@ -41,7 +34,6 @@ class _LagerlistePageState extends State<LagerlistePage> {
                 onPressed: () async {
                   await scanArtikelCodeAfterLagerplatz(
                       context, widget.lagerplatzId);
-
                   setState(() {}); // Rebuild the page
                 },
                 child: Text(

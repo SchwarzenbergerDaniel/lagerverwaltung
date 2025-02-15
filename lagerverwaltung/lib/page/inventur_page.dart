@@ -6,7 +6,7 @@ import 'package:lagerverwaltung/model/lagerlistenentry.dart';
 import 'package:lagerverwaltung/service/codescanner_service.dart';
 import 'package:lagerverwaltung/service/lagerlistenverwaltung_service.dart';
 import 'package:lagerverwaltung/utils/showsnackbar.dart';
-import 'package:lagerverwaltung/widget/custom_leading_button.dart';
+import 'package:lagerverwaltung/widget/custom_app_bar.dart';
 
 class InventurPage extends StatefulWidget {
   final String lagerplatzId;
@@ -88,17 +88,13 @@ class _InventurPageState extends State<InventurPage> {
   @override
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
-      navigationBar: CupertinoNavigationBar(
-        middle: Text(
-          "Inventur: ${widget.lagerplatzId}",
-          style: CupertinoTheme.of(context).textTheme.textStyle,
-        ),
+      navigationBar: CustomAppBar(
+        title: "Inventur: ${widget.lagerplatzId}",
         trailing: CupertinoButton(
           padding: EdgeInsets.zero,
           onPressed: _inventurAbschliessen,
           child: const Text("Fertig"),
         ),
-        leading: CustomBackButton(),
       ),
       child: SafeArea(
         child: Column(

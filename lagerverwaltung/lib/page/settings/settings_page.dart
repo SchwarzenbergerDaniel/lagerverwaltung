@@ -9,7 +9,7 @@ import 'package:lagerverwaltung/page/settings/log_intervall/log_intervall_mail_p
 import 'package:lagerverwaltung/page/settings/setting_tile.dart';
 import 'package:lagerverwaltung/service/mailsender/google_auth_api.dart';
 import 'package:lagerverwaltung/widget/background/animated_background.dart';
-import 'package:lagerverwaltung/widget/custom_leading_button.dart';
+import 'package:lagerverwaltung/widget/custom_app_bar.dart';
 
 //TODO: Add logs Button
 class SettingsPage extends StatelessWidget {
@@ -18,14 +18,8 @@ class SettingsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
-      navigationBar: CupertinoNavigationBar(
-        middle: Text(
-          'Einstellungen',
-          style: CupertinoTheme.of(context).textTheme.textStyle,
-        ),
-        leading: CustomBackButton(),
-        backgroundColor:
-            CupertinoColors.transparent.withOpacity(0), // Komplett transparent
+      navigationBar: CustomAppBar(
+        title: 'Einstellungen',
       ),
       child: AnimatedBackground(
         child: SafeArea(

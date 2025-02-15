@@ -16,7 +16,7 @@ class _CustomBackButtonState extends State<CustomBackButton> {
   @override
   Widget build(BuildContext context) {
     return CupertinoButton(
-      color: CupertinoTheme.of(context).scaffoldBackgroundColor,
+      color: CupertinoColors.transparent,
       padding: const EdgeInsets.all(12),
       borderRadius: BorderRadius.circular(20),
       onPressed: widget.onPressed ??

@@ -5,6 +5,7 @@ import 'package:lagerverwaltung/model/lagerlistenentry.dart';
 import 'package:lagerverwaltung/service/lagerlistenverwaltung_service.dart';
 import 'package:lagerverwaltung/utils/showdialog.dart';
 import 'package:lagerverwaltung/utils/showsnackbar.dart';
+import 'package:lagerverwaltung/widget/custom_app_bar.dart';
 
 class EditArtikelPage extends StatefulWidget {
   final LagerlistenEntry? entry;
@@ -172,16 +173,14 @@ class _EditArtikelPageState extends State<EditArtikelPage> {
   @override
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
-      navigationBar: CupertinoNavigationBar(
-        middle: Text(
+      navigationBar: CustomAppBar(
+        title:
           'Artikel',
-          style: CupertinoTheme.of(context).textTheme.textStyle,
-        ),
         // Replace the previous CustomBackButton with one that calls _onBackPressed.
         leading: CupertinoButton(
           padding: EdgeInsets.zero,
-          child: const Icon(Icons.arrow_back),
           onPressed: _onBackPressed,
+          child: const Icon(Icons.arrow_back),
         ),
       ),
       child: SafeArea(
