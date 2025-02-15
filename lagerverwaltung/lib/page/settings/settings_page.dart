@@ -24,8 +24,8 @@ class SettingsPage extends StatelessWidget {
           style: CupertinoTheme.of(context).textTheme.textStyle,
         ),
         leading: CustomBackButton(),
-        backgroundColor: CupertinoColors.transparent, // Transparent background
-        border: null,
+        backgroundColor:
+            CupertinoColors.transparent.withOpacity(0), // Komplett transparent
       ),
       child: AnimatedBackground(
         child: SafeArea(

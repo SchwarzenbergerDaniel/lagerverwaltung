@@ -53,7 +53,7 @@ class LagerlistenVerwaltungsService {
     } catch (e) {}
   }
 
-  void updateArtikel(
+  Future updateArtikel(
       String artikelGWID, String lagerplatzID, LagerlistenEntry entry) async {
     await deleteArtikel(artikelGWID, lagerplatzID);
     await addArtikelToLagerliste(entry);
