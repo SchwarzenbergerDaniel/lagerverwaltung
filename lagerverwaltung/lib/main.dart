@@ -102,7 +102,7 @@ class MyApp extends StatelessWidget {
                   .primaryColor.darkColor, // Dark mode primary color
             ),
             barBackgroundColor: CupertinoColors.transparent,
-            scaffoldBackgroundColor: themeService.backgroundColor,
+            // scaffoldBackgroundColor: CupertinoColors.transparent,
             textTheme: CupertinoTextThemeData(
               textStyle: TextStyle(
                 fontSize: 16,

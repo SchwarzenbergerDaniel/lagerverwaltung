@@ -1,8 +1,6 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:lagerverwaltung/provider/colormodeprovider.dart';
-import 'package:provider/provider.dart';
 
 class PrimaryButtonBase extends StatelessWidget {
   final String title;

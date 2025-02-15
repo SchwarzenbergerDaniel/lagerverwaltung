@@ -127,8 +127,9 @@ class _LogPageState extends State<LogPage> {
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
-        backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
         leading: CustomBackButton(),
+        backgroundColor: Colors.transparent,
+        border: null, // Remove border line
       ),
       child: AnimatedBackground(
         child: Column(

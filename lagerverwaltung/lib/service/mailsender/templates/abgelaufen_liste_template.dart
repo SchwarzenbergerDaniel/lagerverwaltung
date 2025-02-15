@@ -47,7 +47,7 @@ class AbgelaufenListeTemplate extends HTMLTemplateGenerator {
         <td style="padding: 8px; text-align: left;">${entry.beschreibung}</td>
         <td style="padding: 8px; text-align: center;">${entry.menge}</td>
         <td style="padding: 8px; text-align: center;">${entry.mindestMenge}</td>
-        <td style="padding: 8px; text-align: right; color: ${expiresToday ? '#ffcc00' : '#ff0000'};">
+        <td style="padding: 8px; text-align: right; color: ${expiresToday ? 'orange' : 'red'};">
           ${getMailDateTimeAsReadableString(date: entry.ablaufdatum)}
         </td>
       </tr>

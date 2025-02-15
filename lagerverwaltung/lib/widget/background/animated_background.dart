@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'dart:math';
 
@@ -45,7 +46,7 @@ class _AnimatedBackgroundState extends State<AnimatedBackground>
 
     final startColor = themeChangingService.primaryColor.withOpacity(0.2);
     final hslStart = HSLColor.fromColor(startColor);
-    final nextColor = hslStart.withSaturation(1.0).withLightness(0.1).toColor();
+    final nextColor = hslStart.withLightness(0.1).toColor();
 
     return Stack(
       children: [

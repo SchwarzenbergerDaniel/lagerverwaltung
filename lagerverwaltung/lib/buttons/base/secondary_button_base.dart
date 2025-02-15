@@ -2,8 +2,6 @@ import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:lagerverwaltung/provider/colormodeprovider.dart';
-import 'package:provider/provider.dart';
 
 class SecondaryButtonBase extends StatelessWidget {
   final String title;
