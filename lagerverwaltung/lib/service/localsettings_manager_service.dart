@@ -23,7 +23,8 @@ class LocalSettingsManagerService {
   static const String _LOG_INTERVALL_MAIL_DAYS_KEY =
       "_LOG_INTERVALL_MAIL_DAYS_KEY";
   static const String _CSV_ORDER_LIST_KEY = "CSV_ORDER_LIST_KEY";
-  static const String _IST_BUNT_KEY = "_IST_BUNT_KEY";
+  static const String _IST_MOVING_BACKGROUND_KEY = "_IST_MOVING_BACKGROUND_KEY";
+  static const String _IST_BRIGHT_BACKGROUND = "_IST_BRIGHT_BACKGROUND";
 
   // SharedPreference-Cache:
   static SharedPreferences? _prefs;
@@ -48,7 +49,8 @@ class LocalSettingsManagerService {
         .toList());
     await setIntervallLogMailDays(prefs.getInt(_LOG_INTERVALL_MAIL_DAYS_KEY));
     await setDeleteLogsAfterDays(prefs.getInt(_DELETE_LOGS_AFTER_DAYS_KEY));
-    await setIstBunt(prefs.getBool(_IST_BUNT_KEY));
+    await setIsMoving(prefs.getBool(_IST_MOVING_BACKGROUND_KEY));
+    await setIsBright(prefs.getBool(_IST_BRIGHT_BACKGROUND));
   }
 
   // INSTANZEN
@@ -56,7 +58,8 @@ class LocalSettingsManagerService {
   int? _logIntervallDays;
   int? _deleteLogsAfterDays;
   List<Columns>? _csv_order;
-  bool? _istBunt;
+  bool? _isMovingBackground;
+  bool? _isBrightBackground;
 
   // MAIL-EMpfänger:
   String getMail() {
@@ -107,15 +110,27 @@ class LocalSettingsManagerService {
         _CSV_ORDER_LIST_KEY, newOrder.map((val) => val.name).toList());
   }
 
-  // BUNTE-Farbgebung:
-  bool getIstBunt() {
-    return _istBunt!;
+  // Moving background-Farbgebung:
+  bool getIsMoving() {
+    return _isMovingBackground!;
   }
 
-  Future setIstBunt(bool? istBunt) async {
-    istBunt = istBunt ?? true;
+  Future setIsMoving(bool? istMoving) async {
+    istMoving = istMoving ?? true;
     final prefs = await _getSharePreference();
-    this._istBunt = istBunt;
-    prefs.setBool(_IST_BUNT_KEY, this._istBunt!);
+    this._isMovingBackground = istMoving;
+    prefs.setBool(_IST_MOVING_BACKGROUND_KEY, this._isMovingBackground!);
+  }
+
+  // TODO: Moving background-Farbgebung:
+  bool getIsBright() {
+    return _isMovingBackground!;
+  }
+
+  Future setIsBright(bool? isBright) async {
+    isBright = isBright ?? true;
+    final prefs = await _getSharePreference();
+    this._isBrightBackground = isBright;
+    prefs.setBool(_IST_BRIGHT_BACKGROUND, this._isBrightBackground!);
   }
 }

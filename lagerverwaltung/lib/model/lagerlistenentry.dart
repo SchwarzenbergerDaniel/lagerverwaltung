@@ -133,21 +133,59 @@ class LagerlistenEntry {
 
   String toCsvRow(List<Columns> default_csv_order) {
     List<(Columns column, dynamic value)> values = [
-      (Columns.lagerplatzId, lagerplatzId ?? ''),
-      (Columns.fach, fach ?? ''),
-      (Columns.regal, regal ?? ''),
-      (Columns.artikelGWID, artikelGWID ?? ''),
-      (Columns.arikelFirmenId, arikelFirmenId ?? ''),
-      (Columns.beschreibung, beschreibung ?? ''),
-      (Columns.kunde, kunde ?? ''),
-      (Columns.ablaufdatum, ablaufdatum?.toIso8601String() ?? ''),
-      (Columns.menge, menge?.toString() ?? ''),
-      (Columns.mindestMenge, mindestMenge?.toString() ?? '')
+      (
+        Columns.lagerplatzId,
+        (lagerplatzId ?? '').replaceAll(Constants.CSV_DELIMITER_VALUE, ';')
+      ),
+      (
+        Columns.fach,
+        (fach ?? '').replaceAll(Constants.CSV_DELIMITER_VALUE, ';')
+      ),
+      (
+        Columns.regal,
+        (regal ?? '').replaceAll(Constants.CSV_DELIMITER_VALUE, ';')
+      ),
+      (
+        Columns.artikelGWID,
+        (artikelGWID ?? '').replaceAll(Constants.CSV_DELIMITER_VALUE, ';')
+      ),
+      (
+        Columns.arikelFirmenId,
+        (arikelFirmenId ?? '').replaceAll(Constants.CSV_DELIMITER_VALUE, ';')
+      ),
+      (
+        Columns.beschreibung,
+        (beschreibung ?? '').replaceAll(Constants.CSV_DELIMITER_VALUE, ';')
+      ),
+      (
+        Columns.kunde,
+        (kunde ?? '').replaceAll(Constants.CSV_DELIMITER_VALUE, ';')
+      ),
+      (
+        Columns.ablaufdatum,
+        ablaufdatum
+                ?.toIso8601String()
+                .replaceAll(Constants.CSV_DELIMITER_VALUE, ';') ??
+            ''
+      ),
+      (
+        Columns.menge,
+        menge?.toString().replaceAll(Constants.CSV_DELIMITER_VALUE, ';') ?? ''
+      ),
+      (
+        Columns.mindestMenge,
+        mindestMenge
+                ?.toString()
+                .replaceAll(Constants.CSV_DELIMITER_VALUE, ';') ??
+            ''
+      )
     ];
+
     values.sort((left, right) => default_csv_order
         .indexOf(left.$1)
         .compareTo(default_csv_order.indexOf(right.$1)));
-
-    return values.map((value) => value.$2).join(Constants.CSV_DELIMITER_VALUE);
+    final erg =
+        values.map((value) => value.$2).join(Constants.CSV_DELIMITER_VALUE);
+    return erg;
   }
 }
