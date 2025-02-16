@@ -11,7 +11,7 @@ import 'package:lagerverwaltung/buttons/scan_artikel.dart';
 import 'package:lagerverwaltung/buttons/export_list_button.dart';
 import 'package:lagerverwaltung/buttons/import_list_button.dart';
 import 'package:lagerverwaltung/buttons/inventur_durchfuehren_button.dart';
-import 'package:lagerverwaltung/provider/colormodeprovider.dart';
+import 'package:lagerverwaltung/provider/backgroundinfoprovider.dart';
 import 'package:lagerverwaltung/service/jokegenerator_service.dart';
 import 'package:lagerverwaltung/service/localsettings_manager_service.dart';
 import 'package:lagerverwaltung/service/theme_changing_service.dart';
@@ -57,7 +57,7 @@ void main() async {
     DeviceOrientation.portraitUp,
   ]);
 
-  // await Testhelper.clearLocalStorage();
+  await Testhelper.clearLocalStorage();
   await setUpServices();
 
   await Testhelper.add_default_values();
@@ -69,10 +69,8 @@ void main() async {
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(
-          create: (_) => themeService,
-        ),
-        ChangeNotifierProvider(create: (_) => ColorModeProvider()),
+        ChangeNotifierProvider(create: (_) => themeService),
+        ChangeNotifierProvider(create: (_) => BackgroundInfoProvider()),
       ],
       child: const MyApp(),
     ),
@@ -86,11 +84,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<ThemeChangingService>(
       builder: (context, themeService, child) {
-        // Determine appropriate text color based on background brightness
-        final Color textColor =
-            themeService.backgroundColor.color.computeLuminance() > 0.5
-                ? CupertinoColors.black // Light background → Dark text
-                : CupertinoColors.white; // Dark background → Light text
+        final Color textColor = CupertinoColors.white;
 
         return CupertinoApp(
           localizationsDelegates: [DefaultMaterialLocalizations.delegate],

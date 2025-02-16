@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:lagerverwaltung/provider/backgroundinfoprovider.dart';
 import 'dart:math';
 
 import 'package:lagerverwaltung/service/theme_changing_service.dart';
@@ -43,10 +44,13 @@ class _AnimatedBackgroundState extends State<AnimatedBackground>
   Widget build(BuildContext context) {
     // Listen to the provider so that changes trigger a rebuild.
     final themeChangingService = Provider.of<ThemeChangingService>(context);
+    final movingBlobs = Provider.of<BackgroundInfoProvider>(context);
 
-    final startColor = themeChangingService.primaryColor.withOpacity(0.2);
+    final startColor = themeChangingService.backgroundColor
+        .withOpacity(movingBlobs.isBright ? 0.6 : 0.2);
     final hslStart = HSLColor.fromColor(startColor);
-    final nextColor = hslStart.withLightness(0.1).toColor();
+    final nextColor =
+        hslStart.withLightness(movingBlobs.isBright ? 0.6 : 0.2).toColor();
 
     return Stack(
       children: [
@@ -66,13 +70,17 @@ class _AnimatedBackgroundState extends State<AnimatedBackground>
           animation: _animation,
           builder: (context, child) {
             return Stack(
-              children: [
-                // Upper half shapes
-                _buildMovingCircle(80, 130, 40, 0.15, _animation.value * 30),
-                _buildMovingBlob(80, 300, 0.1, _animation.value),
-                _buildMovingCircle(70, 400, 30, 0.12, _animation.value * 20),
-                _buildMovingBlob(500, 250, 0.08, _animation.value),
-              ],
+              children: movingBlobs.isMoving
+                  ? [
+                      // Upper half shapes
+                      _buildMovingCircle(
+                          80, 130, 40, 0.15, _animation.value * 30),
+                      _buildMovingBlob(80, 300, 0.1, _animation.value),
+                      _buildMovingCircle(
+                          70, 400, 30, 0.12, _animation.value * 20),
+                      _buildMovingBlob(500, 250, 0.08, _animation.value),
+                    ]
+                  : [],
             );
           },
         ),
