@@ -30,6 +30,7 @@ class _InventurPageState extends State<InventurPage> {
     _loadSollBestand();
   }
 
+  /// Sollbestand wird geladen
   void _loadSollBestand() async {
     var bestand = await lagerListenVerwaltungsService
         .getLagerlisteByLagerplatz(widget.lagerplatzId);
@@ -79,8 +80,7 @@ class _InventurPageState extends State<InventurPage> {
   /// Speicherung der Inventur
   void _inventurAbschliessen() {
     //TODO:
-    // lagerListenVerwaltungsService.speichereInventur(widget.lagerplatzId, istBestand);
-
+    //lagerListenVerwaltungsService.speichereInventur(widget.lagerplatzId, istBestand);
     Showsnackbar.showSnackBar(context, "Inventur abgeschlossen!");
     Navigator.pop(context);
   }
