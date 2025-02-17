@@ -20,7 +20,7 @@ class SecondaryButtonBase extends StatelessWidget {
     return GestureDetector(
       onTap: onPressed,
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(0),
         child: Stack(
           children: [
             BackdropFilter(
@@ -37,7 +37,6 @@ class SecondaryButtonBase extends StatelessWidget {
                     end: Alignment.bottomRight,
                   ),
                   color: accentColor.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(20),
                   border: Border.all(
                     color: accentColor.withOpacity(0.8),
                     width: 1.2,

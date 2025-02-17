@@ -4,12 +4,12 @@ import 'package:get_it/get_it.dart';
 import 'package:lagerverwaltung/service/localsettings_manager_service.dart';
 import 'package:lagerverwaltung/utils/heading_text.dart';
 import 'package:lagerverwaltung/widget/background/animated_background.dart';
-import 'package:lagerverwaltung/widget/custom_leading_button.dart';
+import 'package:lagerverwaltung/widget/custom_app_bar.dart';
 import 'package:lagerverwaltung/utils/showsnackbar.dart';
 import 'package:lagerverwaltung/widget/fertig_button.dart';
 
-class LogConigPage extends StatelessWidget {
-  LogConigPage({super.key});
+class LogConfigPage extends StatelessWidget {
+  LogConfigPage({super.key});
 
   final localSettingsManagerService =
       GetIt.instance<LocalSettingsManagerService>();
@@ -25,14 +25,7 @@ class LogConigPage extends StatelessWidget {
         text: localSettingsManagerService.getDeleteLogsAfterDays().toString());
 
     return CupertinoPageScaffold(
-      navigationBar: CupertinoNavigationBar(
-        middle: Text(
-          'Log-Konfigurationen',
-          style: CupertinoTheme.of(context).textTheme.textStyle,
-        ),
-        backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
-        leading: CustomBackButton(),
-      ),
+      navigationBar: CustomAppBar(title: "Log-Konfigurationen"),
       child: AnimatedBackground(
         child: Center(
           child: SafeArea(

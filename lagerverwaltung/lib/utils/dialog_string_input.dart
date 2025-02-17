@@ -1,12 +1,12 @@
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 
-class DialogNumberInput {
-  static Future<int?> getNumber(BuildContext context, String title,
-      String hintText, int? defaultNumber) async {
-    final TextEditingController amountController = TextEditingController(
-        text: defaultNumber != null ? defaultNumber.toString() : "");
-    return await showCupertinoDialog<int>(
+class DialogStringInput {
+  static Future<String?> getString(BuildContext context, String title,
+      String hintText, String? defaultText) async {
+    final TextEditingController textController =
+        TextEditingController(text: defaultText ?? "");
+
+    return await showCupertinoDialog<String>(
       context: context,
       builder: (BuildContext context) {
         return CupertinoAlertDialog(
@@ -16,8 +16,8 @@ class DialogNumberInput {
             children: [
               SizedBox(height: 16),
               CupertinoTextField(
-                controller: amountController,
-                keyboardType: TextInputType.number,
+                controller: textController,
+                keyboardType: TextInputType.text,
                 placeholder: hintText,
                 padding: const EdgeInsets.all(12),
               ),
@@ -30,8 +30,9 @@ class DialogNumberInput {
             ),
             CupertinoDialogAction(
               onPressed: () {
-                int? amount = int.tryParse(amountController.text);
-                Navigator.of(context).pop(amount);
+                String inputText = textController.text.trim();
+                Navigator.of(context)
+                    .pop(inputText.isNotEmpty ? inputText : null);
               },
               child: Text("Bestätigen"),
             ),

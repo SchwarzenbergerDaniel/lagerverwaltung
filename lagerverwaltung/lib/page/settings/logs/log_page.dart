@@ -10,7 +10,7 @@ import 'package:lagerverwaltung/service/mailsender/mailsender_service.dart';
 import 'package:lagerverwaltung/utils/heading_text.dart';
 import 'package:lagerverwaltung/utils/loading_dialog.dart';
 import 'package:lagerverwaltung/widget/background/animated_background.dart';
-import 'package:lagerverwaltung/widget/custom_leading_button.dart';
+import 'package:lagerverwaltung/widget/custom_app_bar.dart';
 import 'package:lagerverwaltung/utils/showsnackbar.dart';
 
 class LogPage extends StatefulWidget {
@@ -125,12 +125,11 @@ class _LogPageState extends State<LogPage> {
 
   @override
   Widget build(BuildContext context) {
+    Color color = Theme.of(context).primaryColor.computeLuminance() > 0.5
+        ? CupertinoColors.black
+        : CupertinoColors.systemGrey;
     return CupertinoPageScaffold(
-      navigationBar: CupertinoNavigationBar(
-        leading: CustomBackButton(),
-        backgroundColor: Colors.transparent,
-        border: null, // Remove border line
-      ),
+      navigationBar: CustomAppBar(title: ""),
       child: AnimatedBackground(
         child: Column(
           children: [
@@ -140,14 +139,14 @@ class _LogPageState extends State<LogPage> {
             CupertinoSegmentedControl<bool>(
               groupValue: isDescending,
               onValueChanged: updateSorting,
-              children: const {
+              children: {
                 true: Padding(
                   padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 8),
-                  child: Text('Neueste zuerst'),
+                  child: Text('Neueste zuerst', style: TextStyle(color: color)),
                 ),
                 false: Padding(
                   padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 8),
-                  child: Text('Älteste zuerst'),
+                  child: Text('Älteste zuerst', style: TextStyle(color: color)),
                 ),
               },
             ),

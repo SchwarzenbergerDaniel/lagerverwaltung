@@ -1,6 +1,6 @@
 import 'package:get_it/get_it.dart';
 import 'package:lagerverwaltung/model/lagerlistenentry.dart';
-import 'package:lagerverwaltung/service/csv_converter_service.dart';
+import 'package:lagerverwaltung/service/xlsx_converter_service.dart';
 import 'package:lagerverwaltung/service/lagerlistenverwaltung_service.dart';
 import 'package:lagerverwaltung/service/localsettings_manager_service.dart';
 import 'package:lagerverwaltung/service/localstorage_service.dart';
@@ -54,7 +54,9 @@ class AutomatisiertChecker {
           .toList();
       if (abgelaufeneArtikel.isNotEmpty) {
         mailSenderService.sendAbgelaufen(
-            abgelaufeneArtikel, localSettingsManagerService.getMail());
+            abgelaufeneArtikel,
+            await lagerlistenVerwatlungsService.getLaeuftDemnaechstAb(),
+            localSettingsManagerService.getMail());
       }
     }
   }
@@ -66,7 +68,7 @@ class AutomatisiertChecker {
     if (!_isLastBackupInThisCalenderWeek(lastBackup)) {
       mailSenderService.sendLagerListe(
           await fileConverterService
-              .toCsv(await lagerlistenVerwatlungsService.artikelEntries),
+              .toXlsx(await lagerlistenVerwatlungsService.artikelEntries),
           localSettingsManagerService.getMail(),
           true);
       localStorageService.setLastBackup();

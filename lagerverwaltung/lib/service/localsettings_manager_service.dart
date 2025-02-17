@@ -1,7 +1,7 @@
 // ignore_for_file: constant_identifier_names
 
 import 'package:lagerverwaltung/config/default_values.dart';
-import 'package:lagerverwaltung/page/settings/csv_column_order/csv_column_order_changer_page.dart';
+import 'package:lagerverwaltung/page/settings/xlsx_column_order/xlsx_column_order_changer_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LocalSettingsManagerService {
@@ -22,7 +22,9 @@ class LocalSettingsManagerService {
       "_DELETE_LOGS_AFTER_DAYS_KEY";
   static const String _LOG_INTERVALL_MAIL_DAYS_KEY =
       "_LOG_INTERVALL_MAIL_DAYS_KEY";
-  static const String _CSV_ORDER_LIST_KEY = "CSV_ORDER_LIST_KEY";
+  static const String _SEND_ABGELAUFEN_REMINDER_IN_DAYS_KEY =
+      "_SEND_ABGELAUFEN_REMINDER_IN_DAYS_KEY";
+  static const String _XLSX_ORDER_LIST_KEY = "XLSX_ORDER_LIST_KEY";
   static const String _IST_MOVING_BACKGROUND_KEY = "_IST_MOVING_BACKGROUND_KEY";
   static const String _IST_BRIGHT_BACKGROUND = "_IST_BRIGHT_BACKGROUND";
 
@@ -43,12 +45,14 @@ class LocalSettingsManagerService {
 
   Future setDefaultValues(SharedPreferences prefs) async {
     await setMail(prefs.getString(_TO_MAIL_KEY));
-    await setCsvOrder(prefs
-        .getStringList(_CSV_ORDER_LIST_KEY)
+    await setXlsxOrder(prefs
+        .getStringList(_XLSX_ORDER_LIST_KEY)
         ?.map((value) => Columns.values.firstWhere((e) => e.name == value))
         .toList());
     await setIntervallLogMailDays(prefs.getInt(_LOG_INTERVALL_MAIL_DAYS_KEY));
     await setDeleteLogsAfterDays(prefs.getInt(_DELETE_LOGS_AFTER_DAYS_KEY));
+    await setAbgelaufenReminderInDays(
+        prefs.getInt(_DELETE_LOGS_AFTER_DAYS_KEY));
     await setIsMoving(prefs.getBool(_IST_MOVING_BACKGROUND_KEY));
     await setIsBright(prefs.getBool(_IST_BRIGHT_BACKGROUND));
   }
@@ -57,7 +61,8 @@ class LocalSettingsManagerService {
   String? _toMail;
   int? _logIntervallDays;
   int? _deleteLogsAfterDays;
-  List<Columns>? _csv_order;
+  int? _sendAbgelaufenReminderInDays;
+  List<Columns>? _xlsx_order;
   bool? _isMovingBackground;
   bool? _isBrightBackground;
 
@@ -97,17 +102,17 @@ class LocalSettingsManagerService {
     prefs.setInt(_LOG_INTERVALL_MAIL_DAYS_KEY, value);
   }
 
-  // CSV ORDER:
-  List<Columns> getCsvOrder() {
-    return _csv_order!;
+  // XLSX ORDER:
+  List<Columns> getXlsxOrder() {
+    return _xlsx_order!;
   }
 
-  Future setCsvOrder(List<Columns>? newOrder) async {
-    newOrder = newOrder ?? DefaultValues.DEFAULT_CSV_ORDER;
+  Future setXlsxOrder(List<Columns>? newOrder) async {
+    newOrder = newOrder ?? DefaultValues.DEFAULT_XLSX_ORDER;
     final prefs = await _getSharePreference();
-    _csv_order = newOrder;
+    _xlsx_order = newOrder;
     prefs.setStringList(
-        _CSV_ORDER_LIST_KEY, newOrder.map((val) => val.name).toList());
+        _XLSX_ORDER_LIST_KEY, newOrder.map((val) => val.name).toList());
   }
 
   // Moving background-Farbgebung:
@@ -132,5 +137,16 @@ class LocalSettingsManagerService {
     final prefs = await _getSharePreference();
     _isBrightBackground = isBright;
     prefs.setBool(_IST_BRIGHT_BACKGROUND, _isBrightBackground!);
+  }
+
+  int getAbgelaufenReminderInDays() {
+    return _sendAbgelaufenReminderInDays!;
+  }
+
+  Future setAbgelaufenReminderInDays(int? value) async {
+    value = value ?? DefaultValues.DEFAULT_ABGELAUFEN_REMINDER_DAYS;
+    final prefs = await _getSharePreference();
+    _sendAbgelaufenReminderInDays = value;
+    prefs.setInt(_SEND_ABGELAUFEN_REMINDER_IN_DAYS_KEY, value);
   }
 }

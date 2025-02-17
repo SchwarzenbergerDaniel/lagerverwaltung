@@ -65,7 +65,8 @@ class ArtikelAmountChangeButton extends StatelessWidget {
     int? amount = await DialogNumberInput.getNumber(
         context,
         isIncrease ? "Wie viel legen Sie hinein?" : "Wie viel entnehmen Sie?",
-        "Geben Sie die Menge ein"); // SHOW DIALOG with number inputfield
+        "Geben Sie die Menge ein",
+        null); // SHOW DIALOG with number inputfield
     if (amount == null || amount == 0) return;
 
     amount = amount * (isIncrease ? 1 : -1);

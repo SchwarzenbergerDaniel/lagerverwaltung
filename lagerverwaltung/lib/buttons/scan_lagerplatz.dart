@@ -55,8 +55,6 @@ class ScanLagerplatzButton extends StatelessWidget {
           Showsnackbar.showSnackBar(context, "Lagerplatz wurde hinzugefügt!");
         }
       }
-    } else {
-      Showsnackbar.showSnackBar(context, "kein Code gefunden!");
     }
   }
 }

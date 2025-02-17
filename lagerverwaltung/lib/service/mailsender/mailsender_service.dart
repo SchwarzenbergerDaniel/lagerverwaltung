@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:get_it/get_it.dart';
 import 'package:intl/intl.dart';
 import 'package:lagerverwaltung/model/lagerlistenentry.dart';
-import 'package:lagerverwaltung/service/csv_converter_service.dart';
+import 'package:lagerverwaltung/service/xlsx_converter_service.dart';
 import 'package:lagerverwaltung/service/localstorage_service.dart';
 import 'package:lagerverwaltung/service/logger/log_entry.dart';
 import 'package:lagerverwaltung/service/logger/logger_service.dart';
@@ -121,12 +121,13 @@ class MailSenderService {
     return success;
   }
 
-  Future<bool> sendAbgelaufen(
-      List<LagerlistenEntry> abgelaufeneArtikel, String toMail) async {
+  Future<bool> sendAbgelaufen(List<LagerlistenEntry> abgelaufeneArtikel,
+      List<LagerlistenEntry> laeuftDemnaestAb, String toMail) async {
     bool success = await _sendMessage(
         toMail: toMail,
-        templateGenerator:
-            AbgelaufenListeTemplate(abgelaufenListe: abgelaufeneArtikel));
+        templateGenerator: AbgelaufenListeTemplate(
+            abgelaufenListe: abgelaufeneArtikel,
+            laeuftDemnaestAb: laeuftDemnaestAb));
     if (success) {
       loggerService.log(
         LogEntryModel(

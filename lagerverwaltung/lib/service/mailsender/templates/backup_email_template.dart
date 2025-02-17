@@ -24,7 +24,7 @@ class LagerlisteBackupTemplate extends HTMLTemplateGenerator {
     return '''
       <p>Hallo!</p>
       <p>
-          Ihr manuell ausgelöstes Backup wurde erfolgreich erstellt und liegt dieser E-Mail als CSV-Datei bei.  
+          Ihr manuell ausgelöstes Backup wurde erfolgreich erstellt und liegt dieser E-Mail als XLSX-Datei bei.  
       </p>
      <p>
           Zeitpunkt der Backup-Erstellung: ${getMailDateTimeAsReadableString()}      </p>
@@ -36,7 +36,7 @@ class LagerlisteBackupTemplate extends HTMLTemplateGenerator {
     return '''
       <p>Hallo!</p>
       <p>
-        Ein automatisches Backup der Lagerliste wurde erstellt und als CSV-Datei
+        Ein automatisches Backup der Lagerliste wurde erstellt und als XLSX-Datei
         an diese E-Mail angehängt.
       </p>
       <p>

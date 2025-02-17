@@ -32,7 +32,8 @@ class InventurDurchfuehrenButton extends StatelessWidget {
         context,
         "Lagerplatz-ID scannen",
       );
-      if (scannedLagerplatz == Constants.EXIT_RETURN_VALUE) {
+      if (scannedLagerplatz == Constants.EXIT_RETURN_VALUE ||
+          scannedLagerplatz == null) {
         return;
       }
 

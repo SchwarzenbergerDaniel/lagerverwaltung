@@ -1,19 +1,25 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:lagerverwaltung/page/settings/logs/log_page.dart';
-import 'package:lagerverwaltung/page/settings/change_mail/change_mail_page.dart';
-import 'package:lagerverwaltung/page/settings/csv_column_order/csv_column_order_changer_page.dart';
+import 'package:lagerverwaltung/page/settings/xlsx_column_order/xlsx_column_order_changer_page.dart';
 import 'package:lagerverwaltung/page/settings/send_mail/send_mail_page.dart';
 import 'package:lagerverwaltung/page/settings/color_change/color_changing_page.dart';
 import 'package:lagerverwaltung/page/settings/log_intervall/log_intervall_mail_page.dart';
 import 'package:lagerverwaltung/page/settings/setting_tile.dart';
+import 'package:lagerverwaltung/service/localsettings_manager_service.dart';
 import 'package:lagerverwaltung/service/mailsender/google_auth_api.dart';
+import 'package:lagerverwaltung/utils/dialog_number_input.dart';
+import 'package:lagerverwaltung/utils/dialog_string_input.dart';
+import 'package:lagerverwaltung/utils/showsnackbar.dart';
 import 'package:lagerverwaltung/widget/background/animated_background.dart';
 import 'package:lagerverwaltung/widget/custom_app_bar.dart';
 
 //TODO: Add logs Button
 class SettingsPage extends StatelessWidget {
-  const SettingsPage({super.key});
+  SettingsPage({super.key});
+  final localSettingsManagerService =
+      GetIt.instance<LocalSettingsManagerService>();
 
   @override
   Widget build(BuildContext context) {
@@ -26,23 +32,70 @@ class SettingsPage extends StatelessWidget {
           child: ListView(
             children: [
               createHeading("Datenverwaltung"),
-              createSettingTile("Logs ansehen", Icons.time_to_leave, LogPage()),
+              createSettingTile("Logs anzeigen", Icons.history, LogPage()),
               createSettingTile(
-                  "Log Konfigurationen", Icons.timelapse, LogConigPage()),
-              createSettingTile("Export Spalten Reihenfolge ändern",
-                  Icons.exposure_outlined, CsvColumnOrderChangerPage()),
+                  "Log-Einstellungen", Icons.tune, LogConfigPage()),
+              createArtikelAbgelaufenSettingTile(context),
+              createSettingTile("Export-Spalten anpassen", Icons.view_column,
+                  XlsxColumnOrderChangerPage()),
               createHeading("Personalisierung"),
               createSettingTile(
-                  "Farbgebung", Icons.color_lens_outlined, ColorChangingPage()),
-              createHeading("E-Mail Verwaltung"),
-              createSettingTile("Mail-Empfänger", Icons.mail_outline,
-                  EMailEmpfaengerAendernPage()),
-              createSettingTile("Mail versenden", Icons.mail, SendMailPage()),
+                  "Farbschema ändern", Icons.palette, ColorChangingPage()),
+              createHeading("E-Mail-Verwaltung"),
+              createEMailEmpfaenger(context),
+              createSettingTile("E-Mail senden", Icons.send, SendMailPage()),
               createGoogleAuthorizeButton(),
             ],
           ),
         ),
       ),
+    );
+  }
+
+  Widget createEMailEmpfaenger(BuildContext context) {
+    return SettingTile(
+      bezeichnung: "Empfänger verwalten",
+      icon: Icon(Icons.people_alt),
+      onTap: () async {
+        String? newMail = await DialogStringInput.getString(
+            context,
+            "Empfänger E-Mail",
+            "E-Mail eingeben...",
+            localSettingsManagerService.getMail());
+
+        if (newMail != null) {
+          localSettingsManagerService.setMail(newMail);
+        } else {
+          Showsnackbar.showSnackBar(
+            context,
+            "Daten wurden nicht verändert!",
+          );
+        }
+      },
+    );
+  }
+
+  Widget createArtikelAbgelaufenSettingTile(BuildContext context) {
+    return SettingTile(
+      bezeichnung: "Vorzeitige Erinnerung abgelaufener Artikel",
+      icon: Icon(Icons.event_busy),
+      onTap: () async {
+        int? reminderDays = await DialogNumberInput.getNumber(
+          context,
+          "Vorzeitige Erinnerung abgelaufener Artikel",
+          "Tage vor Erreichen des Ablaufdatums erinnern:",
+          localSettingsManagerService.getAbgelaufenReminderInDays(),
+        );
+
+        if (reminderDays != null) {
+          localSettingsManagerService.setAbgelaufenReminderInDays(reminderDays);
+        } else {
+          Showsnackbar.showSnackBar(
+            context,
+            "Daten wurden nicht verändert!",
+          );
+        }
+      },
     );
   }
 

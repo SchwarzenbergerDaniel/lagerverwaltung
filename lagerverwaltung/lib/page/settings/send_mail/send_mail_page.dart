@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:lagerverwaltung/config/errormessage_constants.dart';
-import 'package:lagerverwaltung/service/csv_converter_service.dart';
+import 'package:lagerverwaltung/service/xlsx_converter_service.dart';
 import 'package:lagerverwaltung/service/lagerlistenverwaltung_service.dart';
 import 'package:lagerverwaltung/service/localsettings_manager_service.dart';
 import 'package:lagerverwaltung/service/logger/logger_service.dart';
@@ -11,7 +11,7 @@ import 'package:lagerverwaltung/utils/heading_text.dart';
 import 'package:lagerverwaltung/utils/loading_dialog.dart';
 import 'package:lagerverwaltung/utils/showsnackbar.dart';
 import 'package:lagerverwaltung/widget/background/animated_background.dart';
-import 'package:lagerverwaltung/widget/custom_leading_button.dart';
+import 'package:lagerverwaltung/widget/custom_app_bar.dart';
 
 class SendMailPage extends StatelessWidget {
   SendMailPage({super.key});
@@ -28,16 +28,18 @@ class SendMailPage extends StatelessWidget {
     LoadingDialog.showLoadingDialog(context, "Liste wird versendet...");
     final abgelaufen =
         await lagerListenVerwaltungsService.getAbgelaufeneArtikel();
+    final laueftDemnaestAb =
+        await lagerListenVerwaltungsService.getLaeuftDemnaechstAb();
 
-    if (abgelaufen.isEmpty) {
+    if (abgelaufen.isEmpty && laueftDemnaestAb.isEmpty) {
       LoadingDialog.hideLoadingDialog(context);
       Showsnackbar.showSnackBar(context,
-          "Gute Nachrichten: Es wurden keine abgelaufenen Artikel gefunden!");
+          "Gute Nachrichten: Es wurden keine abgelaufenen Artikel gefunden und keine die in naher Zukunft ablaufen!");
       return;
     }
 
     bool success = await mailSenderService.sendAbgelaufen(
-        abgelaufen, localSettingsManagerService.getMail());
+        abgelaufen, laueftDemnaestAb, localSettingsManagerService.getMail());
 
     LoadingDialog.hideLoadingDialog(context);
     if (success) {
@@ -53,7 +55,7 @@ class SendMailPage extends StatelessWidget {
 
     bool success = await mailSenderService.sendLagerListe(
         await fileConverterService
-            .toCsv(await lagerListenVerwaltungsService.artikelEntries),
+            .toXlsx(await lagerListenVerwaltungsService.artikelEntries),
         localSettingsManagerService.getMail(),
         false);
 
@@ -107,10 +109,7 @@ class SendMailPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
-      navigationBar: CupertinoNavigationBar(
-        leading: CustomBackButton(),
-        backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
-      ),
+      navigationBar: CustomAppBar(title: "E-Mail versenden"),
       child: SafeArea(
         child: AnimatedBackground(
           child: Center(
@@ -161,6 +160,9 @@ class SendMailPage extends StatelessWidget {
       {required VoidCallback onPressed,
       required String text,
       required IconData icon}) {
+    Color color = Theme.of(context).primaryColor.computeLuminance() > 0.5
+        ? CupertinoColors.black
+        : CupertinoColors.white;
     return SizedBox(
       width: 200,
       height: 55,
@@ -170,15 +172,14 @@ class SendMailPage extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, size: 22, color: CupertinoColors.white),
+            Icon(icon, size: 22, color: color),
             SizedBox(width: 8),
             Expanded(
-              child: Text(
-                text,
-                softWrap: true,
-                overflow: TextOverflow.visible,
-                textAlign: TextAlign.center,
-              ),
+              child: Text(text,
+                  softWrap: true,
+                  overflow: TextOverflow.visible,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: color)),
             ),
           ],
         ),

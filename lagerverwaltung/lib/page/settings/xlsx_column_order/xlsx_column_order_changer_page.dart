@@ -4,7 +4,7 @@ import 'package:get_it/get_it.dart';
 import 'package:lagerverwaltung/service/localsettings_manager_service.dart';
 import 'package:lagerverwaltung/utils/heading_text.dart';
 import 'package:lagerverwaltung/widget/background/animated_background.dart';
-import 'package:lagerverwaltung/widget/custom_leading_button.dart';
+import 'package:lagerverwaltung/widget/custom_app_bar.dart';
 
 enum Columns {
   lagerplatzId,
@@ -19,22 +19,23 @@ enum Columns {
   mindestMenge
 }
 
-class CsvColumnOrderChangerPage extends StatefulWidget {
-  const CsvColumnOrderChangerPage({super.key});
+class XlsxColumnOrderChangerPage extends StatefulWidget {
+  const XlsxColumnOrderChangerPage({super.key});
 
   @override
-  _CsvColumnOrderChangerPageState createState() =>
-      _CsvColumnOrderChangerPageState();
+  _XlsxColumnOrderChangerPageState createState() =>
+      _XlsxColumnOrderChangerPageState();
 }
 
-class _CsvColumnOrderChangerPageState extends State<CsvColumnOrderChangerPage> {
+class _XlsxColumnOrderChangerPageState
+    extends State<XlsxColumnOrderChangerPage> {
   final localSettingsManagerService =
       GetIt.instance<LocalSettingsManagerService>();
 
   @override
   void initState() {
     super.initState();
-    order = List<Columns>.from(localSettingsManagerService.getCsvOrder());
+    order = List<Columns>.from(localSettingsManagerService.getXlsxOrder());
   }
 
   List<Columns> order = [];
@@ -42,15 +43,11 @@ class _CsvColumnOrderChangerPageState extends State<CsvColumnOrderChangerPage> {
   @override
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
-      navigationBar: CupertinoNavigationBar(
-        backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
-        leading: CustomBackButton(),
-      ),
+      navigationBar: CustomAppBar(title: ""),
       child: SafeArea(
         child: AnimatedBackground(
           child: Column(
             children: [
-              // Heading at the top with some padding
               Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: HeadingText(
@@ -84,7 +81,7 @@ class _CsvColumnOrderChangerPageState extends State<CsvColumnOrderChangerPage> {
                       }
                       Columns item = order.removeAt(oldIndex);
                       order.insert(newIndex, item);
-                      localSettingsManagerService.setCsvOrder(order);
+                      localSettingsManagerService.setXlsxOrder(order);
                     });
                   },
                 ),

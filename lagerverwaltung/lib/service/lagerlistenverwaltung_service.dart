@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:get_it/get_it.dart';
 import 'package:lagerverwaltung/config/errormessage_constants.dart';
 import 'package:lagerverwaltung/model/lagerlistenentry.dart';
-import 'package:lagerverwaltung/service/csv_converter_service.dart';
+import 'package:lagerverwaltung/service/xlsx_converter_service.dart';
 import 'package:lagerverwaltung/service/localsettings_manager_service.dart';
 import 'package:lagerverwaltung/service/localstorage_service.dart';
 import 'package:lagerverwaltung/service/mailsender/mailsender_service.dart';
@@ -139,6 +139,28 @@ class LagerlistenVerwaltungsService {
     return null;
   }
 
+  Future<List<LagerlistenEntry>> getLaeuftDemnaechstAb() async {
+    int daysInFuture =
+        localSettingsManagerService.getAbgelaufenReminderInDays();
+    DateTime day = DateTime.now().add(Duration(days: daysInFuture));
+    day = DateTime(day.year, day.month, day.day);
+
+    return (await artikelEntries).where((val) {
+      if (val.getIstAbgelaufen()) {
+        return false;
+      }
+      if (val.ablaufdatum != null) {
+        DateTime ablaufDate = DateTime(
+          val.ablaufdatum!.year,
+          val.ablaufdatum!.month,
+          val.ablaufdatum!.day,
+        );
+        return ablaufDate.isBefore(day) || ablaufDate.isAtSameMomentAs(day);
+      }
+      return false;
+    }).toList();
+  }
+
   Future<List<LagerlistenEntry>> getAbgelaufeneArtikel() async {
     DateTime today = DateTime.now();
     today = DateTime(today.year, today.month, today.day);
@@ -157,19 +179,19 @@ class LagerlistenVerwaltungsService {
   }
 
   void exportLagerListe({bool isAutomatic = false}) async {
-    File file = await fileConverterService.toCsv(await artikelEntries);
+    File file = await fileConverterService.toXlsx(await artikelEntries);
     mailSenderService.sendLagerListe(
         file, localSettingsManagerService.getMail(), isAutomatic);
   }
 
   String importFromFile(String filePath) {
-    if (filePath.endsWith(".csv") == false) {
-      return ErrorMessageConstants.MUST_BE_CSV;
+    if (filePath.endsWith(".xlsx") == false) {
+      return ErrorMessageConstants.MUST_BE_XLSX;
     }
     File file = File(filePath);
     var newList = fileConverterService.convertToList(file);
     if (newList == null) {
-      return ErrorMessageConstants.COULD_NOT_CONVERT_CSV;
+      return ErrorMessageConstants.COULD_NOT_CONVERT_XLSX;
     }
 
     exportLagerListe(isAutomatic: true);

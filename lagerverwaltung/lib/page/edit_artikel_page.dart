@@ -1,7 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:lagerverwaltung/config/constants.dart';
 import 'package:lagerverwaltung/model/lagerlistenentry.dart';
+import 'package:lagerverwaltung/service/codescanner_service.dart';
 import 'package:lagerverwaltung/service/lagerlistenverwaltung_service.dart';
 import 'package:lagerverwaltung/utils/showdialog.dart';
 import 'package:lagerverwaltung/utils/showsnackbar.dart';
@@ -20,6 +22,8 @@ class EditArtikelPage extends StatefulWidget {
 class _EditArtikelPageState extends State<EditArtikelPage> {
   final lagerListenVerwaltungsService =
       GetIt.instance<LagerlistenVerwaltungsService>();
+  final codeScannerService = GetIt.instance<CodeScannerService>();
+
   late TextEditingController fachController;
   late TextEditingController regalController;
   late TextEditingController lagerplatzIdController;
@@ -95,7 +99,6 @@ class _EditArtikelPageState extends State<EditArtikelPage> {
     initialAblaufDatum = widget.entry?.ablaufdatum ?? ablaufDatum!;
   }
 
-  /// Checks if any field value has been changed.
   bool _hasChanges() {
     return fachController.text != initialFach ||
         regalController.text != initialRegal ||
@@ -109,8 +112,6 @@ class _EditArtikelPageState extends State<EditArtikelPage> {
         (ablaufDatum != initialAblaufDatum);
   }
 
-  /// Saves the changes if the required fields are filled.
-  /// Returns true if saving was successful.
   Future<bool> _saveChanges() async {
     if (fachController.text.isEmpty ||
         regalController.text.isEmpty ||
@@ -147,8 +148,6 @@ class _EditArtikelPageState extends State<EditArtikelPage> {
     return true;
   }
 
-  /// This method is called when the back button is pressed.
-  /// If any changes are detected, a dialog asks if the user wants to save them.
   Future<void> _onBackPressed() async {
     if (_hasChanges()) {
       bool shouldSave = await ShowDialogTwoOptions.isFirstOptionClicked(
@@ -161,7 +160,6 @@ class _EditArtikelPageState extends State<EditArtikelPage> {
         if (isEditable) {
           bool saved = await _saveChanges();
           if (!saved) {
-            // If saving fails (e.g. due to validation), do not pop the page.
             return;
           }
         }
@@ -174,9 +172,7 @@ class _EditArtikelPageState extends State<EditArtikelPage> {
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
       navigationBar: CustomAppBar(
-        title:
-          'Artikel',
-        // Replace the previous CustomBackButton with one that calls _onBackPressed.
+        title: 'Artikel',
         leading: CupertinoButton(
           padding: EdgeInsets.zero,
           onPressed: _onBackPressed,
@@ -190,8 +186,10 @@ class _EditArtikelPageState extends State<EditArtikelPage> {
             const SizedBox(height: 16),
             _buildLabeledField('Fach', fachController),
             _buildLabeledField('Regal', regalController),
-            _buildLabeledField('Lagerplatz ID', lagerplatzIdController),
-            _buildLabeledField('Artikel GWID', artikelGWIDController),
+            _buildLabeledField('Lagerplatz ID', lagerplatzIdController,
+                isQRCodeField: true, isLagerplatzIdField: true),
+            _buildLabeledField('Artikel GWID', artikelGWIDController,
+                isQRCodeField: true),
             _buildLabeledField('Artikel Firmen ID', arikelFirmenIdController),
             _buildLabeledField('Beschreibung', beschreibungController),
             _buildLabeledField('Kunde', kundeController),
@@ -252,7 +250,9 @@ class _EditArtikelPageState extends State<EditArtikelPage> {
   }
 
   Widget _buildLabeledField(String label, TextEditingController controller,
-      {TextInputType inputType = TextInputType.text}) {
+      {TextInputType inputType = TextInputType.text,
+      bool isQRCodeField = false,
+      bool isLagerplatzIdField = false}) {
     // Use a different background and text color when not in edit mode.
     final backgroundColor = isEditable
         ? CupertinoTheme.of(context).scaffoldBackgroundColor
@@ -276,14 +276,44 @@ class _EditArtikelPageState extends State<EditArtikelPage> {
             borderRadius: BorderRadius.circular(8),
             color: backgroundColor,
           ),
-          child: CupertinoTextField(
-            controller: controller,
-            placeholder: label,
-            keyboardType: inputType,
-            enabled: isEditable,
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-            style: TextStyle(color: textColor),
-            decoration: BoxDecoration(color: backgroundColor),
+          child: Row(
+            children: [
+              // Expanded CupertinoTextField so it takes available space
+              Expanded(
+                child: CupertinoTextField(
+                  controller: controller,
+                  placeholder: label,
+                  keyboardType: inputType,
+                  enabled: isEditable,
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                  style: TextStyle(color: textColor),
+                  decoration: BoxDecoration(color: backgroundColor),
+                ),
+              ),
+              if (isQRCodeField)
+                CupertinoButton(
+                  padding: EdgeInsets.zero,
+                  child: Icon(Icons.qr_code, color: CupertinoColors.activeBlue),
+                  onPressed: () async {
+                    final id =
+                        await codeScannerService.getCodeByScan(context, "Scan");
+                    if (id == null || id == Constants.EXIT_RETURN_VALUE) {
+                      return;
+                    }
+                    if (isLagerplatzIdField &&
+                        !await lagerListenVerwaltungsService
+                            .lagerplatzExist(id)) {
+                      // check if lagerplatz exists
+                      Showsnackbar.showSnackBar(context,
+                          "Lagerplatz mit der Id $id existiert nicht, lege ihn zuerst an!");
+                      return;
+                    }
+                    // Setze text
+                    controller.text = id;
+                  },
+                ),
+            ],
           ),
         ),
         const SizedBox(height: 16),

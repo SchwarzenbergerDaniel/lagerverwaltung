@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:lagerverwaltung/buttons/base/secondary_button_base.dart';
 import 'package:lagerverwaltung/config/errormessage_constants.dart';
-import 'package:lagerverwaltung/service/csv_converter_service.dart';
+import 'package:lagerverwaltung/service/xlsx_converter_service.dart';
 import 'package:lagerverwaltung/service/lagerlistenverwaltung_service.dart';
 import 'package:lagerverwaltung/service/localsettings_manager_service.dart';
 import 'package:lagerverwaltung/service/mailsender/mailsender_service.dart';
@@ -31,7 +31,7 @@ class ExportListButton extends StatelessWidget {
 
     bool success = await mailSenderService.sendLagerListe(
         await fileConverterService
-            .toCsv(await lagerListenVerwaltungsService.artikelEntries),
+            .toXlsx(await lagerListenVerwaltungsService.artikelEntries),
         localSettingsManagerService.getMail(),
         false);
 

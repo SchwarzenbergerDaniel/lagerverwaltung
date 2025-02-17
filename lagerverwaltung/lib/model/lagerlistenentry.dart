@@ -1,5 +1,5 @@
 import 'package:lagerverwaltung/config/constants.dart';
-import 'package:lagerverwaltung/page/settings/csv_column_order/csv_column_order_changer_page.dart';
+import 'package:lagerverwaltung/page/settings/xlsx_column_order/xlsx_column_order_changer_page.dart';
 
 class LagerlistenEntry {
   // Instanzen
@@ -88,13 +88,14 @@ class LagerlistenEntry {
 
   // CSV - STUFF
   static LagerlistenEntry convertCSVLine(
-      String csvLine, List<Columns> csvOrder) {
-    List<String> split = csvLine.split(Constants.CSV_DELIMITER_VALUE);
+      String line, List<Columns> columnOrder) {
+    List<String> split = line.split(Constants.XLSX_DELIMITER_VALUE);
 
     Map<Columns, String> values = {};
 
-    for (int i = 0; i < csvOrder.length && i < split.length; i++) {
-      values[csvOrder[i]] = split[i];
+    for (int i = 0; i < columnOrder.length && i < split.length; i++) {
+      values[columnOrder[i]] = split[i].replaceAll(
+          Constants.XLSX_DELIMITER_REPLACER, Constants.XLSX_DELIMITER_VALUE);
     }
 
     return LagerlistenEntry(
@@ -135,48 +136,56 @@ class LagerlistenEntry {
     List<(Columns column, dynamic value)> values = [
       (
         Columns.lagerplatzId,
-        (lagerplatzId ?? '').replaceAll(Constants.CSV_DELIMITER_VALUE, ';')
+        (lagerplatzId ?? '').replaceAll(
+            Constants.XLSX_DELIMITER_VALUE, Constants.XLSX_DELIMITER_REPLACER)
       ),
       (
         Columns.fach,
-        (fach ?? '').replaceAll(Constants.CSV_DELIMITER_VALUE, ';')
+        (fach ?? '').replaceAll(
+            Constants.XLSX_DELIMITER_VALUE, Constants.XLSX_DELIMITER_REPLACER)
       ),
       (
         Columns.regal,
-        (regal ?? '').replaceAll(Constants.CSV_DELIMITER_VALUE, ';')
+        (regal ?? '').replaceAll(
+            Constants.XLSX_DELIMITER_VALUE, Constants.XLSX_DELIMITER_REPLACER)
       ),
       (
         Columns.artikelGWID,
-        (artikelGWID ?? '').replaceAll(Constants.CSV_DELIMITER_VALUE, ';')
+        (artikelGWID ?? '').replaceAll(
+            Constants.XLSX_DELIMITER_VALUE, Constants.XLSX_DELIMITER_REPLACER)
       ),
       (
         Columns.arikelFirmenId,
-        (arikelFirmenId ?? '').replaceAll(Constants.CSV_DELIMITER_VALUE, ';')
+        (arikelFirmenId ?? '').replaceAll(
+            Constants.XLSX_DELIMITER_VALUE, Constants.XLSX_DELIMITER_REPLACER)
       ),
       (
         Columns.beschreibung,
-        (beschreibung ?? '').replaceAll(Constants.CSV_DELIMITER_VALUE, ';')
+        (beschreibung ?? '').replaceAll(
+            Constants.XLSX_DELIMITER_VALUE, Constants.XLSX_DELIMITER_REPLACER)
       ),
       (
         Columns.kunde,
-        (kunde ?? '').replaceAll(Constants.CSV_DELIMITER_VALUE, ';')
+        (kunde ?? '').replaceAll(
+            Constants.XLSX_DELIMITER_VALUE, Constants.XLSX_DELIMITER_REPLACER)
       ),
       (
         Columns.ablaufdatum,
-        ablaufdatum
-                ?.toIso8601String()
-                .replaceAll(Constants.CSV_DELIMITER_VALUE, ';') ??
+        ablaufdatum?.toIso8601String().replaceAll(
+                Constants.XLSX_DELIMITER_VALUE,
+                Constants.XLSX_DELIMITER_REPLACER) ??
             ''
       ),
       (
         Columns.menge,
-        menge?.toString().replaceAll(Constants.CSV_DELIMITER_VALUE, ';') ?? ''
+        menge?.toString().replaceAll(Constants.XLSX_DELIMITER_VALUE,
+                Constants.XLSX_DELIMITER_REPLACER) ??
+            ''
       ),
       (
         Columns.mindestMenge,
-        mindestMenge
-                ?.toString()
-                .replaceAll(Constants.CSV_DELIMITER_VALUE, ';') ??
+        mindestMenge?.toString().replaceAll(Constants.XLSX_DELIMITER_VALUE,
+                Constants.XLSX_DELIMITER_REPLACER) ??
             ''
       )
     ];
@@ -185,7 +194,7 @@ class LagerlistenEntry {
         .indexOf(left.$1)
         .compareTo(default_csv_order.indexOf(right.$1)));
     final erg =
-        values.map((value) => value.$2).join(Constants.CSV_DELIMITER_VALUE);
+        values.map((value) => value.$2).join(Constants.XLSX_DELIMITER_VALUE);
     return erg;
   }
 }

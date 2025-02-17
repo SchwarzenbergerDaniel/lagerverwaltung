@@ -18,7 +18,7 @@ class PrimaryButtonBase extends StatelessWidget {
     return GestureDetector(
       onTap: onPressed,
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(25),
+        borderRadius: BorderRadius.circular(0),
         child: Stack(
           children: [
             // Gläserner Hintergrund mit Blur-Effekt
@@ -37,9 +37,9 @@ class PrimaryButtonBase extends StatelessWidget {
                     end: Alignment.bottomRight,
                   ),
                   color: Colors.white.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(25),
+                  borderRadius: BorderRadius.circular(0),
                   border: Border.all(
-                    color: accentColor.withOpacity(0.8),
+                    color: accentColor.withOpacity(0.5),
                     width: 1.5,
                   ),
                   boxShadow: [

@@ -4,8 +4,9 @@ import 'package:get_it/get_it.dart';
 import 'package:lagerverwaltung/service/localsettings_manager_service.dart';
 import 'package:lagerverwaltung/utils/heading_text.dart';
 import 'package:lagerverwaltung/widget/background/animated_background.dart';
-import 'package:lagerverwaltung/widget/custom_leading_button.dart';
+import 'package:lagerverwaltung/widget/custom_app_bar.dart';
 import 'package:lagerverwaltung/utils/showsnackbar.dart';
+import 'package:lagerverwaltung/widget/fertig_button.dart';
 
 class EMailEmpfaengerAendernPage extends StatelessWidget {
   EMailEmpfaengerAendernPage({super.key});
@@ -26,10 +27,7 @@ class EMailEmpfaengerAendernPage extends StatelessWidget {
     );
 
     return CupertinoPageScaffold(
-      navigationBar: CupertinoNavigationBar(
-        backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
-        leading: CustomBackButton(),
-      ),
+      navigationBar: CustomAppBar(title: "Empfänger verwalten"),
       child: AnimatedBackground(
         child: SafeArea(
           child: Padding(
@@ -58,40 +56,25 @@ class EMailEmpfaengerAendernPage extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 20),
-                Align(
-                  alignment: Alignment.center,
-                  child: CupertinoButton.filled(
-                    borderRadius: BorderRadius.circular(12),
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 12, horizontal: 24),
-                    onPressed: () {
-                      String email = textController.text.trim();
-                      if (_isValidEmail(email)) {
-                        localSettingsManagerService.setMail(email);
-                        Navigator.pop(context);
-                      } else {
-                        Showsnackbar.showSnackBar(context,
-                            "Bitte eine gültige E-Mail-Adresse eingeben.");
-                      }
-                    },
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(Icons.check, size: 20),
-                        SizedBox(width: 8),
-                        Text(
-                          "Speichern",
-                          style: CupertinoTheme.of(context).textTheme.textStyle,
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
+                FertigButton(
+                    onPressed: () => _onFertigPressed(textController, context)),
               ],
             ),
           ),
         ),
       ),
     );
+  }
+
+  void _onFertigPressed(
+      TextEditingController textController, BuildContext context) {
+    String email = textController.text.trim();
+    if (_isValidEmail(email)) {
+      localSettingsManagerService.setMail(email);
+      Navigator.pop(context);
+    } else {
+      Showsnackbar.showSnackBar(
+          context, "Bitte eine gültige E-Mail-Adresse eingeben.");
+    }
   }
 }
