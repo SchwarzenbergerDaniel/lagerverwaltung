@@ -42,7 +42,6 @@ class _AnimatedBackgroundState extends State<AnimatedBackground>
 
   @override
   Widget build(BuildContext context) {
-    // Listen to the provider so that changes trigger a rebuild.
     final themeChangingService = Provider.of<ThemeChangingService>(context);
     final movingBlobs = Provider.of<BackgroundInfoProvider>(context);
 

@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:get_it/get_it.dart';
 import 'package:lagerverwaltung/model/lagerlistenentry.dart';
 import 'package:lagerverwaltung/service/lagerlistenverwaltung_service.dart';
@@ -135,4 +136,10 @@ class Testhelper {
           mindestMenge: 5),
     ];
   }
+}
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await Testhelper.clearLocalStorage();
 }
