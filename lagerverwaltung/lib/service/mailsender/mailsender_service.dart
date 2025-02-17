@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:get_it/get_it.dart';
 import 'package:intl/intl.dart';
 import 'package:lagerverwaltung/model/lagerlistenentry.dart';
@@ -7,6 +6,7 @@ import 'package:lagerverwaltung/service/csv_converter_service.dart';
 import 'package:lagerverwaltung/service/localstorage_service.dart';
 import 'package:lagerverwaltung/service/logger/log_entry.dart';
 import 'package:lagerverwaltung/service/logger/logger_service.dart';
+import 'package:lagerverwaltung/service/mailsender/auth_manager.dart';
 import 'package:lagerverwaltung/service/mailsender/templates/abgelaufen_liste_template.dart';
 import 'package:lagerverwaltung/service/mailsender/templates/backup_email_template.dart';
 import 'package:lagerverwaltung/service/mailsender/templates/html_template_generator.dart';
