@@ -13,7 +13,7 @@ class HeadingText extends StatelessWidget {
           text,
           textAlign: TextAlign.center,
           style: TextStyle(
-            fontSize: 32,
+            fontSize: 25,
             fontWeight: FontWeight.bold,
             color: CupertinoColors.white, // Adjust color as needed
           ),

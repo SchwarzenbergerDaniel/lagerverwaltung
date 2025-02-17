@@ -49,7 +49,6 @@ Future setUpServices() async {
   await localSettingsManager.ensureInitialized();
 }
 
-//TODO: Appbar schaut Arsch aus => Text weg und transparent, nur backbutton links oben.
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await SystemChrome.setPreferredOrientations([
@@ -139,7 +138,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
           AnimatedBackground(
             child: Center(
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
+                padding: const EdgeInsets.symmetric(horizontal: 40),
                 child: SingleChildScrollView(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,

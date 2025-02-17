@@ -118,19 +118,19 @@ class LocalSettingsManagerService {
   Future setIsMoving(bool? istMoving) async {
     istMoving = istMoving ?? true;
     final prefs = await _getSharePreference();
-    this._isMovingBackground = istMoving;
-    prefs.setBool(_IST_MOVING_BACKGROUND_KEY, this._isMovingBackground!);
+    _isMovingBackground = istMoving;
+    prefs.setBool(_IST_MOVING_BACKGROUND_KEY, _isMovingBackground!);
   }
 
-  // TODO: Moving background-Farbgebung:
+  // TODO Moving background-Farbgebung:
   bool getIsBright() {
-    return _isMovingBackground!;
+    return _isBrightBackground!;
   }
 
   Future setIsBright(bool? isBright) async {
-    isBright = isBright ?? true;
+    isBright = isBright ?? false;
     final prefs = await _getSharePreference();
-    this._isBrightBackground = isBright;
-    prefs.setBool(_IST_BRIGHT_BACKGROUND, this._isBrightBackground!);
+    _isBrightBackground = isBright;
+    prefs.setBool(_IST_BRIGHT_BACKGROUND, _isBrightBackground!);
   }
 }
