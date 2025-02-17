@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:lagerverwaltung/automatisierte_aufgaben/automatisiert_checker.dart';
 import 'package:lagerverwaltung/buttons/scan_lagerplatz.dart';
 import 'package:lagerverwaltung/buttons/artikel_amount_change_button.dart';
@@ -14,6 +15,7 @@ import 'package:lagerverwaltung/buttons/inventur_durchfuehren_button.dart';
 import 'package:lagerverwaltung/provider/backgroundinfoprovider.dart';
 import 'package:lagerverwaltung/service/jokegenerator_service.dart';
 import 'package:lagerverwaltung/service/localsettings_manager_service.dart';
+import 'package:lagerverwaltung/service/mailsender/auth_manager.dart';
 import 'package:lagerverwaltung/service/theme_changing_service.dart';
 import 'package:lagerverwaltung/service/logger/logger_service.dart';
 import 'package:lagerverwaltung/service/codescanner_service.dart';
@@ -58,7 +60,6 @@ void main() async {
 
   await Testhelper.clearLocalStorage();
   await setUpServices();
-
   await Testhelper.add_default_values();
 
   checker.checkTodo();
@@ -70,6 +71,10 @@ void main() async {
       providers: [
         ChangeNotifierProvider(create: (_) => themeService),
         ChangeNotifierProvider(create: (_) => BackgroundInfoProvider()),
+        Provider<AuthManager>(
+          create: (_) =>
+              AuthManager(GoogleSignIn(scopes: ["https://mail.google.com/"])),
+        ),
       ],
       child: const MyApp(),
     ),

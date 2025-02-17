@@ -11,7 +11,6 @@ import 'package:lagerverwaltung/service/mailsender/google_auth_api.dart';
 import 'package:lagerverwaltung/widget/background/animated_background.dart';
 import 'package:lagerverwaltung/widget/custom_app_bar.dart';
 
-//TODO: Add logs Button
 class SettingsPage extends StatelessWidget {
   const SettingsPage({super.key});
 
