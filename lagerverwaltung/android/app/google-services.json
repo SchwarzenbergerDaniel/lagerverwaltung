@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "216394735894-kplu5gfm566622jrq7hv71u7g5g8dhe2.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.lagerverwaltung",
+            "certificate_hash": "fccece61c02e3a4efd38c9c858e76ec17a0d0ee5"
+          }
+        },
+        {
           "client_id": "216394735894-n1sndsq8vn6ds8v2jotimff0hm9g27sb.apps.googleusercontent.com",
           "client_type": 3
         }
@@ -29,6 +37,13 @@
             {
               "client_id": "216394735894-n1sndsq8vn6ds8v2jotimff0hm9g27sb.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "216394735894-hcm13qeavqqp21tashdvarhvqgseuvdm.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.lagerverwaltung"
+              }
             }
           ]
         }
