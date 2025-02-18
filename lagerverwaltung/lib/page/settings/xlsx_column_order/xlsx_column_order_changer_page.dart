@@ -44,8 +44,8 @@ class _XlsxColumnOrderChangerPageState
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
       navigationBar: CustomAppBar(title: ""),
-      child: SafeArea(
-        child: AnimatedBackground(
+      child: AnimatedBackground(
+        child: SafeArea(
           child: Column(
             children: [
               Padding(

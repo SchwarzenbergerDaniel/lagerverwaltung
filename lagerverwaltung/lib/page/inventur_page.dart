@@ -6,6 +6,7 @@ import 'package:lagerverwaltung/model/lagerlistenentry.dart';
 import 'package:lagerverwaltung/service/codescanner_service.dart';
 import 'package:lagerverwaltung/service/lagerlistenverwaltung_service.dart';
 import 'package:lagerverwaltung/utils/showsnackbar.dart';
+import 'package:lagerverwaltung/widget/background/animated_background.dart';
 import 'package:lagerverwaltung/widget/custom_app_bar.dart';
 
 class InventurPage extends StatefulWidget {
@@ -36,8 +37,21 @@ class _InventurPageState extends State<InventurPage> {
         .getLagerlisteByLagerplatz(widget.lagerplatzId);
     setState(() {
       sollBestand = List.from(bestand);
-      istBestand = List.from(bestand.map(
-          (e) => LagerlistenEntry(menge: e.menge, artikelGWID: e.artikelGWID)));
+      istBestand = List.from(
+        bestand.map(
+          (e) => LagerlistenEntry(
+              menge: e.menge,
+              artikelGWID: e.artikelGWID,
+              fach: e.fach,
+              regal: e.regal,
+              lagerplatzId: e.lagerplatzId,
+              arikelFirmenId: e.arikelFirmenId,
+              beschreibung: e.beschreibung,
+              kunde: e.kunde,
+              ablaufdatum: e.ablaufdatum,
+              mindestMenge: e.mindestMenge),
+        ),
+      );
     });
   }
 
@@ -47,7 +61,9 @@ class _InventurPageState extends State<InventurPage> {
         await codeScannerService.getCodeByScan(context, "Artikel Code scannen");
     if (artikelGWID == null ||
         artikelGWID.isEmpty ||
-        artikelGWID == Constants.EXIT_RETURN_VALUE) return;
+        artikelGWID == Constants.EXIT_RETURN_VALUE) {
+      return;
+    }
 
     setState(() {
       bool existiert = false;
@@ -78,10 +94,10 @@ class _InventurPageState extends State<InventurPage> {
   }
 
   /// Speicherung der Inventur
-  void _inventurAbschliessen() {
-    //TODO:
-    //lagerListenVerwaltungsService.speichereInventur(widget.lagerplatzId, istBestand);
-    Showsnackbar.showSnackBar(context, "Inventur abgeschlossen!");
+  Future _inventurAbschliessen() async {
+    await lagerListenVerwaltungsService.speichereInventur(
+        widget.lagerplatzId, sollBestand, istBestand);
+    await Showsnackbar.showSnackBar(context, "Inventur abgeschlossen!");
     Navigator.pop(context);
   }
 
@@ -96,26 +112,28 @@ class _InventurPageState extends State<InventurPage> {
           child: const Text("Fertig"),
         ),
       ),
-      child: SafeArea(
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: CupertinoButton.filled(
-                onPressed: _artikelScannen,
-                child: Text("Artikel hinzufügen"),
+      child: AnimatedBackground(
+        child: SafeArea(
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: CupertinoButton.filled(
+                  onPressed: _artikelScannen,
+                  child: Text("Artikel hinzufügen"),
+                ),
               ),
-            ),
-            Expanded(
-              child: ListView.builder(
-                itemCount: istBestand.length,
-                itemBuilder: (context, index) {
-                  var entry = istBestand[index];
-                  return createListTile(entry, index);
-                },
+              Expanded(
+                child: ListView.builder(
+                  itemCount: istBestand.length,
+                  itemBuilder: (context, index) {
+                    var entry = istBestand[index];
+                    return createListTile(entry, index);
+                  },
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

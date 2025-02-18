@@ -127,7 +127,6 @@ class LocalSettingsManagerService {
     prefs.setBool(_IST_MOVING_BACKGROUND_KEY, _isMovingBackground!);
   }
 
-  // TODO Moving background-Farbgebung:
   bool getIsBright() {
     return _isBrightBackground!;
   }

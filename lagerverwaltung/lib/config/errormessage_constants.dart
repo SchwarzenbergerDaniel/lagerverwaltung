@@ -16,5 +16,5 @@ class ErrorMessageConstants {
   static const String MUST_BE_XLSX = "Die Datei muss eine XLSX-Datei sein!";
 
   static const String MAIL_FAILED =
-      "Mail konnte nicht versendet werden, bitte übeprüfen Sie Ihre Internetverbindung!";
+      "Mail konnte nicht versendet werden, bitte übeprüfen Sie Ihre Internetverbindung! Falls der Fehler weiterhin besteht, gehen Sie in die Einstellungen und wählen Sie \"Sender wechseln\"";
 }

@@ -4,7 +4,7 @@ enum LogReason {
   Einlagerung,
   Lagerplatz_angelegt,
   Auslagerung,
-  Inventur_gestartet,
+  Inventur_abgeschlossen,
   Inventurliste_gesendet,
   Backup_Lagerliste_gesendet,
   Lagerliste_gesendet,
@@ -15,7 +15,8 @@ enum LogReason {
   Artikel_entnehmen,
   Log_Liste_versendet,
   Mindestmenge_erreicht_Mail,
-  Alle_abgelaufenen_Artikel_versendet
+  Alle_abgelaufenen_Artikel_versendet,
+  Lagerplatz_geloescht
 }
 
 class LogEntryModel {

@@ -125,21 +125,21 @@ class LocalStorageService {
         jsonEncode(artikelList.map((entry) => entry.toJson()).toList()));
   }
 
-  void _lagerplaetzeChanged(List<LagerlistenEntry> lagerplaetze) async {
+  Future _lagerplaetzeChanged(List<LagerlistenEntry> newLagerplaetze) async {
     final prefs = await _getSharePreference();
     await prefs.setString(_lagerplaetzeKey,
-        jsonEncode(lagerplaetze.map((entry) => entry.toJson()).toList()));
+        jsonEncode(newLagerplaetze.map((entry) => entry.toJson()).toList()));
   }
 
-  void import(List<LagerlistenEntry> artikelList) {
-    _artikelListeChanged(artikelList);
+  void import(List<LagerlistenEntry> newArtikelList) {
+    _artikelListeChanged(newArtikelList);
     loggerService.log(LogEntryModel(
         timestamp: DateTime.now(), logReason: LogReason.Lagerliste_importiert));
   }
 
-  Future removeEntry(
-      List<LagerlistenEntry> artikelList, LagerlistenEntry entry) async {
-    await _artikelListeChanged(artikelList);
+  Future removeArtikel(
+      List<LagerlistenEntry> newArtikelList, LagerlistenEntry entry) async {
+    await _artikelListeChanged(newArtikelList);
     loggerService.log(LogEntryModel(
         timestamp: DateTime.now(),
         logReason: LogReason.Artikel_entnehmen,
@@ -147,11 +147,29 @@ class LocalStorageService {
         lagerplatzId: entry.lagerplatzId));
   }
 
-  void addEntry(List<LagerlistenEntry> list, LagerlistenEntry entry) {
+  Future removeLagerplatz(List<LagerlistenEntry> newLagerplaetzeList) async {
+    await _lagerplaetzeChanged(newLagerplaetzeList);
+    loggerService.log(
+      LogEntryModel(
+          timestamp: DateTime.now(), logReason: LogReason.Lagerplatz_geloescht),
+    );
+  }
+
+  Future inventurAbgeschlossen(
+      List<LagerlistenEntry> newList, String lagerplatzID) async {
+    await _artikelListeChanged(newList);
+
+    loggerService.log(LogEntryModel(
+        timestamp: DateTime.now(),
+        logReason: LogReason.Inventur_abgeschlossen,
+        lagerplatzId: lagerplatzID));
+  }
+
+  void addEntry(List<LagerlistenEntry> newList, LagerlistenEntry entry) {
     if (entry.istArtikel()) {
-      _artikelListeChanged(list);
+      _artikelListeChanged(newList);
     } else {
-      _lagerplaetzeChanged(list);
+      _lagerplaetzeChanged(newList);
     }
 
     loggerService.log(LogEntryModel(

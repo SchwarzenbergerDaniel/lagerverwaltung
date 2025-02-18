@@ -22,7 +22,6 @@ import 'package:lagerverwaltung/service/lagerlistenverwaltung_service.dart';
 import 'package:lagerverwaltung/service/localstorage_service.dart';
 import 'package:lagerverwaltung/service/mailsender/mailsender_service.dart';
 import 'package:lagerverwaltung/page/settings/settings_page.dart';
-import 'package:lagerverwaltung/testhelper/testhelper.dart';
 import 'package:lagerverwaltung/utils/heading_text.dart';
 import 'package:lagerverwaltung/widget/background/animated_background.dart';
 import 'package:provider/provider.dart';
@@ -56,10 +55,10 @@ void main() async {
     DeviceOrientation.portraitUp,
   ]);
 
-  await Testhelper.clearLocalStorage();
+  // await Testhelper.clearLocalStorage();
   await setUpServices();
 
-  await Testhelper.add_default_values();
+  // await Testhelper.add_default_values();
 
   checker.checkTodo();
   final themeService = getIt<ThemeChangingService>();
@@ -94,7 +93,7 @@ class MyApp extends StatelessWidget {
               darkColor: themeService
                   .primaryColor.darkColor, // Dark mode primary color
             ),
-            barBackgroundColor: CupertinoColors.transparent,
+            scaffoldBackgroundColor: CupertinoColors.black,
             // scaffoldBackgroundColor: CupertinoColors.transparent,
             textTheme: CupertinoTextThemeData(
               textStyle: TextStyle(

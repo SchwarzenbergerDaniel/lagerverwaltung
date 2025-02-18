@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+// ignore: depend_on_referenced_packages
 import 'package:intl/intl.dart';
 import 'package:lagerverwaltung/config/errormessage_constants.dart';
 import 'package:lagerverwaltung/service/localsettings_manager_service.dart';
@@ -125,9 +126,7 @@ class _LogPageState extends State<LogPage> {
 
   @override
   Widget build(BuildContext context) {
-    Color color = Theme.of(context).primaryColor.computeLuminance() > 0.5
-        ? CupertinoColors.black
-        : CupertinoColors.systemGrey;
+    Color color = CupertinoColors.black;
     return CupertinoPageScaffold(
       navigationBar: CustomAppBar(title: ""),
       child: AnimatedBackground(

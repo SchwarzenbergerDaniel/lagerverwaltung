@@ -110,8 +110,8 @@ class SendMailPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
       navigationBar: CustomAppBar(title: "E-Mail versenden"),
-      child: SafeArea(
-        child: AnimatedBackground(
+      child: AnimatedBackground(
+        child: SafeArea(
           child: Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,

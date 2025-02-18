@@ -1,8 +1,10 @@
 import 'dart:io';
 
 import 'package:get_it/get_it.dart';
+// ignore: depend_on_referenced_packages
 import 'package:intl/intl.dart';
 import 'package:lagerverwaltung/model/lagerlistenentry.dart';
+import 'package:lagerverwaltung/service/mailsender/templates/inventur_liste_template.dart';
 import 'package:lagerverwaltung/service/xlsx_converter_service.dart';
 import 'package:lagerverwaltung/service/localstorage_service.dart';
 import 'package:lagerverwaltung/service/logger/log_entry.dart';
@@ -115,7 +117,7 @@ class MailSenderService {
           logReason: LogReason.Mindestmenge_erreicht_Mail,
           lagerplatzId: entry.lagerplatzId,
           artikelGWID: entry.artikelGWID,
-          zusatzInformationen: "Mindestmenge erreicht, EMail gesendet"));
+          zusatzInformationen: "Mindestmenge erreicht | EMail gesendet"));
     }
 
     return success;
@@ -180,6 +182,23 @@ class MailSenderService {
                 "Empfänger-Email: $toMail | Anzahl versendeter Artikel: ${entries.length}"),
       );
     }
+    return success;
+  }
+
+  Future<bool> sendInventurAbgeschlossen(
+      String lagerplatzId, File inventurListe, String toMail) async {
+    bool success = await _sendMessage(
+        toMail: toMail,
+        templateGenerator: InventurListeTemplate(lagerplatzId: lagerplatzId),
+        attachments: [FileAttachment(inventurListe)]);
+
+    if (success) {
+      loggerService.log(LogEntryModel(
+          timestamp: DateTime.now(),
+          logReason: LogReason.Inventurliste_gesendet,
+          zusatzInformationen: "Empfänger-Email: $toMail"));
+    }
+
     return success;
   }
 }

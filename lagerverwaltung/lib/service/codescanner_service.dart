@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:lagerverwaltung/utils/showsnackbar.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:lagerverwaltung/config/constants.dart';
 
 class CodeScannerService {
@@ -35,7 +34,7 @@ class CodeScannerService {
 
 class CodeScannerPopup extends StatefulWidget {
   final String title;
-  const CodeScannerPopup({Key? key, required this.title}) : super(key: key);
+  const CodeScannerPopup({super.key, required this.title});
 
   @override
   _CodeScannerPopupState createState() => _CodeScannerPopupState();
@@ -168,7 +167,7 @@ class _CodeScannerPopupState extends State<CodeScannerPopup> {
 }
 
 class ScannerOverlay extends StatelessWidget {
-  const ScannerOverlay({Key? key}) : super(key: key);
+  const ScannerOverlay({super.key});
 
   @override
   Widget build(BuildContext context) {

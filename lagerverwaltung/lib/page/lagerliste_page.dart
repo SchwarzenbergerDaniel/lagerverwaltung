@@ -4,6 +4,7 @@ import 'package:get_it/get_it.dart';
 import 'package:lagerverwaltung/model/lagerlistenentry.dart';
 import 'package:lagerverwaltung/service/lagerlistenverwaltung_service.dart';
 import 'package:lagerverwaltung/utils/scan_artikel_code_after_lagerplatz.dart';
+import 'package:lagerverwaltung/utils/showdialog.dart';
 import 'package:lagerverwaltung/widget/background/animated_background.dart';
 import 'package:lagerverwaltung/widget/custom_app_bar.dart';
 import 'package:lagerverwaltung/page/edit_artikel_page.dart';
@@ -24,7 +25,8 @@ class _LagerlistePageState extends State<LagerlistePage> {
   @override
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
-      navigationBar: CustomAppBar(title: "Artikel in Lagerplatz: ${widget.lagerplatzId}"),
+      navigationBar:
+          CustomAppBar(title: "Artikel in Lagerplatz: ${widget.lagerplatzId}"),
       child: AnimatedBackground(
         child: SafeArea(
           child: Column(
@@ -123,10 +125,37 @@ class _LagerlistePageState extends State<LagerlistePage> {
                   },
                 ),
               ),
+              const SizedBox(height: 16),
+              CupertinoButton(
+                color: CupertinoColors.systemRed,
+                onPressed: _deleteLagerplatz,
+                child: Text(
+                  'Lösche Lagerplatz',
+                  style:
+                      CupertinoTheme.of(context).textTheme.textStyle.copyWith(
+                            color: CupertinoColors.white,
+                          ),
+                ),
+              ),
+              const SizedBox(height: 16),
             ],
           ),
         ),
       ),
     );
+  }
+
+  void _deleteLagerplatz() async {
+    bool cancel = await ShowDialogTwoOptions.isFirstOptionClicked(
+        context,
+        "Lagerplatz Löschen?",
+        "Möchten Sie den Lagerplatz mit der ID ${widget.lagerplatzId} wirklich und alle dazugehörigen Artikel löschen?",
+        "Abbrechen",
+        "Löschen");
+    if (cancel) {
+      return;
+    }
+    lagerlistenVerwaltungsService.deleteLagerplatz(widget.lagerplatzId);
+    Navigator.pop(context);
   }
 }

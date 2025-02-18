@@ -15,7 +15,6 @@ import 'package:lagerverwaltung/utils/showsnackbar.dart';
 import 'package:lagerverwaltung/widget/background/animated_background.dart';
 import 'package:lagerverwaltung/widget/custom_app_bar.dart';
 
-//TODO: Add logs Button
 class SettingsPage extends StatelessWidget {
   SettingsPage({super.key});
   final localSettingsManagerService =

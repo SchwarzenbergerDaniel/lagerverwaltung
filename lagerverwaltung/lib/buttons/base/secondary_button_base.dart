@@ -9,11 +9,11 @@ class SecondaryButtonBase extends StatelessWidget {
   final VoidCallback onPressed;
 
   const SecondaryButtonBase({
-    Key? key,
+    super.key,
     required this.title,
     required this.accentColor,
     required this.onPressed,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

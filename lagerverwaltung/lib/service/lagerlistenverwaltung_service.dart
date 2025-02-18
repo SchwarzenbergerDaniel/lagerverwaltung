@@ -32,13 +32,43 @@ class LagerlistenVerwaltungsService {
       await localStorageService.getLagerplaetze();
 
   // Methods:
+  Future speichereInventur(
+      String lagerplatzId,
+      List<LagerlistenEntry> sollBestand,
+      List<LagerlistenEntry> istBestand) async {
+    List<LagerlistenEntry> entries = await artikelEntries;
+    entries.removeWhere((x) => x.lagerplatzId == lagerplatzId);
+    entries.addAll(istBestand);
+    await localStorageService.inventurAbgeschlossen(entries, lagerplatzId);
+
+    mailSenderService.sendInventurAbgeschlossen(
+        lagerplatzId,
+        await fileConverterService.convertToInventurListe(
+            sollBestand, istBestand),
+        localSettingsManagerService.getMail());
+  }
 
   Future<bool> lagerplatzExist(String lagerplatzId) async {
     return (await lagerplatzEntries)
         .any((val) => val.lagerplatzId == lagerplatzId);
   }
 
-  Future<void> deleteArtikel(String artikelGWID, String lagerplatzID) async {
+  Future deleteLagerplatz(String lagerplatzId) async {
+    // Artikel Löschen
+    final artikel =
+        (await artikelEntries).where((x) => x.lagerplatzId == lagerplatzId);
+    for (final i in artikel) {
+      deleteArtikel(i.artikelGWID!, i.lagerplatzId!);
+    }
+    final lagerplaetzeList = await lagerplatzEntries;
+
+    LagerlistenEntry entry = lagerplaetzeList
+        .firstWhere((element) => element.lagerplatzId == lagerplatzId);
+    lagerplaetzeList.remove(entry);
+    await localStorageService.removeLagerplatz(lagerplaetzeList);
+  }
+
+  Future deleteArtikel(String artikelGWID, String lagerplatzID) async {
     final list = await artikelEntries;
 
     try {
@@ -49,7 +79,7 @@ class LagerlistenVerwaltungsService {
       );
 
       list.remove(entry);
-      await localStorageService.removeEntry(list, entry);
+      await localStorageService.removeArtikel(list, entry);
     } catch (e) {}
   }
 
@@ -115,7 +145,7 @@ class LagerlistenVerwaltungsService {
   Future<String?> changeAmount(LagerlistenEntry entry, int amountChange) async {
     entry.menge = entry.menge! + amountChange;
     if (entry.menge! < 0) {
-      return ErrorMessageConstants.NOT_ENOUGH_IN_STORAGE;
+      return "${ErrorMessageConstants.NOT_ENOUGH_IN_STORAGE}. Menge im Lager: ${entry.menge! - amountChange}";
     }
     List<LagerlistenEntry> artikel = await artikelEntries;
     artikel.removeWhere((val) =>

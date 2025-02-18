@@ -25,7 +25,14 @@ class LogConfigPage extends StatelessWidget {
         text: localSettingsManagerService.getDeleteLogsAfterDays().toString());
 
     return CupertinoPageScaffold(
-      navigationBar: CustomAppBar(title: "Log-Konfigurationen"),
+      navigationBar: CustomAppBar(
+        title: "Log-Konfigurationen",
+        leading: CupertinoButton(
+          padding: EdgeInsets.zero,
+          onPressed: () => _onFertigPressed(context, pop: true),
+          child: const Icon(Icons.arrow_back),
+        ),
+      ),
       child: AnimatedBackground(
         child: Center(
           child: SafeArea(
@@ -70,7 +77,7 @@ class LogConfigPage extends StatelessWidget {
     );
   }
 
-  void _onFertigPressed(BuildContext context) {
+  void _onFertigPressed(BuildContext context, {bool pop = false}) {
     int? logIntervallDays = int.tryParse(logIntervallController.text);
     int? deleteDays = int.tryParse(deleteAfterDaysController.text);
 
@@ -88,6 +95,9 @@ class LogConfigPage extends StatelessWidget {
       Showsnackbar.showSnackBar(
           context, "Bitte eine gültige Zahl für das Löschen eingeben.");
       return;
+    }
+    if (pop) {
+      Navigator.pop(context);
     }
   }
 

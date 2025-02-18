@@ -6,7 +6,7 @@ class NewLagerplatzCodeScannedModal {
     return await showCupertinoModalPopup<bool>(
       context: context,
       builder: (BuildContext context) => CupertinoActionSheet(
-        title: Text('Wähle eine Aktion für $lagerplatzID'),
+        title: Text('Wähle eine Aktion für "$lagerplatzID"'),
         actions: <CupertinoActionSheetAction>[
           CupertinoActionSheetAction(
             isDefaultAction: true,

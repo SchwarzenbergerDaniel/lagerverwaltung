@@ -1,5 +1,4 @@
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:lagerverwaltung/service/localsettings_manager_service.dart';
 import 'package:lagerverwaltung/utils/heading_text.dart';
@@ -37,21 +36,19 @@ class EMailEmpfaengerAendernPage extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 HeadingText(text: "Empfänger-EMail"),
-                Container(
-                  child: CupertinoTextField(
-                    controller: textController,
-                    keyboardType: TextInputType.emailAddress,
-                    placeholder: "E-Mail eingeben...",
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 12,
-                      horizontal: 16,
-                    ),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(
-                        color: CupertinoColors.white,
-                        width: 1.0,
-                      ),
+                CupertinoTextField(
+                  controller: textController,
+                  keyboardType: TextInputType.emailAddress,
+                  placeholder: "E-Mail eingeben...",
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 12,
+                    horizontal: 16,
+                  ),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: CupertinoColors.white,
+                      width: 1.0,
                     ),
                   ),
                 ),

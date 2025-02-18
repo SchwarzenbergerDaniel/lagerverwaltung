@@ -8,11 +8,11 @@ class PrimaryButtonBase extends StatelessWidget {
       accentColor; // Akzentfarbe für Verlauf & Rahmen  final VoidCallback onPressed;
   final VoidCallback onPressed;
   const PrimaryButtonBase({
-    Key? key,
+    super.key,
     required this.title,
     required this.accentColor,
     required this.onPressed,
-  }) : super(key: key);
+  });
   @override
   Widget build(BuildContext context) {
     return GestureDetector(

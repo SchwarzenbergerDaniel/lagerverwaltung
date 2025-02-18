@@ -1,5 +1,4 @@
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:lagerverwaltung/provider/backgroundinfoprovider.dart';
 import 'dart:math';
@@ -71,7 +70,6 @@ class _AnimatedBackgroundState extends State<AnimatedBackground>
             return Stack(
               children: movingBlobs.isMoving
                   ? [
-                      // Upper half shapes
                       _buildMovingCircle(
                           80, 130, 40, 0.15, _animation.value * 30),
                       _buildMovingBlob(80, 300, 0.1, _animation.value),
