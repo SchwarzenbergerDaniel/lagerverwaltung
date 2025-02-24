@@ -8,8 +8,8 @@ import 'package:provider/provider.dart';
 
 class AnimatedBackground extends StatefulWidget {
   Widget child;
-
-  AnimatedBackground({super.key, required this.child});
+  bool? isAnimated;
+  AnimatedBackground({super.key, required this.child, this.isAnimated});
 
   @override
   State<AnimatedBackground> createState() => _AnimatedBackgroundState();
@@ -68,7 +68,7 @@ class _AnimatedBackgroundState extends State<AnimatedBackground>
           animation: _animation,
           builder: (context, child) {
             return Stack(
-              children: movingBlobs.isMoving
+              children: movingBlobs.isMoving && widget.isAnimated != false
                   ? [
                       _buildMovingCircle(
                           80, 130, 40, 0.15, _animation.value * 30),

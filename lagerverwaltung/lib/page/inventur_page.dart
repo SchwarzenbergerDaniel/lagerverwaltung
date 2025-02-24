@@ -5,6 +5,7 @@ import 'package:lagerverwaltung/config/constants.dart';
 import 'package:lagerverwaltung/model/lagerlistenentry.dart';
 import 'package:lagerverwaltung/service/codescanner_service.dart';
 import 'package:lagerverwaltung/service/lagerlistenverwaltung_service.dart';
+import 'package:lagerverwaltung/utils/dialog_number_input.dart';
 import 'package:lagerverwaltung/utils/showsnackbar.dart';
 import 'package:lagerverwaltung/widget/background/animated_background.dart';
 import 'package:lagerverwaltung/widget/custom_app_bar.dart';
@@ -55,8 +56,34 @@ class _InventurPageState extends State<InventurPage> {
     });
   }
 
-  /// Gescannter Artikel wird Ist Liste hinzugefügt
-  Future<void> _artikelScannen() async {
+  void _changeAmountWithScan() async {
+    String? artikelGWID =
+        await codeScannerService.getCodeByScan(context, "ArtikelGWID scannen");
+    if (artikelGWID == null || artikelGWID == Constants.EXIT_RETURN_VALUE) {
+      return;
+    }
+    int index = -1;
+    final artikel = await lagerListenVerwaltungsService
+        .getLagerlisteByLagerplatz(widget.lagerplatzId);
+    for (int i = 0; i < artikel.length; i++) {
+      if (artikel[i].artikelGWID == artikelGWID) index = i;
+    }
+    if (index != -1) {
+      int? neueMenge = await DialogNumberInput.getNumber(
+          context,
+          "Menge für $artikelGWID",
+          "Gebe die Ist-Menge für $artikelGWID ein",
+          null);
+      if (neueMenge != null && neueMenge > -1) {
+        _updateMenge(index, neueMenge);
+      }
+    } else {
+      Showsnackbar.showSnackBar(context,
+          "$artikelGWID nicht in Lagerplatz: ${widget.lagerplatzId} enthalten!");
+    }
+  }
+
+  Future<void> _addArtikel() async {
     String? artikelGWID =
         await codeScannerService.getCodeByScan(context, "Artikel Code scannen");
     if (artikelGWID == null ||
@@ -116,11 +143,22 @@ class _InventurPageState extends State<InventurPage> {
         child: SafeArea(
           child: Column(
             children: [
-              Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: CupertinoButton.filled(
-                  onPressed: _artikelScannen,
-                  child: Text("Artikel hinzufügen"),
+              Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        CupertinoButton.filled(
+                          onPressed: _addArtikel,
+                          child: Text("Neuen hinzufügen"),
+                        ),
+                        SizedBox(width: 10),
+                        CupertinoButton.filled(
+                          onPressed: _changeAmountWithScan,
+                          child: Text("Artikel Scannen"),
+                        ),
+                      ]),
                 ),
               ),
               Expanded(

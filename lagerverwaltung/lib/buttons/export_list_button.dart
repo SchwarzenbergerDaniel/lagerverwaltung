@@ -21,7 +21,7 @@ class ExportListButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SecondaryButtonBase(
-        title: "Liste exportieren",
+        title: "Exportieren",
         accentColor: Color.fromRGBO(233, 175, 134, 1),
         onPressed: () => export(context));
   }

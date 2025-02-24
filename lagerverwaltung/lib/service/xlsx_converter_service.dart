@@ -111,7 +111,6 @@ class FileConverterService {
     final directory = await getTemporaryDirectory();
     final filePath = '${directory.path}/inventur-listes.xlsx';
     Excel excel = Excel.createExcel();
-    excel.delete('Sheet1');
 
     // Sheet 1: Regal	Fach	Lagerplatz	Artikel GWID	Artikel Firmen-ID	Beschreibung	Soll-Menge	Ist-Menge	Differenz(Fehlmengen=Rot, Übermengen=gelb, korrekt=Grün)	Mindestmenge	Kunde	Ablaufdatum	Kommentar(Fehlmenge/Überbestand)
     createArtikelSheet(excel, sollListe, istListe);
@@ -124,6 +123,7 @@ class FileConverterService {
         localSettingsManagerService.getAbgelaufenReminderInDays();
     createAblaufKritischeBestaendeSheet(
         excel, sollListe, istListe, reminderBeforeDays);
+    excel.delete('Sheet1');
 
     List<int>? fileBytes = excel.encode();
     final file = File(filePath)

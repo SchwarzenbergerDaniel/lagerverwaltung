@@ -7,14 +7,13 @@ import 'package:lagerverwaltung/service/codescanner_service.dart';
 import 'package:lagerverwaltung/service/lagerlistenverwaltung_service.dart';
 import 'package:lagerverwaltung/utils/showdialog.dart';
 import 'package:lagerverwaltung/utils/showsnackbar.dart';
+import 'package:lagerverwaltung/widget/background/animated_background.dart';
 import 'package:lagerverwaltung/widget/custom_app_bar.dart';
 
 class EditArtikelPage extends StatefulWidget {
   final LagerlistenEntry? entry;
-  final bool isEditable;
 
-  const EditArtikelPage(
-      {super.key, required this.entry, this.isEditable = false});
+  const EditArtikelPage({super.key, required this.entry});
   @override
   _EditArtikelPageState createState() => _EditArtikelPageState();
 }
@@ -34,7 +33,6 @@ class _EditArtikelPageState extends State<EditArtikelPage> {
   late TextEditingController mengeController;
   late TextEditingController mindestMengeController;
   DateTime? ablaufDatum;
-  late bool isEditable = widget.isEditable;
 
   // Store initial values for change detection
   late final String initialFach;
@@ -157,11 +155,9 @@ class _EditArtikelPageState extends State<EditArtikelPage> {
           "Speichern",
           "Nicht speichern");
       if (shouldSave) {
-        if (isEditable) {
-          bool saved = await _saveChanges();
-          if (!saved) {
-            return;
-          }
+        bool saved = await _saveChanges();
+        if (!saved) {
+          return;
         }
       }
     }
@@ -179,40 +175,39 @@ class _EditArtikelPageState extends State<EditArtikelPage> {
           child: const Icon(Icons.arrow_back),
         ),
       ),
-      child: SafeArea(
-        child: ListView(
-          padding: const EdgeInsets.all(16.0),
-          children: [
-            const SizedBox(height: 16),
-            _buildLabeledField('Fach', fachController),
-            _buildLabeledField('Regal', regalController),
-            _buildLabeledField('Lagerplatz ID', lagerplatzIdController,
-                isQRCodeField: true, isLagerplatzIdField: true),
-            _buildLabeledField('Artikel GWID', artikelGWIDController,
-                isQRCodeField: true),
-            _buildLabeledField('Artikel Firmen ID', arikelFirmenIdController),
-            _buildLabeledField('Beschreibung', beschreibungController),
-            _buildLabeledField('Kunde', kundeController),
-            _abgelaufenPicker(),
-            _buildLabeledField('Menge', mengeController,
-                inputType: TextInputType.number),
-            _buildLabeledField('Mindestmenge', mindestMengeController,
-                inputType: TextInputType.number),
-            speichernBearbeitenButton(),
-            deleteButton()
-          ],
+      child: AnimatedBackground(
+        isAnimated: false,
+        child: SafeArea(
+          child: ListView(
+            padding: const EdgeInsets.all(16.0),
+            children: [
+              const SizedBox(height: 16),
+              _buildLabeledField('Fach', fachController),
+              _buildLabeledField('Regal', regalController),
+              _buildLabeledField('Lagerplatz ID', lagerplatzIdController,
+                  isQRCodeField: true, isLagerplatzIdField: true),
+              _buildLabeledField('Artikel GWID', artikelGWIDController,
+                  isQRCodeField: true),
+              _buildLabeledField('Artikel Firmen ID', arikelFirmenIdController),
+              _buildLabeledField('Beschreibung', beschreibungController),
+              _buildLabeledField('Kunde', kundeController),
+              _abgelaufenPicker(),
+              _buildLabeledField('Menge', mengeController,
+                  inputType: TextInputType.number),
+              _buildLabeledField('Mindestmenge', mindestMengeController,
+                  inputType: TextInputType.number),
+              speichernButton(),
+              deleteButton()
+            ],
+          ),
         ),
       ),
     );
   }
 
   Widget _abgelaufenPicker() {
-    final textColor = isEditable
-        ? CupertinoTheme.of(context).primaryColor
-        : CupertinoColors.inactiveGray;
-    final labelTextColor = isEditable
-        ? CupertinoTheme.of(context).textTheme.textStyle.color
-        : CupertinoColors.inactiveGray;
+    final textColor = CupertinoTheme.of(context).primaryColor;
+    final labelTextColor = CupertinoTheme.of(context).textTheme.textStyle.color;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -226,18 +221,16 @@ class _EditArtikelPageState extends State<EditArtikelPage> {
           ),
         ),
         CupertinoButton(
-          onPressed: isEditable
-              ? () => _showDialog(
-                    CupertinoDatePicker(
-                      initialDateTime: ablaufDatum,
-                      mode: CupertinoDatePickerMode.date,
-                      use24hFormat: true,
-                      onDateTimeChanged: (DateTime newDate) {
-                        setState(() => ablaufDatum = newDate);
-                      },
-                    ),
-                  )
-              : null,
+          onPressed: () => _showDialog(
+            CupertinoDatePicker(
+              initialDateTime: ablaufDatum,
+              mode: CupertinoDatePickerMode.date,
+              use24hFormat: true,
+              onDateTimeChanged: (DateTime newDate) {
+                setState(() => ablaufDatum = newDate);
+              },
+            ),
+          ),
           padding: const EdgeInsets.symmetric(horizontal: 5),
           child: Text(
             '${ablaufDatum!.day}-${ablaufDatum!.month}-${ablaufDatum!.year}',
@@ -254,12 +247,8 @@ class _EditArtikelPageState extends State<EditArtikelPage> {
       bool isQRCodeField = false,
       bool isLagerplatzIdField = false}) {
     // Use a different background and text color when not in edit mode.
-    final backgroundColor = isEditable
-        ? CupertinoTheme.of(context).scaffoldBackgroundColor
-        : CupertinoColors.systemGrey6;
-    final textColor = isEditable
-        ? CupertinoTheme.of(context).textTheme.textStyle.color
-        : CupertinoColors.inactiveGray;
+    final backgroundColor = CupertinoTheme.of(context).scaffoldBackgroundColor;
+    final textColor = CupertinoTheme.of(context).textTheme.textStyle.color;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -284,7 +273,7 @@ class _EditArtikelPageState extends State<EditArtikelPage> {
                   controller: controller,
                   placeholder: label,
                   keyboardType: inputType,
-                  enabled: isEditable,
+                  enabled: true,
                   padding:
                       const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
                   style: TextStyle(color: textColor),
@@ -321,46 +310,12 @@ class _EditArtikelPageState extends State<EditArtikelPage> {
     );
   }
 
-  CupertinoButton speichernBearbeitenButton() {
+  CupertinoButton speichernButton() {
     return CupertinoButton(
-      child: Text(isEditable ? 'Speichern' : 'Bearbeiten'),
+      child: Text('Speichern'),
       onPressed: () {
         setState(() {
-          if (isEditable) {
-            if (fachController.text.isEmpty ||
-                regalController.text.isEmpty ||
-                lagerplatzIdController.text.isEmpty ||
-                artikelGWIDController.text.isEmpty ||
-                arikelFirmenIdController.text.isEmpty ||
-                beschreibungController.text.isEmpty ||
-                kundeController.text.isEmpty ||
-                mengeController.text.isEmpty ||
-                mindestMengeController.text.isEmpty ||
-                ablaufDatum == null) {
-              Showsnackbar.showSnackBar(
-                  context, "Felder sind leer!\nKorrigiere diese bitte");
-              return;
-            }
-
-            final lagerlistenEntry = LagerlistenEntry(
-              fach: fachController.text,
-              regal: regalController.text,
-              lagerplatzId: lagerplatzIdController.text,
-              artikelGWID: artikelGWIDController.text,
-              arikelFirmenId: arikelFirmenIdController.text,
-              beschreibung: beschreibungController.text,
-              kunde: kundeController.text,
-              menge: int.tryParse(mengeController.text),
-              mindestMenge: int.tryParse(mindestMengeController.text),
-              ablaufdatum: ablaufDatum,
-            );
-
-            lagerListenVerwaltungsService.updateArtikel(
-                lagerlistenEntry.artikelGWID!,
-                lagerlistenEntry.lagerplatzId!,
-                lagerlistenEntry);
-          }
-          isEditable = !isEditable;
+          _saveChanges();
         });
       },
     );
@@ -371,14 +326,14 @@ class _EditArtikelPageState extends State<EditArtikelPage> {
       child: Text("Delete",
           style: TextStyle(color: CupertinoColors.destructiveRed)),
       onPressed: () async {
-        bool confirmDelete = await ShowDialogTwoOptions.isFirstOptionClicked(
+        bool isCancel = await ShowDialogTwoOptions.isFirstOptionClicked(
             context,
             "Löschen bestätigen",
             "Möchten Sie diesen Artikel wirklich löschen?",
-            "Löschen",
-            "Abbrechen");
+            "Abbrechen",
+            "Löschen");
 
-        if (confirmDelete) {
+        if (!isCancel) {
           try {
             await lagerListenVerwaltungsService.deleteArtikel(
               widget.entry!.artikelGWID!,

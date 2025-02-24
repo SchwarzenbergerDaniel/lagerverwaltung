@@ -26,7 +26,7 @@ class SecondaryButtonBase extends StatelessWidget {
             BackdropFilter(
               filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
               child: Container(
-                height: 70,
+                height: 60,
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     colors: [
@@ -52,9 +52,10 @@ class SecondaryButtonBase extends StatelessWidget {
                 child: Center(
                   child: Text(
                     title,
+                    textAlign: TextAlign.center,
                     style: TextStyle(
                       color: CupertinoColors.white,
-                      fontSize: 18,
+                      fontSize: 16,
                       fontWeight: FontWeight.bold,
                     ),
                   ),

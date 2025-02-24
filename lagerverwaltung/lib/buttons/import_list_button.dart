@@ -13,7 +13,7 @@ class ImportListButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SecondaryButtonBase(
-        title: "Liste importieren",
+        title: "Importieren",
         accentColor: Color.fromRGBO(231, 218, 112, 1),
         onPressed: () => import(context));
   }

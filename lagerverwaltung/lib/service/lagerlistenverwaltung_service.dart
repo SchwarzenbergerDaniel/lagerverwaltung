@@ -49,8 +49,9 @@ class LagerlistenVerwaltungsService {
   }
 
   Future<bool> lagerplatzExist(String lagerplatzId) async {
-    return (await lagerplatzEntries)
-        .any((val) => val.lagerplatzId == lagerplatzId);
+    return ((await lagerplatzEntries)
+            .any((val) => val.lagerplatzId == lagerplatzId) ||
+        (await artikelEntries).any((val) => val.lagerplatzId == lagerplatzId));
   }
 
   Future deleteLagerplatz(String lagerplatzId) async {
@@ -86,7 +87,9 @@ class LagerlistenVerwaltungsService {
   Future updateArtikel(
       String artikelGWID, String lagerplatzID, LagerlistenEntry entry) async {
     await deleteArtikel(artikelGWID, lagerplatzID);
-    await addArtikelToLagerliste(entry);
+    if (entry.menge != null && entry.menge! > 0) {
+      await addArtikelToLagerliste(entry);
+    }
   }
 
   Future<bool> artikelGWIDExist(String gwidCode) async {

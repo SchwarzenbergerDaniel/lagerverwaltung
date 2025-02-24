@@ -5,12 +5,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
 import 'package:lagerverwaltung/automatisierte_aufgaben/automatisiert_checker.dart';
-import 'package:lagerverwaltung/buttons/scan_lagerplatz.dart';
+import 'package:lagerverwaltung/buttons/scan_lagerplatz_button.dart';
 import 'package:lagerverwaltung/buttons/artikel_amount_change_button.dart';
-import 'package:lagerverwaltung/buttons/scan_artikel.dart';
+import 'package:lagerverwaltung/buttons/scan_artikel_button.dart';
 import 'package:lagerverwaltung/buttons/export_list_button.dart';
 import 'package:lagerverwaltung/buttons/import_list_button.dart';
 import 'package:lagerverwaltung/buttons/inventur_durchfuehren_button.dart';
+import 'package:lagerverwaltung/buttons/show_all_articles_button.dart';
 import 'package:lagerverwaltung/provider/backgroundinfoprovider.dart';
 import 'package:lagerverwaltung/service/jokegenerator_service.dart';
 import 'package:lagerverwaltung/service/localsettings_manager_service.dart';
@@ -139,49 +140,52 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 15),
                 child: SingleChildScrollView(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      HeadingText(text: "Lagerverwaltung"),
-                      const SizedBox(height: 20),
+                    child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    HeadingText(text: "Lagerverwaltung"),
+                    const SizedBox(height: 20),
 
-                      // Zeile 1: Standort & Artikel Scannen
-                      _buildHeading("Standort & Artikel Scannen"),
-                      const SizedBox(height: 10),
-                      Row(
-                        children: [
-                          Expanded(child: ScanLagerplatzButton()),
-                          const SizedBox(width: 10),
-                          Expanded(child: ScanArtikelButton()),
-                        ],
-                      ),
-                      const SizedBox(height: 20),
+                    // Zeile 1: Standort & Artikel Scannen
+                    _buildHeading("Standort & Artikel Scannen"),
+                    const SizedBox(height: 10),
+                    Row(
+                      children: [
+                        Expanded(child: ScanLagerplatzButton()),
+                        const SizedBox(width: 10),
+                        Expanded(child: ScanArtikelButton()),
+                      ],
+                    ),
+                    const SizedBox(height: 20),
 
-                      // Zeile 2: Bestandsänderungen & Inventur
-                      _buildHeading("Bestandsänderungen & Inventur"),
-                      const SizedBox(height: 10),
-                      Row(
-                        children: [
-                          Expanded(child: ArtikelAmountChangeButton()),
-                          const SizedBox(width: 10),
-                          Expanded(child: InventurDurchfuehrenButton()),
-                        ],
-                      ),
-                      const SizedBox(height: 20),
+                    // Zeile 2: Bestandsänderungen & Inventur
+                    _buildHeading("Bestandsänderungen & Inventur"),
+                    const SizedBox(height: 10),
+                    Row(
+                      children: [
+                        Expanded(child: ArtikelAmountChangeButton()),
+                        const SizedBox(width: 10),
+                        Expanded(child: InventurDurchfuehrenButton()),
+                      ],
+                    ),
+                    const SizedBox(height: 20),
 
-                      // Zeile 3: Datenimport & -export
-                      _buildHeading("Datenimport & -export"),
-                      const SizedBox(height: 10),
-                      Row(
-                        children: [
-                          Expanded(child: ExportListButton()),
-                          const SizedBox(width: 10),
-                          Expanded(child: ImportListButton()),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
+                    // Zeile 3: Lagerlistenverwaltung (updated heading)
+                    _buildHeading("Lagerlistenverwaltung"),
+                    const SizedBox(height: 10),
+                    // Row with Export and Import buttons.
+                    Row(
+                      children: [
+                        Expanded(child: ExportListButton()),
+                        const SizedBox(width: 10),
+                        Expanded(child: ImportListButton()),
+                      ],
+                    ),
+                    const SizedBox(height: 10),
+                    // ShowAllArticlesButton below, centered.
+                    Center(child: ShowAllArticlesButton()),
+                  ],
+                )),
               ),
             ),
           ),
@@ -217,7 +221,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
           Text(
             title,
             style: const TextStyle(
-              fontSize: 18,
+              fontSize: 20,
               fontWeight: FontWeight.w600,
             ),
           ),
