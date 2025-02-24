@@ -14,7 +14,7 @@ class ScanArtikelButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return PrimaryButtonBase(
-        title: "Artikel\nScannen",
+        title: "Artikel Scannen",
         accentColor: Color.fromRGBO(211, 153, 241, 1),
         onPressed: () => scanArtikel(context));
   }
