@@ -76,10 +76,8 @@ class _LagerplatzPageState extends State<LagerplatzPage> {
                             await Navigator.push(
                               context,
                               CupertinoPageRoute(
-                                builder: (context) => EditArtikelPage(
-                                  entry: entry,
-                                  isEditable: true,
-                                ),
+                                builder: (context) =>
+                                    EditArtikelPage(entry: entry),
                               ),
                             );
                             setState(() => {});

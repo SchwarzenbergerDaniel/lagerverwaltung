@@ -39,10 +39,7 @@ class ScanArtikelButton extends StatelessWidget {
       Navigator.push(
         context,
         CupertinoPageRoute(
-          builder: (context) => EditArtikelPage(
-            entry: entry,
-            isEditable: true,
-          ),
+          builder: (context) => EditArtikelPage(entry: entry),
         ),
       );
     } else {
@@ -95,7 +92,6 @@ class ScanArtikelButton extends StatelessWidget {
                 artikelGWID: artikelGWID,
                 lagerplatzId: scannedLagerplatz,
               ),
-              isEditable: true,
             ),
           ),
         );
