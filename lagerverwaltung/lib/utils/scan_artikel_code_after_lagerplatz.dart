@@ -31,10 +31,7 @@ Future<void> scanArtikelCodeAfterLagerplatz(
       await Navigator.push(
         context,
         CupertinoPageRoute(
-          builder: (context) => EditArtikelPage(
-            entry: artikel,
-            isEditable: true,
-          ),
+          builder: (context) => EditArtikelPage(entry: artikel),
         ),
       );
     } else {
@@ -42,12 +39,10 @@ Future<void> scanArtikelCodeAfterLagerplatz(
           context,
           CupertinoPageRoute(
               builder: (context) => EditArtikelPage(
-                    entry: LagerlistenEntry(
-                      lagerplatzId: lagerplatzId,
-                      artikelGWID: scannedID,
-                    ),
-                    isEditable: true,
-                  )));
+                      entry: LagerlistenEntry(
+                    lagerplatzId: lagerplatzId,
+                    artikelGWID: scannedID,
+                  ))));
     }
   } else {
     Showsnackbar.showSnackBar(context, "kein Code gefunden!");
