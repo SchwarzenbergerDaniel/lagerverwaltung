@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
-import 'package:lagerverwaltung/buttons/base/secondary_button_base.dart';
+import 'package:lagerverwaltung/buttons/base/base_button.dart';
 import 'package:lagerverwaltung/config/errormessage_constants.dart';
 import 'package:lagerverwaltung/service/xlsx_converter_service.dart';
 import 'package:lagerverwaltung/service/lagerlistenverwaltung_service.dart';
@@ -20,10 +20,11 @@ class ExportListButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SecondaryButtonBase(
+    return BaseButton(
         title: "Exportieren",
         accentColor: Color.fromRGBO(233, 175, 134, 1),
-        onPressed: () => export(context));
+        onPressed: () => export(context),
+        isPrimary: false);
   }
 
   void export(BuildContext context) async {

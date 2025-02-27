@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:get_it/get_it.dart';
-import 'package:lagerverwaltung/buttons/base/primary_button_base.dart';
+import 'package:lagerverwaltung/buttons/base/base_button.dart';
 import 'package:lagerverwaltung/config/constants.dart';
 import 'package:lagerverwaltung/model/lagerlistenentry.dart';
 import 'package:lagerverwaltung/page/edit_artikel_page.dart';
@@ -13,10 +13,12 @@ class ScanArtikelButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return PrimaryButtonBase(
-        title: "Artikel Scannen",
-        accentColor: Color.fromRGBO(211, 153, 241, 1),
-        onPressed: () => scanArtikel(context));
+    return BaseButton(
+      title: "Artikel\nScannen",
+      accentColor: Color.fromRGBO(211, 153, 241, 1),
+      onPressed: () => scanArtikel(context),
+      isPrimary: true,
+    );
   }
 
   void scanArtikel(BuildContext context) async {

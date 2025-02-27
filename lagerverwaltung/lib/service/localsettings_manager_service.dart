@@ -27,6 +27,7 @@ class LocalSettingsManagerService {
   static const String _XLSX_ORDER_LIST_KEY = "XLSX_ORDER_LIST_KEY";
   static const String _IST_MOVING_BACKGROUND_KEY = "_IST_MOVING_BACKGROUND_KEY";
   static const String _IST_BRIGHT_BACKGROUND = "_IST_BRIGHT_BACKGROUND";
+  static const String _IST_BUNT_KEY = "_IST_BUNT_KEY";
 
   // SharedPreference-Cache:
   static SharedPreferences? _prefs;
@@ -55,6 +56,7 @@ class LocalSettingsManagerService {
         prefs.getInt(_DELETE_LOGS_AFTER_DAYS_KEY));
     await setIsMoving(prefs.getBool(_IST_MOVING_BACKGROUND_KEY));
     await setIsBright(prefs.getBool(_IST_BRIGHT_BACKGROUND));
+    await setIstBunt(prefs.getBool(_IST_BUNT_KEY));
   }
 
   // INSTANZEN
@@ -65,6 +67,7 @@ class LocalSettingsManagerService {
   List<Columns>? _xlsx_order;
   bool? _isMovingBackground;
   bool? _isBrightBackground;
+  bool? _isBunt;
 
   // MAIL-EMpfänger:
   String getMail() {
@@ -147,5 +150,16 @@ class LocalSettingsManagerService {
     final prefs = await _getSharePreference();
     _sendAbgelaufenReminderInDays = value;
     prefs.setInt(_SEND_ABGELAUFEN_REMINDER_IN_DAYS_KEY, value);
+  }
+
+  Future setIstBunt(bool? istBunt) async {
+    istBunt = istBunt ?? true;
+    final prefs = await _getSharePreference();
+    _isBunt = istBunt;
+    prefs.setBool(_IST_BUNT_KEY, istBunt);
+  }
+
+  bool getIstBunt() {
+    return _isBunt!;
   }
 }

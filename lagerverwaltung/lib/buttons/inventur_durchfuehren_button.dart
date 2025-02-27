@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:get_it/get_it.dart';
-import 'package:lagerverwaltung/buttons/base/primary_button_base.dart';
+import 'package:lagerverwaltung/buttons/base/base_button.dart';
 import 'package:lagerverwaltung/page/inventur_page.dart';
 import 'package:lagerverwaltung/config/constants.dart';
 import 'package:lagerverwaltung/utils/showdialog.dart';
@@ -15,10 +15,12 @@ class InventurDurchfuehrenButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return PrimaryButtonBase(
-        title: "Inventur durchführen",
-        accentColor: Color.fromRGBO(135, 241, 211, 1),
-        onPressed: () => inventurDurchfuehren(context));
+    return BaseButton(
+      title: "Inventur\ndurchführen",
+      accentColor: Color.fromRGBO(135, 241, 211, 1),
+      onPressed: () => inventurDurchfuehren(context),
+      isPrimary: true,
+    );
   }
 
   void inventurDurchfuehren(BuildContext context) async {

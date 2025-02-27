@@ -9,6 +9,13 @@ import 'package:lagerverwaltung/widget/background/animated_background.dart';
 import 'package:lagerverwaltung/widget/custom_app_bar.dart';
 import 'package:provider/provider.dart';
 
+class ColorCombination {
+  final Color primary;
+  final Color background;
+
+  ColorCombination({required this.primary, required this.background});
+}
+
 class ColorChangingPage extends StatefulWidget {
   const ColorChangingPage({super.key});
 
@@ -21,89 +28,133 @@ class _ColorChangingPageState extends State<ColorChangingPage> {
   final localSettingsManagerService =
       GetIt.instance<LocalSettingsManagerService>();
 
-  final colors = [
-    Color(0xFF4F4F4F), // Dark Grey
-    CupertinoColors.systemGrey,
-    Color(0xFFD3D3D3), // Light Grey
-
-    CupertinoColors.systemIndigo,
-
-    CupertinoColors.activeBlue,
-    CupertinoColors.systemTeal,
-
-    Color(0xFF006400), // Dark Green
-    CupertinoColors.activeGreen,
-    Color(0xFF90EE90), // Light Green
-
-    Color(0xFF8B0000), // Dark Red
-    CupertinoColors.destructiveRed,
-    Color(0xFFFFA07A), // Light Red
+  // Please do not add the same primary color twice!
+  final List<ColorCombination> colorCombinations = [
+    ColorCombination(
+        primary: CupertinoColors.systemTeal,
+        background: Color(0xFF4F4F4F)), // Teal + Dunkelgrau
+    ColorCombination(
+        primary: CupertinoColors.systemBlue, background: Color(0xFF1E1E1E)), //
+    ColorCombination(
+        primary: CupertinoColors.systemRed,
+        background: Color(0xFFFFE5E5)), // Rot
+    ColorCombination(
+        primary: CupertinoColors.systemGreen, background: Color(0xFF2E7D32)), //
+    ColorCombination(
+        primary: CupertinoColors.systemYellow,
+        background: Color(0xFF3E2723)), // Gelb + Dunkelbraun
+    ColorCombination(
+        primary: CupertinoColors.systemPurple,
+        background: Color(0xFF1A237E)), //
+    ColorCombination(
+        primary: CupertinoColors.systemOrange,
+        background: Color(0xFFFFF3E0)), // Orange
+    ColorCombination(
+        primary: CupertinoColors.systemIndigo,
+        background: Color(0xFF212121)), //
   ];
 
-  late Color selectedBackgroundColor;
-  late Color selectedPrimaryColor;
+  int selectedCombinationIndex = 0;
 
   @override
   void initState() {
     super.initState();
-    selectedBackgroundColor = themeService.backgroundColor;
-    selectedPrimaryColor = themeService.primaryColor;
+    selectedCombinationIndex = 0;
   }
 
-  /// Helper method to build a grid for color selection.
-  Widget _buildColorGrid({
-    required Color selectedColor,
-    required void Function(Color) onColorSelected,
-  }) {
-    return GridView.count(
-      crossAxisCount: 4,
+  Widget _buildCombinationGrid() {
+    return GridView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
-      padding: const EdgeInsets.symmetric(
-          horizontal: 80.0), // space on the outside of the grid
-      children: colors.map((color) {
-        final isSelected = color.green == selectedColor.green &&
-            color.red == selectedColor.red &&
-            color.blue == selectedColor.blue;
-        return Center(
-          child: GestureDetector(
-            onTap: () => onColorSelected(color),
-            child: Container(
-              width: 50,
-              height: 50,
-              decoration: BoxDecoration(
-                color: color,
-                shape: BoxShape.circle,
-                border: Border.all(
-                  color: isSelected
-                      ? CupertinoColors.black
-                      : CupertinoColors.systemGrey2,
-                  width: isSelected ? 3.0 : 1.0,
+      padding: const EdgeInsets.symmetric(horizontal: 40.0),
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 4,
+        childAspectRatio: 1,
+        crossAxisSpacing: 16.0,
+        mainAxisSpacing: 16.0,
+      ),
+      itemCount: colorCombinations.length,
+      itemBuilder: (context, index) {
+        final combination = colorCombinations[index];
+        final primaryColor = Theme.of(context).primaryColor;
+        final isSelected = combination.primary.r == primaryColor.r &&
+            combination.primary.g == primaryColor.g &&
+            combination.primary.b == primaryColor.b;
+        return GestureDetector(
+          onTap: () {
+            setState(() {
+              selectedCombinationIndex = index;
+              themeService.setPrimaryColor(
+                CupertinoDynamicColor.withBrightness(
+                  color: combination.primary,
+                  darkColor: combination.primary,
+                ),
+              );
+              themeService.setBackgroundColor(
+                CupertinoDynamicColor.withBrightness(
+                  color: combination.background,
+                  darkColor: combination.background,
+                ),
+              );
+            });
+          },
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              Container(
+                decoration: BoxDecoration(
+                  border: Border.all(
+                    color: isSelected
+                        ? CupertinoColors.activeBlue
+                        : CupertinoColors.systemGrey2,
+                    width: isSelected ? 3.0 : 1.0,
+                  ),
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+                child: Column(
+                  children: [
+                    Expanded(
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: combination.background,
+                          borderRadius: const BorderRadius.vertical(
+                              top: Radius.circular(8.0)),
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: combination.primary,
+                          borderRadius: const BorderRadius.vertical(
+                              bottom: Radius.circular(8.0)),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
-              child: isSelected
-                  ? Center(
-                      child: Icon(
-                        Icons.check,
-                        color: CupertinoColors.white,
-                        size: 20,
-                      ),
-                    )
-                  : null,
-            ),
+              if (isSelected)
+                const Icon(
+                  Icons.check,
+                  color: CupertinoColors.white,
+                  size: 30,
+                ),
+            ],
           ),
         );
-      }).toList(),
+      },
     );
   }
 
   @override
   Widget build(BuildContext context) {
     final movingBlobsProvider = Provider.of<BackgroundInfoProvider>(context);
+    final colorProvider = Provider.of<ThemeChangingService>(context);
 
     return CupertinoPageScaffold(
       navigationBar: CustomAppBar(
-        title: 'Farbgebung',
+        title: 'Farbkombination wählen',
       ),
       child: AnimatedBackground(
         child: Center(
@@ -115,80 +166,26 @@ class _ColorChangingPageState extends State<ColorChangingPage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    // Section for Primary Color
-                    HeadingText(text: 'Primärfarbe'),
+                    HeadingText(text: 'Farbkombination'),
                     const SizedBox(height: 10),
-                    _buildColorGrid(
-                      selectedColor: selectedPrimaryColor,
-                      onColorSelected: (color) {
-                        setState(() {
-                          selectedPrimaryColor = color;
-                          themeService.setPrimaryColor(
-                            CupertinoDynamicColor.withBrightness(
-                              color: color,
-                              darkColor: color,
-                            ),
-                          );
-                        });
-                      },
-                    ),
+                    _buildCombinationGrid(),
                     const SizedBox(height: 30),
-                    // Section for Background Color
-                    HeadingText(text: 'Hintergrundfarbe'),
+                    _buildSwitchRow(
+                      label: 'Bewegender Hintergrund',
+                      value: movingBlobsProvider.isMoving,
+                      onChanged: movingBlobsProvider.changeMoving,
+                    ),
                     const SizedBox(height: 10),
-                    _buildColorGrid(
-                      selectedColor: selectedBackgroundColor,
-                      onColorSelected: (color) {
-                        setState(() {
-                          selectedBackgroundColor = color;
-                          themeService.setBackgroundColor(
-                            CupertinoDynamicColor.withBrightness(
-                              color: color,
-                              darkColor: color,
-                            ),
-                          );
-                        });
-                      },
+                    _buildSwitchRow(
+                      label: 'Heller Hintergrund',
+                      value: movingBlobsProvider.isBright,
+                      onChanged: movingBlobsProvider.changeIsBright,
                     ),
-                    const SizedBox(height: 30),
-                    // "Bewegende Blobs" checkmark at the bottom.
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          'Bewegender Hintergrund',
-                          style: TextStyle(
-                            color: selectedPrimaryColor,
-                            fontSize: 18,
-                          ),
-                        ),
-                        const SizedBox(width: 10),
-                        CupertinoSwitch(
-                          value: movingBlobsProvider.isMoving,
-                          onChanged: (bool value) {
-                            movingBlobsProvider.changeMoving(value);
-                          },
-                        ),
-                      ],
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          'Heller Hintergrund',
-                          style: TextStyle(
-                            color: selectedPrimaryColor,
-                            fontSize: 18,
-                          ),
-                        ),
-                        const SizedBox(width: 10),
-                        CupertinoSwitch(
-                          value: movingBlobsProvider.isBright,
-                          onChanged: (bool value) {
-                            movingBlobsProvider.changeIsBright(value);
-                          },
-                        ),
-                      ],
+                    const SizedBox(height: 10),
+                    _buildSwitchRow(
+                      label: 'Bunter Modus',
+                      value: colorProvider.istBunt,
+                      onChanged: themeService.setIstBunt,
                     ),
                   ],
                 ),
@@ -197,6 +194,30 @@ class _ColorChangingPageState extends State<ColorChangingPage> {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildSwitchRow({
+    required String label,
+    required bool value,
+    required Function(bool) onChanged,
+  }) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text(
+          label,
+          style: TextStyle(
+            color: colorCombinations[selectedCombinationIndex].primary,
+            fontSize: 18,
+          ),
+        ),
+        const SizedBox(width: 10),
+        CupertinoSwitch(
+          value: value,
+          onChanged: onChanged,
+        ),
+      ],
     );
   }
 }

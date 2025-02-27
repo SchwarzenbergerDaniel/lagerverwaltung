@@ -147,7 +147,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                     const SizedBox(height: 20),
 
                     // Zeile 1: Standort & Artikel Scannen
-                    _buildHeading("Standort & Artikel Scannen"),
+                    _buildHeading("Lagerplatz & Artikel"),
                     const SizedBox(height: 10),
                     Row(
                       children: [
@@ -159,7 +159,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                     const SizedBox(height: 20),
 
                     // Zeile 2: Bestandsänderungen & Inventur
-                    _buildHeading("Bestandsänderungen & Inventur"),
+                    _buildHeading("Bestandsbezogen"),
                     const SizedBox(height: 10),
                     Row(
                       children: [

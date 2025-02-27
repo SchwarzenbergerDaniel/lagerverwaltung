@@ -247,7 +247,7 @@ class _EditArtikelPageState extends State<EditArtikelPage> {
       bool isQRCodeField = false,
       bool isLagerplatzIdField = false}) {
     // Use a different background and text color when not in edit mode.
-    final backgroundColor = CupertinoTheme.of(context).scaffoldBackgroundColor;
+    final backgroundColor = CupertinoTheme.of(context).barBackgroundColor;
     final textColor = CupertinoTheme.of(context).textTheme.textStyle.color;
 
     return Column(
@@ -313,10 +313,11 @@ class _EditArtikelPageState extends State<EditArtikelPage> {
   CupertinoButton speichernButton() {
     return CupertinoButton(
       child: Text('Speichern'),
-      onPressed: () {
-        setState(() {
-          _saveChanges();
-        });
+      onPressed: () async {
+        bool isOkay = await _saveChanges();
+        if (isOkay) {
+          Navigator.pop(context);
+        }
       },
     );
   }

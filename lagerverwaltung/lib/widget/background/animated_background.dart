@@ -1,5 +1,4 @@
 import 'package:flutter/cupertino.dart';
-import 'package:get_it/get_it.dart';
 import 'package:lagerverwaltung/provider/backgroundinfoprovider.dart';
 import 'dart:math';
 
@@ -36,8 +35,6 @@ class _AnimatedBackgroundState extends State<AnimatedBackground>
     _controller.dispose();
     super.dispose();
   }
-
-  final themeChangingService = GetIt.instance<ThemeChangingService>();
 
   @override
   Widget build(BuildContext context) {

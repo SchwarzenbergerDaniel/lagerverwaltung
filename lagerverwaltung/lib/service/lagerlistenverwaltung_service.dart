@@ -140,7 +140,7 @@ class LagerlistenVerwaltungsService {
         .length;
   }
 
-  Future<bool> exist(String? lagerplatz, String artikelGWID) async {
+  Future<bool> exist(String lagerplatz, String artikelGWID) async {
     return (await artikelEntries).any((val) =>
         val.artikelGWID == artikelGWID && val.lagerplatzId == lagerplatz);
   }
