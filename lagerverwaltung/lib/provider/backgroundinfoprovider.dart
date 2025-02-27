@@ -23,7 +23,7 @@ class BackgroundInfoProvider extends ChangeNotifier {
 
   void changeIsBright(bool isBright) {
     _isBright = isBright;
-    _localSettingsManagerService.setIsMoving(_isBright);
+    _localSettingsManagerService.setIsBright(_isBright);
     notifyListeners();
   }
 }

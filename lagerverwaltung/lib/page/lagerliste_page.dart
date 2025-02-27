@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:lagerverwaltung/model/lagerlistenentry.dart';
 import 'package:lagerverwaltung/page/edit_artikel_page.dart';
 import 'package:lagerverwaltung/service/lagerlistenverwaltung_service.dart';
+import 'package:lagerverwaltung/service/localsettings_manager_service.dart';
 import 'package:lagerverwaltung/widget/background/animated_background.dart';
 import 'package:lagerverwaltung/widget/custom_app_bar.dart';
 
@@ -23,7 +24,8 @@ class _LagerlistePageState extends State<LagerlistePage> {
   final TextEditingController _searchController = TextEditingController();
   late List<LagerlistenEntry> _filteredEntries;
   SortType _currentSort = SortType.ablaufdatum;
-
+  final localSettingsManagerService =
+      GetIt.instance<LocalSettingsManagerService>();
   @override
   void initState() {
     super.initState();
@@ -99,7 +101,6 @@ class _LagerlistePageState extends State<LagerlistePage> {
     });
   }
 
-  // --- Build UI ---
   @override
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
@@ -224,13 +225,16 @@ class _LagerlistePageState extends State<LagerlistePage> {
   Widget _buildArticleCard(LagerlistenEntry entry) {
     final bool isExpired =
         entry.ablaufdatum != null && DateTime.now().isAfter(entry.ablaufdatum!);
+    bool isWhite = localSettingsManagerService.getIsBright();
+
     final Color ablaufDatumColor = isExpired ? Colors.redAccent : Colors.green;
 
     final bool isBelowMinimum = (entry.menge != null &&
         entry.mindestMenge != null &&
         entry.menge! < entry.mindestMenge!);
-    final Color mengeColor =
-        isBelowMinimum ? Colors.redAccent : Colors.grey.shade800;
+    final Color mengeColor = isBelowMinimum
+        ? Colors.redAccent
+        : (isWhite ? Colors.grey.shade800 : Colors.white70);
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -256,14 +260,7 @@ class _LagerlistePageState extends State<LagerlistePage> {
             borderRadius: BorderRadius.circular(15),
           ),
           child: Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [Colors.white, Colors.blue.shade50],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-              borderRadius: BorderRadius.circular(15),
-            ),
+            color: isWhite ? Colors.grey[300] : Colors.grey.shade900,
             child: Padding(
               padding: const EdgeInsets.all(16),
               child: Column(
@@ -289,7 +286,9 @@ class _LagerlistePageState extends State<LagerlistePage> {
                   const SizedBox(height: 12),
                   Text(
                     "Lagerplatz: ${entry.lagerplatzId ?? 'N/A'}",
-                    style: TextStyle(fontSize: 16, color: Colors.grey.shade800),
+                    style: TextStyle(
+                        fontSize: 16,
+                        color: isWhite ? Colors.grey.shade800 : Colors.white70),
                   ),
                   const SizedBox(height: 10),
                   Row(
@@ -298,12 +297,18 @@ class _LagerlistePageState extends State<LagerlistePage> {
                       Text(
                         "Regal: ${entry.regal ?? 'N/A'}",
                         style: TextStyle(
-                            fontSize: 16, color: Colors.grey.shade800),
+                            fontSize: 16,
+                            color: isWhite
+                                ? Colors.grey.shade800
+                                : Colors.white70),
                       ),
                       Text(
                         "Fach: ${entry.fach ?? 'N/A'}",
                         style: TextStyle(
-                            fontSize: 16, color: Colors.grey.shade800),
+                            fontSize: 16,
+                            color: isWhite
+                                ? Colors.grey.shade800
+                                : Colors.white70),
                       ),
                     ],
                   ),
@@ -318,7 +323,10 @@ class _LagerlistePageState extends State<LagerlistePage> {
                       Text(
                         "Mindestmenge: ${entry.mindestMenge?.toString() ?? 'N/A'}",
                         style: TextStyle(
-                            fontSize: 16, color: Colors.grey.shade800),
+                            fontSize: 16,
+                            color: isWhite
+                                ? Colors.grey.shade800
+                                : Colors.white70),
                       ),
                     ],
                   ),
@@ -328,7 +336,6 @@ class _LagerlistePageState extends State<LagerlistePage> {
                         ? "Ablaufdatum: ${DateFormat.yMd().format(entry.ablaufdatum!)}"
                         : "Ablaufdatum: N/A",
                     style: TextStyle(
-                      fontStyle: FontStyle.italic,
                       fontSize: 14,
                       color: ablaufDatumColor,
                     ),

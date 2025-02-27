@@ -13,7 +13,7 @@ class ShowAllArticlesButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final double containerWidth = MediaQuery.of(context).size.width * 0.5;
-    return Container(
+    return SizedBox(
       width: containerWidth,
       child: SecondaryButtonBase(
         title: "Artikel anzeigen",
