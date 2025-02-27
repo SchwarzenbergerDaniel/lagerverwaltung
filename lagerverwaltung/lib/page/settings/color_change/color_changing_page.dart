@@ -62,7 +62,6 @@ class _ColorChangingPageState extends State<ColorChangingPage> {
     selectedCombinationIndex = 0;
   }
 
-  /// Builds a grid of color combinations.
   Widget _buildCombinationGrid() {
     return GridView.builder(
       shrinkWrap: true,
@@ -117,7 +116,7 @@ class _ColorChangingPageState extends State<ColorChangingPage> {
                     Expanded(
                       child: Container(
                         decoration: BoxDecoration(
-                          color: combination.primary,
+                          color: combination.background,
                           borderRadius: const BorderRadius.vertical(
                               top: Radius.circular(8.0)),
                         ),
@@ -126,7 +125,7 @@ class _ColorChangingPageState extends State<ColorChangingPage> {
                     Expanded(
                       child: Container(
                         decoration: BoxDecoration(
-                          color: combination.background,
+                          color: combination.primary,
                           borderRadius: const BorderRadius.vertical(
                               bottom: Radius.circular(8.0)),
                         ),
@@ -151,6 +150,7 @@ class _ColorChangingPageState extends State<ColorChangingPage> {
   @override
   Widget build(BuildContext context) {
     final movingBlobsProvider = Provider.of<BackgroundInfoProvider>(context);
+    final colorProvider = Provider.of<ThemeChangingService>(context);
 
     return CupertinoPageScaffold(
       navigationBar: CustomAppBar(
@@ -170,47 +170,22 @@ class _ColorChangingPageState extends State<ColorChangingPage> {
                     const SizedBox(height: 10),
                     _buildCombinationGrid(),
                     const SizedBox(height: 30),
-                    // Bewegender Hintergrund switch.
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          'Bewegender Hintergrund',
-                          style: TextStyle(
-                            color: colorCombinations[selectedCombinationIndex]
-                                .primary,
-                            fontSize: 18,
-                          ),
-                        ),
-                        const SizedBox(width: 10),
-                        CupertinoSwitch(
-                          value: movingBlobsProvider.isMoving,
-                          onChanged: (bool value) {
-                            movingBlobsProvider.changeMoving(value);
-                          },
-                        ),
-                      ],
+                    _buildSwitchRow(
+                      label: 'Bewegender Hintergrund',
+                      value: movingBlobsProvider.isMoving,
+                      onChanged: movingBlobsProvider.changeMoving,
                     ),
                     const SizedBox(height: 10),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          'Heller Hintergrund',
-                          style: TextStyle(
-                            color: colorCombinations[selectedCombinationIndex]
-                                .primary,
-                            fontSize: 18,
-                          ),
-                        ),
-                        const SizedBox(width: 10),
-                        CupertinoSwitch(
-                          value: movingBlobsProvider.isBright,
-                          onChanged: (bool value) {
-                            movingBlobsProvider.changeIsBright(value);
-                          },
-                        ),
-                      ],
+                    _buildSwitchRow(
+                      label: 'Heller Hintergrund',
+                      value: movingBlobsProvider.isBright,
+                      onChanged: movingBlobsProvider.changeIsBright,
+                    ),
+                    const SizedBox(height: 10),
+                    _buildSwitchRow(
+                      label: 'Bunter Modus',
+                      value: colorProvider.istBunt,
+                      onChanged: themeService.setIstBunt,
                     ),
                   ],
                 ),
@@ -219,6 +194,30 @@ class _ColorChangingPageState extends State<ColorChangingPage> {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildSwitchRow({
+    required String label,
+    required bool value,
+    required Function(bool) onChanged,
+  }) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text(
+          label,
+          style: TextStyle(
+            color: colorCombinations[selectedCombinationIndex].primary,
+            fontSize: 18,
+          ),
+        ),
+        const SizedBox(width: 10),
+        CupertinoSwitch(
+          value: value,
+          onChanged: onChanged,
+        ),
+      ],
     );
   }
 }

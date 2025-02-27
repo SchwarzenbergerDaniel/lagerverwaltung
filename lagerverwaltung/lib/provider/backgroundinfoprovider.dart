@@ -12,6 +12,7 @@ class BackgroundInfoProvider extends ChangeNotifier {
   BackgroundInfoProvider()
       : _isMoving = GetIt.instance<LocalSettingsManagerService>().getIsMoving(),
         _isBright = GetIt.instance<LocalSettingsManagerService>().getIsBright();
+
   bool get isMoving => _isMoving;
   bool get isBright => _isBright;
 

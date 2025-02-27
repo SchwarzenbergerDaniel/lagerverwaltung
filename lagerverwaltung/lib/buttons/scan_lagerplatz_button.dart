@@ -2,7 +2,7 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:get_it/get_it.dart';
-import 'package:lagerverwaltung/buttons/base/primary_button_base.dart';
+import 'package:lagerverwaltung/buttons/base/base_button.dart';
 import 'package:lagerverwaltung/config/constants.dart';
 import 'package:lagerverwaltung/page/lagerplatz_page.dart';
 import 'package:lagerverwaltung/widget/lagerplatz_code_scanned_modal.dart';
@@ -19,10 +19,12 @@ class ScanLagerplatzButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return PrimaryButtonBase(
-        title: "Lagerplatz Scannen",
-        accentColor: Color.fromRGBO(131, 166, 241, 1),
-        onPressed: () => scanLagerplatz(context));
+    return BaseButton(
+      title: "Lagerplatz\nScannen",
+      accentColor: Color.fromRGBO(131, 166, 241, 1),
+      onPressed: () => scanLagerplatz(context),
+      isPrimary: true,
+    );
   }
 
   void scanLagerplatz(BuildContext context) async {
