@@ -28,30 +28,38 @@ class _ColorChangingPageState extends State<ColorChangingPage> {
   final localSettingsManagerService =
       GetIt.instance<LocalSettingsManagerService>();
 
-  // Please do not add the same primary color twice!
   final List<ColorCombination> colorCombinations = [
     ColorCombination(
         primary: CupertinoColors.systemTeal,
         background: Color(0xFF4F4F4F)), // Teal + Dunkelgrau
-    ColorCombination(
-        primary: CupertinoColors.systemBlue, background: Color(0xFF1E1E1E)), //
-    ColorCombination(
-        primary: CupertinoColors.systemRed,
-        background: Color(0xFFFFE5E5)), // Rot
-    ColorCombination(
-        primary: CupertinoColors.systemGreen, background: Color(0xFF2E7D32)), //
-    ColorCombination(
-        primary: CupertinoColors.systemYellow,
-        background: Color(0xFF3E2723)), // Gelb + Dunkelbraun
-    ColorCombination(
-        primary: CupertinoColors.systemPurple,
-        background: Color(0xFF1A237E)), //
+
     ColorCombination(
         primary: CupertinoColors.systemOrange,
-        background: Color(0xFFFFF3E0)), // Orange
+        background: Color(0xFF2E2E2E)), // Orange + Schwarzgrau
+
     ColorCombination(
         primary: CupertinoColors.systemIndigo,
-        background: Color(0xFF212121)), //
+        background: Color(0xFF1F1F3D)), // Indigo + Dunkelblau
+
+    ColorCombination(
+        primary: CupertinoColors.systemPink,
+        background: Color(0xFF3B3B3B)), // Pink + Mittelgrau
+
+    ColorCombination(
+        primary: CupertinoColors.systemGreen,
+        background: Color(0xFF252525)), // Grün + Sehr dunkles Grau
+
+    ColorCombination(
+        primary: CupertinoColors.systemPurple,
+        background: Color(0xFF2A1A40)), // Lila + Dunkellila
+
+    ColorCombination(
+        primary: CupertinoColors.systemYellow,
+        background: Color(0xFF303030)), // Gelb + Dunkelgrau
+
+    ColorCombination(
+        primary: CupertinoColors.systemRed,
+        background: Color(0xFF0D0D30)), // Rot + Dunkelblau
   ];
 
   int selectedCombinationIndex = 0;
