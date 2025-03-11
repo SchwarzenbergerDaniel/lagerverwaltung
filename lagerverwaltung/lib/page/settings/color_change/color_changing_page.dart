@@ -36,22 +36,22 @@ class _ColorChangingPageState extends State<ColorChangingPage> {
     ColorCombination(
         primary: CupertinoColors.systemBlue, background: Color(0xFF1E1E1E)), //
     ColorCombination(
-        primary: CupertinoColors.systemRed,
-        background: Color(0xFFFFE5E5)), // Rot
+        primary: const Color.fromRGBO(128, 0, 128, 1),
+        background: Color.fromRGBO(29, 17, 96, 1)), // Rot
     ColorCombination(
         primary: CupertinoColors.systemGreen, background: Color(0xFF2E7D32)), //
     ColorCombination(
-        primary: CupertinoColors.systemYellow,
-        background: Color(0xFF3E2723)), // Gelb + Dunkelbraun
+        primary: Color.fromRGBO(210, 162, 178, 1),
+        background: Color.fromRGBO(45, 93, 77, 1)), //
     ColorCombination(
         primary: CupertinoColors.systemPurple,
         background: Color(0xFF1A237E)), //
     ColorCombination(
-        primary: CupertinoColors.systemOrange,
-        background: Color(0xFFFFF3E0)), // Orange
-    ColorCombination(
         primary: CupertinoColors.systemIndigo,
-        background: Color(0xFF212121)), //
+        background: Color(0xFF212121)), // Dark
+    ColorCombination(
+        primary: CupertinoColors.white,
+        background: Color.fromARGB(0, 0, 56, 108)), //
   ];
 
   int selectedCombinationIndex = 0;
