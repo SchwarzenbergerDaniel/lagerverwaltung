@@ -109,7 +109,11 @@ class LagerlistenVerwaltungsService {
   }
 
   Future addEmptyLagerplatz(String lagerplatzCode) async {
-    LagerlistenEntry entry = LagerlistenEntry(lagerplatzId: lagerplatzCode);
+    List<String> split = lagerplatzCode.split('.');
+    String regal = split[0];
+    String fach = split[1];
+    LagerlistenEntry entry = LagerlistenEntry(
+        lagerplatzId: lagerplatzCode, regal: regal, fach: fach);
     await addLagerplatzToLagerliste(entry);
   }
 

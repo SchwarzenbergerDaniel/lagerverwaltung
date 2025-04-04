@@ -64,6 +64,14 @@ class _EditArtikelPageState extends State<EditArtikelPage> {
     );
   }
 
+  void artikelGWIDchanged(String newValue) {
+    List<String> split = newValue.split('.');
+    String regal = split[0];
+    String fach = split[1];
+    regalController.text = regal;
+    fachController.text = fach;
+  }
+
   @override
   void initState() {
     super.initState();
@@ -185,9 +193,14 @@ class _EditArtikelPageState extends State<EditArtikelPage> {
               _buildLabeledField('Fach', fachController),
               _buildLabeledField('Regal', regalController),
               _buildLabeledField('Lagerplatz ID', lagerplatzIdController,
-                  isQRCodeField: true, isLagerplatzIdField: true),
-              _buildLabeledField('Artikel GWID', artikelGWIDController,
-                  isQRCodeField: true),
+                  isQRCodeField: true,
+                  isLagerplatzIdField: true,
+                  onChangedCallback: (value) => {artikelGWIDchanged(value)}),
+              _buildLabeledField(
+                'Artikel GWID',
+                artikelGWIDController,
+                isQRCodeField: true,
+              ),
               _buildLabeledField('Artikel Firmen ID', arikelFirmenIdController),
               _buildLabeledField('Beschreibung', beschreibungController),
               _buildLabeledField('Kunde', kundeController),
@@ -242,11 +255,15 @@ class _EditArtikelPageState extends State<EditArtikelPage> {
     );
   }
 
-  Widget _buildLabeledField(String label, TextEditingController controller,
-      {TextInputType inputType = TextInputType.text,
-      bool isQRCodeField = false,
-      bool isLagerplatzIdField = false}) {
-    // Use a different background and text color when not in edit mode.
+  Widget _buildLabeledField(
+    String label,
+    TextEditingController controller, {
+    TextInputType inputType = TextInputType.text,
+    bool isQRCodeField = false,
+    ValueChanged<String>? onChangedCallback,
+    bool isLagerplatzIdField = false,
+  }) {
+    onChangedCallback ??= (value) {};
     final backgroundColor = CupertinoTheme.of(context).barBackgroundColor;
     final textColor = CupertinoTheme.of(context).textTheme.textStyle.color;
 
@@ -278,6 +295,7 @@ class _EditArtikelPageState extends State<EditArtikelPage> {
                       const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
                   style: TextStyle(color: textColor),
                   decoration: BoxDecoration(color: backgroundColor),
+                  onChanged: onChangedCallback,
                 ),
               ),
               if (isQRCodeField)
