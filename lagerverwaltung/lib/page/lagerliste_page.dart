@@ -4,15 +4,20 @@ import 'package:get_it/get_it.dart';
 import 'package:intl/intl.dart';
 import 'package:lagerverwaltung/model/lagerlistenentry.dart';
 import 'package:lagerverwaltung/page/edit_artikel_page.dart';
-import 'package:lagerverwaltung/service/lagerlistenverwaltung_service.dart';
 import 'package:lagerverwaltung/service/localsettings_manager_service.dart';
 import 'package:lagerverwaltung/widget/background/animated_background.dart';
 import 'package:lagerverwaltung/widget/custom_app_bar.dart';
 
-enum SortType { ablaufdatum, lagerplatz, alphabetisch, mindestmengeErreicht }
+enum SortType {
+  ablaufdatum,
+  lagerplatz,
+  alphabetisch,
+  mindestmengeErreicht,
+  regal
+}
 
 class LagerlistePage extends StatefulWidget {
-  List<LagerlistenEntry> lagerlistenEntries;
+  final List<LagerlistenEntry> lagerlistenEntries;
 
   LagerlistePage({super.key, required this.lagerlistenEntries});
 
@@ -26,6 +31,7 @@ class _LagerlistePageState extends State<LagerlistePage> {
   SortType _currentSort = SortType.ablaufdatum;
   final localSettingsManagerService =
       GetIt.instance<LocalSettingsManagerService>();
+
   @override
   void initState() {
     super.initState();
@@ -46,7 +52,12 @@ class _LagerlistePageState extends State<LagerlistePage> {
       _filteredEntries = widget.lagerlistenEntries.where((entry) {
         final artikelGWID = entry.artikelGWID?.toLowerCase() ?? '';
         final beschreibung = entry.beschreibung?.toLowerCase() ?? '';
-        return artikelGWID.contains(query) || beschreibung.contains(query);
+        final regal = entry.regal?.toLowerCase() ?? '';
+        final fach = entry.fach?.toLowerCase() ?? '';
+        return artikelGWID.contains(query) ||
+            beschreibung.contains(query) ||
+            regal.contains(query) ||
+            fach.contains(query);
       }).toList();
       _applySort();
     });
@@ -86,19 +97,206 @@ class _LagerlistePageState extends State<LagerlistePage> {
 
   void _applySort() {
     setState(() {
-      _filteredEntries.sort((a, b) {
-        switch (_currentSort) {
-          case SortType.ablaufdatum:
-            return _compareByAblaufdatum(a, b);
-          case SortType.lagerplatz:
-            return _compareByLagerplatz(a, b);
-          case SortType.alphabetisch:
-            return _compareAlphabetically(a, b);
-          case SortType.mindestmengeErreicht:
-            return _compareByMindestmengeErreicht(a, b);
-        }
-      });
+      switch (_currentSort) {
+        case SortType.ablaufdatum:
+          _filteredEntries.sort((a, b) => _compareByAblaufdatum(a, b));
+          break;
+        case SortType.lagerplatz:
+          _filteredEntries.sort((a, b) => _compareByLagerplatz(a, b));
+          break;
+        case SortType.alphabetisch:
+          _filteredEntries.sort((a, b) => _compareAlphabetically(a, b));
+          break;
+        case SortType.mindestmengeErreicht:
+          _filteredEntries.sort((a, b) => _compareByMindestmengeErreicht(a, b));
+          break;
+        case SortType.regal:
+          _filteredEntries.sort((a, b) {
+            int regalComparison = (a.regal ?? '').compareTo(b.regal ?? '');
+            if (regalComparison != 0) return regalComparison;
+            return (a.fach ?? '').compareTo(b.fach ?? '');
+          });
+          break;
+      }
     });
+  }
+
+  void _onEntryTap(LagerlistenEntry entry) {
+    Navigator.push(
+      context,
+      CupertinoPageRoute(
+        builder: (context) => EditArtikelPage(entry: entry),
+      ),
+    );
+  }
+
+  String _sortTypeLabel(SortType type) {
+    switch (type) {
+      case SortType.ablaufdatum:
+        return "Ablaufdatum";
+      case SortType.lagerplatz:
+        return "Lagerplatz";
+      case SortType.alphabetisch:
+        return "Alphabetisch";
+      case SortType.mindestmengeErreicht:
+        return "Mindestmenge erreicht";
+      case SortType.regal:
+        return "Regal";
+    }
+  }
+
+  /// This keeps your fach design: fach at the top, description below.
+  Widget _buildGridItem(LagerlistenEntry entry) {
+    bool isWhite = localSettingsManagerService.getIsBright();
+    final bool isExpired =
+        entry.ablaufdatum != null && DateTime.now().isAfter(entry.ablaufdatum!);
+    final Color ablaufDatumColor = isExpired ? Colors.redAccent : Colors.green;
+    final bool isBelowMinimum = (entry.menge != null &&
+        entry.mindestMenge != null &&
+        entry.menge! < entry.mindestMenge!);
+    final Color mengeColor =
+        isBelowMinimum ? Colors.redAccent : (Colors.grey.shade800);
+
+    // Shorten description to 25 characters
+    String shortDescription = entry.beschreibung ?? 'Keine Beschreibung';
+    if (shortDescription.length > 25) {
+      shortDescription = shortDescription.substring(0, 25) + '...';
+    }
+
+    return GestureDetector(
+      onTap: () {
+        _onEntryTap(entry);
+      },
+      child: Card(
+        elevation: 4,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(5),
+        ),
+        child: Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(15),
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                entry.fach ?? 'Kein Fach',
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                shortDescription,
+                textAlign: TextAlign.center,
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
+              ),
+              const SizedBox(height: 4),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Text(
+                    "Menge: ${entry.menge?.toString() ?? 'N/A'}",
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: mengeColor,
+                    ),
+                  ),
+                  Text(
+                    "Min: ${entry.mindestMenge?.toString() ?? 'N/A'}",
+                    style: TextStyle(
+                      fontSize: 14,
+                      color:
+                          isWhite ? Colors.grey.shade800 : Colors.grey.shade800,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 4),
+              Text(
+                entry.ablaufdatum != null
+                    ? "Ablauf: ${DateFormat.yMd().format(entry.ablaufdatum!)}"
+                    : "Ablauf: N/A",
+                style: TextStyle(
+                  fontSize: 14,
+                  color: ablaufDatumColor,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildArticleList() {
+    // Group entries by Regal.
+    final Map<String, List<LagerlistenEntry>> groupedEntries = {};
+    for (var entry in _filteredEntries) {
+      final key = entry.regal ?? 'N/A';
+      groupedEntries.putIfAbsent(key, () => []).add(entry);
+    }
+    final sortedKeys = groupedEntries.keys.toList()..sort();
+
+    // Wrap the ListView in a Material widget with a transparent background.
+    return Material(
+      color: Colors.transparent,
+      child: ListView(
+        children: sortedKeys.map((regalKey) {
+          final groupEntries = groupedEntries[regalKey]!;
+          switch (_currentSort) {
+            case SortType.ablaufdatum:
+              groupEntries.sort((a, b) => _compareByAblaufdatum(a, b));
+              break;
+            case SortType.lagerplatz:
+              groupEntries.sort((a, b) => _compareByLagerplatz(a, b));
+              break;
+            case SortType.alphabetisch:
+              groupEntries.sort((a, b) => _compareAlphabetically(a, b));
+              break;
+            case SortType.mindestmengeErreicht:
+              groupEntries.sort((a, b) => _compareByMindestmengeErreicht(a, b));
+              break;
+            case SortType.regal:
+            default:
+              // Sortierung innerhalb des Regals anhand des "fach"-Felds
+              groupEntries
+                  .sort((a, b) => (a.fach ?? '').compareTo(b.fach ?? ''));
+              break;
+          }
+          return ExpansionTile(
+            title: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12.0),
+              child: Text(
+                regalKey,
+                style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: CupertinoColors.white),
+              ),
+            ),
+            children: [
+              Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
+                child: Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: groupEntries
+                      .map((entry) => _buildGridItem(entry))
+                      .toList(),
+                ),
+              )
+            ],
+          );
+        }).toList(),
+      ),
+    );
   }
 
   @override
@@ -113,11 +311,10 @@ class _LagerlistePageState extends State<LagerlistePage> {
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: CupertinoTextField(
-                  controller: _searchController,
-                  placeholder: 'Nach Artikel suchen...',
-                ),
+                    controller: _searchController,
+                    placeholder: 'Nach Regal, Fach oder Artikel suchen...'),
               ),
-              // Sorting Options
+              // Sort Options
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Align(
@@ -172,6 +369,16 @@ class _LagerlistePageState extends State<LagerlistePage> {
                                   });
                                 },
                               ),
+                              CupertinoActionSheetAction(
+                                child: const Text("Regal"),
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                  setState(() {
+                                    _currentSort = SortType.regal;
+                                    _applySort();
+                                  });
+                                },
+                              ),
                             ],
                             cancelButton: CupertinoActionSheetAction(
                               child: const Text("Abbrechen"),
@@ -193,156 +400,11 @@ class _LagerlistePageState extends State<LagerlistePage> {
                   ),
                 ),
               ),
-
-              // List of Articles
+              // Display the article list (or accordion view for regale)
               Expanded(
-                child: ListView.builder(
-                  itemCount: _filteredEntries.length,
-                  itemBuilder: (context, index) =>
-                      _buildArticleCard(_filteredEntries[index]),
-                ),
+                child: _buildArticleList(),
               ),
             ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  String _sortTypeLabel(SortType type) {
-    switch (type) {
-      case SortType.ablaufdatum:
-        return "Ablaufdatum";
-      case SortType.lagerplatz:
-        return "Lagerplatz";
-      case SortType.alphabetisch:
-        return "Alphabetisch";
-      case SortType.mindestmengeErreicht:
-        return "Mindestmenge erreicht";
-    }
-  }
-
-  Widget _buildArticleCard(LagerlistenEntry entry) {
-    final bool isExpired =
-        entry.ablaufdatum != null && DateTime.now().isAfter(entry.ablaufdatum!);
-    bool isWhite = localSettingsManagerService.getIsBright();
-
-    final Color ablaufDatumColor = isExpired ? Colors.redAccent : Colors.green;
-
-    final bool isBelowMinimum = (entry.menge != null &&
-        entry.mindestMenge != null &&
-        entry.menge! < entry.mindestMenge!);
-    final Color mengeColor = isBelowMinimum
-        ? Colors.redAccent
-        : (isWhite ? Colors.grey.shade800 : Colors.white70);
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      child: GestureDetector(
-        onTap: () async {
-          await Navigator.push(
-            context,
-            CupertinoPageRoute(
-              builder: (context) => EditArtikelPage(
-                entry: entry,
-              ),
-            ),
-          );
-          widget.lagerlistenEntries =
-              await GetIt.instance<LagerlistenVerwaltungsService>()
-                  .artikelEntries;
-          _filterEntries();
-          setState(() {});
-        },
-        child: Card(
-          elevation: 4,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(15),
-          ),
-          child: Container(
-            color: isWhite ? Colors.grey[300] : Colors.grey.shade900,
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        entry.artikelGWID ?? "Keine ArtikelGWID",
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 18,
-                          color: CupertinoTheme.of(context).primaryColor,
-                        ),
-                      ),
-                      const Icon(
-                        Icons.article,
-                        size: 24,
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 12),
-                  Text(
-                    "Lagerplatz: ${entry.lagerplatzId ?? 'N/A'}",
-                    style: TextStyle(
-                        fontSize: 16,
-                        color: isWhite ? Colors.grey.shade800 : Colors.white70),
-                  ),
-                  const SizedBox(height: 10),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        "Regal: ${entry.regal ?? 'N/A'}",
-                        style: TextStyle(
-                            fontSize: 16,
-                            color: isWhite
-                                ? Colors.grey.shade800
-                                : Colors.white70),
-                      ),
-                      Text(
-                        "Fach: ${entry.fach ?? 'N/A'}",
-                        style: TextStyle(
-                            fontSize: 16,
-                            color: isWhite
-                                ? Colors.grey.shade800
-                                : Colors.white70),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 10),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        "Menge: ${entry.menge?.toString() ?? 'N/A'}",
-                        style: TextStyle(fontSize: 16, color: mengeColor),
-                      ),
-                      Text(
-                        "Mindestmenge: ${entry.mindestMenge?.toString() ?? 'N/A'}",
-                        style: TextStyle(
-                            fontSize: 16,
-                            color: isWhite
-                                ? Colors.grey.shade800
-                                : Colors.white70),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 10),
-                  Text(
-                    entry.ablaufdatum != null
-                        ? "Ablaufdatum: ${DateFormat.yMd().format(entry.ablaufdatum!)}"
-                        : "Ablaufdatum: N/A",
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: ablaufDatumColor,
-                    ),
-                  ),
-                ],
-              ),
-            ),
           ),
         ),
       ),
